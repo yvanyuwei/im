@@ -1,9 +1,12 @@
 package com.vm.im.common.enums;
 
-public enum BusinessErrorEnum {
+public enum BusinessExceptionEnum {
 
     //未知的系统异常
     UNKNOWN_SYSTEM_EXCEPTION("500", "Unknown system exception"),
+
+    //用户认证异常
+    USER_AUTH_EXCEPTION("1000", "User authentication exception")
 
     ;
 
@@ -11,7 +14,7 @@ public enum BusinessErrorEnum {
 
     private String failReason;
 
-    private BusinessErrorEnum(String failCode, String failReason) {
+    private BusinessExceptionEnum(String failCode, String failReason) {
         this.failCode = failCode;
         this.failReason = failReason;
     }

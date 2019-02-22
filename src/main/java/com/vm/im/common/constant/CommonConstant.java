@@ -19,6 +19,11 @@ public class CommonConstant {
      */
     public final static Integer NO = 0;
 
+    /**
+     *  请求头认证字段
+     */
+    public final static String AUTHORIZATION = "Authorization";
+
 
 
 

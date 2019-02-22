@@ -3,16 +3,16 @@ package com.vm.im.common.enums;
 /**
  * 群用户权限枚举
  */
-public enum GroupRole {
+public enum GroupRoleEnum {
     MASTER(1),
 
-    ADMIN(2),
+    ADMIN(3),
 
-    USER(3);
+    USER(5);
 
     private int value;
 
-    GroupRole(int value) {
+    GroupRoleEnum(int value) {
         this.value = value;
     }
 
@@ -20,7 +20,7 @@ public enum GroupRole {
         return value;
     }
 
-    public static GroupRole valueOf(int value) {
+    public static GroupRoleEnum valueOf(int value) {
         if (value == ADMIN.value) {
             return ADMIN;
         } else if (value == MASTER.value) {

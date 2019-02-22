@@ -1,6 +1,6 @@
 package com.vm.im.common.annot;
 
-import com.vm.im.common.enums.GroupRole;
+import com.vm.im.common.enums.GroupRoleEnum;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -17,5 +17,5 @@ public @interface GroupAuth {
 
     boolean auth() default true;
 
-    GroupRole[] roles() default {};
+    GroupRoleEnum[] roles() default {};
 }
