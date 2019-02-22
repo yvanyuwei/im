@@ -19,7 +19,7 @@ public class ChildChannelHandler extends ChannelInitializer<SocketChannel> {
     @Override
     protected void initChannel(SocketChannel e) throws Exception {
 // 设置30秒没有读到数据，则触发一个READER_IDLE事件。
-         e.pipeline().addLast("ping", new IdleStateHandler(60, 20, 60 * 10, TimeUnit.SECONDS));
+        e.pipeline().addLast("ping", new IdleStateHandler(60, 30, 60 * 10, TimeUnit.SECONDS));
 // pipeline.addLast(new IdleStateHandler(30, 0, 0));
 // HttpServerCodec：将请求和应答消息解码为HTTP消息
         e.pipeline().addLast("http-codec", new HttpServerCodec());

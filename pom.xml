@@ -17,7 +17,6 @@
     <properties>
         <java.version>1.8</java.version>
         <fastjson.version>1.2.7</fastjson.version>
-        <version.slf4j-api>1.7.25</version.slf4j-api>
         <version.springfox-swagger2>2.7.0</version.springfox-swagger2>
         <version.baomidou>3.0.3</version.baomidou>
         <version.druid>1.1.6</version.druid>
@@ -52,6 +51,12 @@
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka-test</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <!-- AOP-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
 
         <!-- mybatisplus与springboot整合 -->

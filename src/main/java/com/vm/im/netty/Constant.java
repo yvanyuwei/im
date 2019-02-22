@@ -16,6 +16,7 @@ public class Constant {
     public static Map<String, ChannelHandlerContext> pushCtxMap = new ConcurrentHashMap<String, ChannelHandlerContext>() ;
     
     //存放某一类的channel
-    public static ChannelGroup aaChannelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    public static  Map<String, ChannelGroup> groupMap = new ConcurrentHashMap<String, ChannelGroup>() ;
 
+    public static ChannelGroup aaChannelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 }
