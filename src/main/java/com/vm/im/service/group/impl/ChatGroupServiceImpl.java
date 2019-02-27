@@ -1,5 +1,8 @@
 package com.vm.im.service.group.impl;
 
+import com.vm.im.common.dto.admin.UnionOperationDTO;
+import com.vm.im.common.enums.BusinessExceptionEnum;
+import com.vm.im.common.exception.BusinessException;
 import com.vm.im.entity.group.ChatGroup;
 import com.vm.im.dao.group.ChatGroupMapper;
 import com.vm.im.service.group.ChatGroupService;
@@ -19,4 +22,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup> implements ChatGroupService {
     private static final Logger LOG = LoggerFactory.getLogger(ChatGroupServiceImpl.class);
+
+    @Override
+    public ChatGroup checkGroup(UnionOperationDTO unionOperationDTO) {
+        ChatGroup group = getById(unionOperationDTO.getGroupId());
+        if (group == null){
+            throw  new BusinessException(BusinessExceptionEnum.GROUP_NOT_FOUND_EXCEPTION.getFailCode(), BusinessExceptionEnum.GROUP_NOT_FOUND_EXCEPTION.getFailReason());
+        }
+
+        return group;
+    }
 }

@@ -5,14 +5,13 @@ import lombok.Data;
 @Data
 public class ResultBean {
 
-	public String status;
-	public String msg;
+	public Integer status;
 	public String result;
+	public String msg;
 
-	public ResultBean(String status, String msg, String result){
+	public ResultBean(Integer status, String result, String msg){
 		this.status = status;
-		this.msg = msg;
 		this.result = result;
+		this.msg = msg;
 	}
-
 }
