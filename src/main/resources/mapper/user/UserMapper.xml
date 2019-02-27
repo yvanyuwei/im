@@ -4,19 +4,124 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.vm.im.entity.user.User">
-        <id column="id" property="id" />
-        <result column="avatar" property="avatar" />
-        <result column="name" property="name" />
-        <result column="sex" property="sex" />
-        <result column="birthday" property="birthday" />
-        <result column="sign" property="sign" />
-        <result column="mobile" property="mobile" />
-        <result column="email" property="email" />
-        <result column="password" property="password" />
-        <result column="iv" property="iv" />
-        <result column="remarks" property="remarks" />
-        <result column="del_flag" property="delFlag" />
-        <result column="create_time" property="createTime" />
+        <id column="id" property="id" jdbcType="VARCHAR" />
+        <result column="avatar" property="avatar" jdbcType="VARCHAR" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="sex" property="sex" jdbcType="INTEGER" />
+        <result column="birthday" property="birthday" jdbcType="TIMESTAMP" />
+        <result column="sign" property="sign" jdbcType="VARCHAR" />
+        <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+        <result column="email" property="email" jdbcType="VARCHAR" />
+        <result column="password" property="password" jdbcType="VARCHAR" />
+        <result column="iv" property="iv" jdbcType="VARCHAR" />
+        <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+        <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     </resultMap>
+
+    <sql id="Base_Column_List" >
+      id, avatar, name, sex, birthday, sign, mobile, email, password, iv, remarks, del_flag,
+      create_time
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select
+        <include refid="Base_Column_List" />
+        from im_user
+        where id = #{id,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectByUserName" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List" />
+        from im_user
+        where name = #{name,jdbcType=VARCHAR}
+    </select>
+
+    <insert id="insertSelective" parameterType="com.vm.im.entity.user.User" >
+      insert into im_user
+      <trim prefix="(" suffix=")" suffixOverrides="," >
+        <if test="id != null" >
+            id,
+        </if>
+        <if test="avatar != null" >
+            avatar,
+        </if>
+        <if test="name != null" >
+            name,
+        </if>
+        <if test="sex != null" >
+            sex,
+        </if>
+        <if test="birthday != null" >
+            birthday,
+        </if>
+        <if test="sign != null" >
+            sign,
+        </if>
+        <if test="mobile != null" >
+            mobile,
+        </if>
+        <if test="email != null" >
+            email,
+        </if>
+        <if test="password != null" >
+            password,
+        </if>
+        <if test="iv != null" >
+            iv,
+        </if>
+        <if test="remarks != null" >
+            remarks,
+        </if>
+        <if test="delFlag != null" >
+            del_flag,
+        </if>
+        <if test="createTime != null" >
+            create_time,
+        </if>
+      </trim>
+      <trim prefix="values (" suffix=")" suffixOverrides="," >
+        <if test="id != null" >
+            #{id,jdbcType=VARCHAR},
+        </if>
+        <if test="avatar != null" >
+            #{avatar,jdbcType=VARCHAR},
+        </if>
+        <if test="name != null" >
+            #{name,jdbcType=VARCHAR},
+        </if>
+        <if test="sex != null" >
+            #{sex,jdbcType=INTEGER},
+        </if>
+        <if test="birthday != null" >
+            #{birthday,jdbcType=TIMESTAMP},
+        </if>
+        <if test="sign != null" >
+            #{sign,jdbcType=VARCHAR},
+        </if>
+        <if test="mobile != null" >
+            #{mobile,jdbcType=VARCHAR},
+        </if>
+        <if test="email != null" >
+            #{email,jdbcType=VARCHAR},
+        </if>
+        <if test="password != null" >
+            #{password,jdbcType=VARCHAR},
+        </if>
+        <if test="iv != null" >
+            #{iv,jdbcType=VARCHAR},
+        </if>
+        <if test="remarks != null" >
+            #{remarks,jdbcType=VARCHAR},
+        </if>
+        <if test="delFlag != null" >
+            #{delFlag,jdbcType=INTEGER},
+        </if>
+        <if test="createTime != null" >
+            #{createTime,jdbcType=TIMESTAMP},
+        </if>
+      </trim>
+    </insert>
 
 </mapper>

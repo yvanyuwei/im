@@ -1,5 +1,8 @@
 package com.vm.im.netty;
 
+import com.alibaba.fastjson.JSONObject;
+import com.vm.im.common.util.ResponseJson;
+import com.vm.im.service.chat.ChatService;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
@@ -12,6 +15,8 @@ import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.AttributeKey;
 import io.netty.util.CharsetUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.logging.Level;
@@ -22,165 +27,113 @@ import java.util.logging.Logger;
  *
  * @author hxy
  */
-public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object> {
+@Service
+public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
     private static final Logger logger = Logger.getLogger(WebSocketServerHandshaker.class.getName());
     private WebSocketServerHandshaker handshaker;
 
+    @Autowired
+    private ChatService chatService;
+
     /**
-     * channel 通道 action 活跃的 当客户端主动链接服务端的链接后，这个通道就是活跃的了。也就是客户端与服务端建立了通信通道并且可以传输数据
+     * channel 通道 action 活跃的 当客户端主动链接服务端的链接后，
+     * 这个通道就是活跃的了。也就是客户端与服务端建立了通信通道并且
+     * 可以传输数据
      */
-    @Override
+    /*@Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-// 添加
+        // 添加
         Global.group.add(ctx.channel());
         System.out.println("客户端与服务端连接开启：" + ctx.channel().remoteAddress().toString());
+    }*/
+
+    /**
+     * 接收客户端发送的消息 channel 通道 Read 读 简而言之就是从通道中
+     * 读取数据，也就是服务端接收客户端发来的数据。但是这个数据在不进行
+     * 解码时它是ByteBuf类型的
+     */
+    @Override
+    protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame msg) throws Exception {
+        handlerWebSocketFrame(ctx,msg);
     }
 
     /**
-     * channel 通道 Inactive 不活跃的 当客户端主动断开服务端的链接后，这个通道就是不活跃的。也就是说客户端与服务端关闭了通信通道并且不可以传输数据
+     *              处理WebSocketFrame
+     * @param ctx
+     * @param frame
      */
-    @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        // 移除
-        Global.group.remove(ctx.channel());
-        System.out.println("客户端与服务端连接关闭：" + ctx.channel().remoteAddress().toString());
-    }
-
-    /**
-     * 接收客户端发送的消息 channel 通道 Read 读 简而言之就是从通道中读取数据，也就是服务端接收客户端发来的数据。但是这个数据在不进行解码时它是ByteBuf类型的
-     */
-    @Override
-    protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
-
-        //http：//xxxx
-        if (msg instanceof FullHttpRequest) {
-
-            handleHttpRequest(ctx, (FullHttpRequest) msg);
-        //ws://xxxx
-        } else if (msg instanceof WebSocketFrame) {
-
-            handlerWebSocketFrame(ctx, (WebSocketFrame) msg);
-        }
-
-
-    }
-
-    /**
-     * channel 通道 Read 读取 Complete 完成 在通道读取完成后会在这个方法里通知，对应可以做刷新操作 ctx.flush()
-     */
-    @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-        ctx.flush();
-        System.out.println(ctx.name());
-    }
-
     private void handlerWebSocketFrame(ChannelHandlerContext ctx, WebSocketFrame frame) {
-// 判断是否关闭链路的指令
+        // 判断是否关闭链路的指令
         if (frame instanceof CloseWebSocketFrame) {
-            handshaker.close(ctx.channel(), (CloseWebSocketFrame) frame.retain());
+            handshaker = Constant.webSocketHandshakerMap.get(ctx.channel().id().asLongText());
+            if (handshaker == null){
+                sendErrorMessage(ctx,"不存在此客户端连接");
+            }else {
+                handshaker.close(ctx.channel(), (CloseWebSocketFrame) frame.retain());
+            }
             return;
         }
-// 判断是否ping消息
+        // 判断是否ping消息
         if (frame instanceof PingWebSocketFrame) {
             ctx.channel().write(new PongWebSocketFrame(frame.content().retain()));
             return;
         }
-// 本例程仅支持文本消息，不支持二进制消息
+        // 本例程仅支持文本消息，不支持二进制消息
         if (!(frame instanceof TextWebSocketFrame)) {
-            System.out.println("本例程仅支持文本消息，不支持二进制消息");
-            throw new UnsupportedOperationException(
-                    String.format("%s frame types not supported", frame.getClass().getName()));
+            sendErrorMessage(ctx, "本例程仅支持文本消息，不支持二进制消息");
         }
-//客服端发送过来的消息
+        //客服端发送过来的消息
         String request = ((TextWebSocketFrame) frame).text();
         System.out.println("服务端收到：" + request);
-        if (logger.isLoggable(Level.FINE)) {
+        JSONObject param = null;
+        try {
+            param = JSONObject.parseObject(request);
+        } catch (Exception e) {
+            sendErrorMessage(ctx, "JSON字符串转换出错！");
+            e.printStackTrace();
+        }
+        if (param == null) {
+            sendErrorMessage(ctx, "消息参数为空！");
+            return;
+        }
+        String type = (String) param.get("type");
+        switch (type){
+            case "REGISTER":
+                chatService.register(param, ctx);
+                break;
+            case "SINGLE_SENDING":
+                chatService.singleSend(param, ctx);
+                break;
+            case "GROUP_SENDING":
+                chatService.groupSend(param, ctx);
+                break;
+            default:
+                chatService.typeError(ctx);
+                break;
+        }
+        /*if (logger.isLoggable(Level.FINE)) {
             logger.fine(String.format("%s received %s", ctx.channel(), request));
         }
         TextWebSocketFrame tws = new TextWebSocketFrame(new Date().toString() + ctx.channel().id() + "：" + request);
-// 群发
+        // 群发
         Global.group.writeAndFlush(tws);
-// 返回【谁发的发给谁】
-// ctx.channel().writeAndFlush(tws);
-    }
-
-    private void handlerWebSocketFrame2(ChannelHandlerContext ctx, WebSocketFrame frame) {
-// 判断是否关闭链路的指令
-        if (frame instanceof CloseWebSocketFrame) {
-            handshaker.close(ctx.channel(), (CloseWebSocketFrame) frame.retain());
-            return;
-        }
-// 判断是否ping消息
-        if (frame instanceof PingWebSocketFrame) {
-            ctx.channel().write(new PongWebSocketFrame(frame.content().retain()));
-            return;
-        }
-// 本例程仅支持文本消息，不支持二进制消息
-        if (!(frame instanceof TextWebSocketFrame)) {
-            System.out.println("本例程仅支持文本消息，不支持二进制消息");
-            throw new UnsupportedOperationException(
-                    String.format("%s frame types not supported", frame.getClass().getName()));
-        }
-// 返回应答消息
-        String request = ((TextWebSocketFrame) frame).text();
-        System.out.println("服务端2收到：" + request);
-        if (logger.isLoggable(Level.FINE)) {
-            logger.fine(String.format("%s received %s", ctx.channel(), request));
-        }
-        TextWebSocketFrame tws = new TextWebSocketFrame(new Date().toString() + ctx.channel().id() + "：" + request);
-// 群发
-        Global.group.writeAndFlush(tws);
-// 返回【谁发的发给谁】
-// ctx.channel().writeAndFlush(tws);
-    }
-
-    private void handleHttpRequest(ChannelHandlerContext ctx, FullHttpRequest req) {
-// 如果HTTP解码失败，返回HHTP异常
-        if (!req.getDecoderResult().isSuccess() || (!"websocket".equals(req.headers().get("Upgrade")))) {
-            sendHttpResponse(ctx, req,
-                    new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST));
-            return;
-        }
-//获取url后置参数
-        HttpMethod method = req.getMethod();
-        String uri = req.getUri();
-//        QueryStringDecoder queryStringDecoder = new QueryStringDecoder(uri);
-//        Map<String, List<String>> parameters = queryStringDecoder.parameters();
-//        System.out.println(parameters.get("request").get(0));
-        if (method == HttpMethod.GET && "/webssss".equals(uri)) {
-//....处理
-            ctx.attr(AttributeKey.valueOf("type")).set("anzhuo");
-        } else if (method == HttpMethod.GET && "/websocket".equals(uri)) {
-//...处理
-            ctx.attr(AttributeKey.valueOf("type")).set("live");
-        }
-// 构造握手响应返回，本机测试
-        WebSocketServerHandshakerFactory wsFactory = new WebSocketServerHandshakerFactory(
-                "ws://" + req.headers().get(HttpHeaders.Names.HOST) + uri, null, false);
-        handshaker = wsFactory.newHandshaker(req);
-        if (handshaker == null) {
-            WebSocketServerHandshakerFactory.sendUnsupportedWebSocketVersionResponse(ctx.channel());
-        } else {
-            handshaker.handshake(ctx.channel(), req);
-        }
-    }
-
-    private static void sendHttpResponse(ChannelHandlerContext ctx, FullHttpRequest req, DefaultFullHttpResponse res) {
-// 返回应答给客户端
-        if (res.getStatus().code() != 200) {
-            ByteBuf buf = Unpooled.copiedBuffer(res.getStatus().toString(), CharsetUtil.UTF_8);
-            res.content().writeBytes(buf);
-            buf.release();
-        }
-// 如果是非Keep-Alive，关闭连接
-        ChannelFuture f = ctx.channel().writeAndFlush(res);
-        if (!HttpHeaders.isKeepAlive(req) || res.getStatus().code() != 200) {
-            f.addListener(ChannelFutureListener.CLOSE);
-        }
+        // 返回【谁发的发给谁】
+        // ctx.channel().writeAndFlush(tws);*/
     }
 
     /**
-     * exception 异常 Caught 抓住 抓住异常，当发生异常的时候，可以做一些相应的处理，比如打印日志、关闭链接
+     * channel 通道 Inactive 不活跃的 当客户端主动断开服务端的链接后，
+     * 这个通道就是不活跃的。也就是说客户端与服务端关闭了通信通道并且不
+     * 可以传输数据
+     */
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) {
+        chatService.remove(ctx);
+    }
+
+    /**
+     * exception 异常 Caught 抓住 抓住异常，当发生异常的时候，可以做
+     * 一些相应的处理，比如打印日志、关闭链接
      */
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
@@ -188,33 +141,11 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
         ctx.close();
     }
 
-    @Override
-    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-        // TODO Auto-generated method stub
-        super.userEventTriggered(ctx, evt);
-
-        if (evt instanceof IdleStateEvent) {
-            IdleStateEvent event = (IdleStateEvent) evt;
-
-            if (event.state().equals(IdleState.READER_IDLE)) {
-//                Log.logD("------长期未收到服务器反馈数据------");
-//                String loginMsg = Login.login("admin", "admin");
-//                Log.logD("------发送登录信息------" + loginMsg+"\r\n");
-                ctx.writeAndFlush("重连");
-                //根据具体的情况 在这里也可以重新连接
-            } else if (event.state().equals(IdleState.WRITER_IDLE)) {
-//                Log.logD("------长期未向服务器发送数据 发送心跳------");
-//                Log.logD("------发送心跳包------" + "[LinkTest]\r\n");
-                TextWebSocketFrame tws = new TextWebSocketFrame("xintiaobao");
-                ctx.writeAndFlush(tws);
-//                ctx.channel().writeAndFlush(tws);
-//                TextWebSocketFrame tws = new TextWebSocketFrame(new Date().toString() + ctx.channel().id() + "：" + "心跳包");
-//                Global.group.writeAndFlush(tws);
-
-            } else if (event.state().equals(IdleState.ALL_IDLE)) {
-
-            }
-        }
+    private void sendErrorMessage(ChannelHandlerContext ctx, String errorMsg) {
+        String responseJson = new ResponseJson()
+                .error(errorMsg)
+                .toString();
+        ctx.channel().writeAndFlush(new TextWebSocketFrame(responseJson));
     }
 
 }
