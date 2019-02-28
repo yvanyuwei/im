@@ -18,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
+import java.util.List;
+
 /**
  * <p>
  * 用户群 服务实现类

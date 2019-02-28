@@ -1,7 +1,10 @@
 package com.vm.im.service.user;
 
+import com.vm.im.common.util.ResponseJson;
 import com.vm.im.entity.user.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import javax.servlet.http.HttpSession;
 
 /**
  * <p>
@@ -13,4 +16,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface UserService extends IService<User> {
 
+    ResponseJson login(String username, String password, HttpSession session);
+
+    ResponseJson getByUserId(String userId);
 }

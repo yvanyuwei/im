@@ -11,11 +11,13 @@ import com.vm.im.common.enums.GroupLeverEnum;
 import com.vm.im.common.enums.GroupRoleEnum;
 import com.vm.im.common.exception.BusinessException;
 import com.vm.im.common.util.StringUtil;
+import com.vm.im.dao.user.UserChatGroupMapper;
 import com.vm.im.entity.group.ChatGroup;
 import com.vm.im.dao.group.ChatGroupMapper;
 import com.vm.im.entity.user.UserChatGroup;
 import com.vm.im.service.group.ChatGroupFlowService;
 import com.vm.im.service.group.ChatGroupOperationFlowService;
+import com.vm.im.netty.Constant;
 import com.vm.im.service.group.ChatGroupService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.vm.im.service.user.UserChatGroupService;
@@ -26,6 +28,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+
+import java.util.List;
 
 /**
  * <p>
@@ -38,6 +42,12 @@ import java.util.Date;
 @Service
 public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup> implements ChatGroupService {
     private static final Logger LOG = LoggerFactory.getLogger(ChatGroupServiceImpl.class);
+
+    @Autowired
+    private ChatGroupMapper chatGroupMapper;
+
+    @Autowired
+    private UserChatGroupMapper userChatGroupMapper;
 
     @Autowired
     private ChatGroupFlowService chatGroupFlowService;
@@ -258,6 +268,11 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
         return result;
     }
 
+    @Override
+    public ChatGroup checkGroup(UnionOperationDTO unionOperationDTO) {
+        return null;
+    }
+
     /**
      * 构建用户群组信息
      *
@@ -297,4 +312,22 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
 
         return chatGroup;
     }
+
+
+
+    @Override
+    public List<UserChatGroup> getByGroupId(String groupId) {
+        return Constant.groupInfoMap.get(groupId);
+    }
+
+    @Override
+    public void loadGroupInfo() {
+        List<ChatGroup> chatGroups = chatGroupMapper.selectAllGroup();
+        for (ChatGroup chatGroup : chatGroups) {
+            List<UserChatGroup> userChatGroups = userChatGroupMapper.selectByGroupId(chatGroup.getId());
+            Constant.groupInfoMap.put(chatGroup.getId(),userChatGroups);
+        }
+    }
+
+
 }

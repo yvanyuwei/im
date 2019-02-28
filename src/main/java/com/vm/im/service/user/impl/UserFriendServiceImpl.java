@@ -6,7 +6,10 @@ import com.vm.im.service.user.UserFriendService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * <p>
@@ -19,4 +22,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserFriendServiceImpl extends ServiceImpl<UserFriendMapper, UserFriend> implements UserFriendService {
     private static final Logger LOG = LoggerFactory.getLogger(UserFriendServiceImpl.class);
+
+    @Autowired
+    private UserFriendMapper userFriendMapper;
+    @Override
+    public List<UserFriend> selectByPrimaryKey() {
+        return null;
+    }
 }

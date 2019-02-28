@@ -21,6 +21,7 @@
         <version.baomidou>3.0.3</version.baomidou>
         <version.druid>1.1.6</version.druid>
         <version.velocity>1.7</version.velocity>
+        <mysql-connector-java.version>5.1.44</mysql-connector-java.version>
     </properties>
 
     <dependencies>

@@ -4,6 +4,8 @@ import com.vm.im.entity.group.ChatGroup;
 import com.vm.im.entity.user.UserChatGroup;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
  * <p>
  * 用户群 服务类
@@ -14,6 +16,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface UserChatGroupService extends IService<UserChatGroup> {
 
+    //List<UserChatGroup> getUserInfoByGroupId(String GroupId);
     /**
      * 添加群主加入指定群组
      *

@@ -2,6 +2,8 @@ package com.vm.im.dao.user;
 
 import com.vm.im.entity.user.UserFriend;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Repository;
  * @author zhangqi
  * @since 2019-02-19
  */
+@Mapper
 @Repository
 public interface UserFriendMapper extends BaseMapper<UserFriend> {
 
