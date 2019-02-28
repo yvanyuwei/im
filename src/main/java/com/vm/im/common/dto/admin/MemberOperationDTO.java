@@ -23,7 +23,7 @@ public class MemberOperationDTO {
     private String groupId;
 
     @NotEmpty(message = "timestamp不能为空")
-    private Long timestamp;
+    private String timestamp;
 
     @Min(value = 0)
     @Max(value = 1)

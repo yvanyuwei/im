@@ -1,7 +1,9 @@
 package com.vm.im.service.group;
 
+import com.vm.im.entity.group.ChatGroup;
 import com.vm.im.entity.group.ChatGroupOperationFlow;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.vm.im.entity.user.UserChatGroup;
 
 /**
  * <p>
@@ -13,4 +15,17 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ChatGroupOperationFlowService extends IService<ChatGroupOperationFlow> {
 
+    /**
+     * 添加删除群组的操作流水
+     *
+     * @param chatGroup
+     */
+    void addDeleteGroupFlow(ChatGroup chatGroup);
+
+    /**
+     * 添加群组用户权限操作流水
+     *
+     * @param userChatGroup
+     */
+    void addMemberAuthOperationFlow(UserChatGroup userChatGroup);
 }

@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 /**
  * <p>
@@ -20,4 +22,20 @@ import java.util.List;
 public interface UserChatGroupMapper extends BaseMapper<UserChatGroup> {
 
     List<UserChatGroup> selectByGroupId(String groupId);
+
+    /**
+     * 更新用户群组信息为删除
+     *
+     * @param groupId
+     */
+    void deleteByGroupId(String groupId);
+
+    /**
+     * 根据群id 用户id 查询群用户数据
+     *
+     * @param groupId
+     * @param userId
+     * @return
+     */
+    UserChatGroup selectUserByGroupIdAndUid(@Param("groupId") String groupId, @Param("userId") String userId);
 }

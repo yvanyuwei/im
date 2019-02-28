@@ -39,6 +39,6 @@ public class HMACSHA256Util {
     public static void main(String[] args) {
 //        long l = System.currentTimeMillis();
 //        System.out.println(l);
-//        System.out.println(sha256_HMAC(l + "aaaaaa", "afad71e8a8f944f0afc4e79e9520d71d"));
+        System.out.println(sha256_HMAC("{\"uid\":\"180188\",\"groupName\":\"111111\",\"groupId\":\"1\",\"avatar\":\"111\",\"type\":1,\"timestamp\":\"1551336980339\"}", "afad71e8a8f944f0afc4e79e9520d71d"));
     }
 }

@@ -1,7 +1,9 @@
 package com.vm.im.service.group;
 
+import com.vm.im.entity.group.ChatGroup;
 import com.vm.im.entity.group.ChatGroupFlow;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.vm.im.entity.user.UserChatGroup;
 
 /**
  * <p>
@@ -13,4 +15,17 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ChatGroupFlowService extends IService<ChatGroupFlow> {
 
+    /**
+     * 添加群主加入流水
+     *
+     * @param chatGroup
+     */
+    void addGroupMaster(ChatGroup chatGroup);
+
+    /**
+     * 添加成员加入流水
+     *
+     * @param userChatGroup
+     */
+    void addChatGroupFlow(UserChatGroup userChatGroup);
 }
