@@ -12,8 +12,9 @@ public class CodeGeneration {
 
     private static String packageName = "D://";    //输出文件路径
     private static String authorName = "zhangqi";     //作者
+    private static String[] tables = new String[]{"im_user_chat_group"};
 //    private static String[] tables = new String[]{"im_blacklist", "im_group", "im_user", "im_user_chat_group", "im_user_friend", "im_user_friend_apply", "im_user_operation_flow"}; //table名字
-    private static String[] tables = new String[]{"im_level", "im_message", "im_red_packet", "im_red_packet_detial"}; //table名字
+//    private static String[] tables = new String[]{"im_level", "im_message", "im_red_packet", "im_red_packet_detial"}; //table名字
 //    private static String[] tables = new String[]{"im_chat_group", "im_chat_group_apply", "im_chat_group_flow", "im_chat_group_notice", "im_chat_group_operation_flow", "im_chat_group_user"}; //table名字
     private static String[] prefix = new String[]{"im_"};
 
@@ -63,12 +64,12 @@ public class CodeGeneration {
         PackageConfig pc = new PackageConfig();
         pc.setParent("com.vm.im");
 
-        pc.setController("controller.common");
-        pc.setService("service.common");
-        pc.setServiceImpl("service.common.impl");
-        pc.setMapper("dao.common");
-        pc.setEntity("entity.common");
-        pc.setXml("xml.common");
+        pc.setController("controller.user");
+        pc.setService("service.user");
+        pc.setServiceImpl("service.user.impl");
+        pc.setMapper("dao.user");
+        pc.setEntity("entity.user");
+        pc.setXml("xml.user");
         mpg.setPackageInfo(pc);
 
         // 执行生成
