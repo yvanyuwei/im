@@ -10,7 +10,7 @@ public class ResponseJson extends HashMap<String, Object> {
 
     private static final Integer SUCCESS_STATUS = 200;
     private static final Integer ERROR_STATUS = -1;
-    private static final String SUCCESS_MSG = "一切正常";
+    private static final String SUCCESS_MSG = "Success";
     
     public ResponseJson() {
         super();

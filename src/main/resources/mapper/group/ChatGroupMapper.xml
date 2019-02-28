@@ -4,19 +4,30 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.vm.im.entity.group.ChatGroup">
-        <id column="id" property="id" />
-        <result column="name" property="name" />
-        <result column="avatar" property="avatar" />
-        <result column="master" property="master" />
-        <result column="remarks" property="remarks" />
-        <result column="notice" property="notice" />
-        <result column="can_speak" property="canSpeak" />
-        <result column="type" property="type" />
-        <result column="create_time" property="createTime" />
-        <result column="create_by" property="createBy" />
-        <result column="update_time" property="updateTime" />
-        <result column="update_by" property="updateBy" />
-        <result column="del_flag" property="delFlag" />
+        <id column="id" property="id" jdbcType="VARCHAR" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="avatar" property="avatar" jdbcType="VARCHAR" />
+        <result column="master" property="master" jdbcType="VARCHAR" />
+        <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+        <result column="notice" property="notice" jdbcType="VARCHAR" />
+        <result column="can_speak" property="canSpeak" jdbcType="INTEGER" />
+        <result column="type" property="type" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="create_by" property="createBy" jdbcType="VARCHAR" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="update_by" property="updateBy" jdbcType="VARCHAR" />
+        <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
     </resultMap>
+
+    <sql id="Base_Column_List" >
+      id, name, avatar, master, remarks, notice, can_speak, type, create_time, create_by,
+      update_time, update_by, del_flag
+    </sql>
+
+    <select id="selectAllGroup" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from im_chat_group
+    </select>
 
 </mapper>

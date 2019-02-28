@@ -2,6 +2,10 @@ package com.vm.im.dao.group;
 
 import com.vm.im.entity.group.ChatGroup;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * <p>
@@ -11,6 +15,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author zhangqi
  * @since 2019-02-20
  */
+@Mapper
+@Repository
 public interface ChatGroupMapper extends BaseMapper<ChatGroup> {
 
+    List<ChatGroup> selectAllGroup();
 }

@@ -705,3 +705,472 @@ java.sql.SQLSyntaxErrorException: You have an error in your SQL syntax; check th
 	at java.lang.Thread.run(Thread.java:748)
 2019-02-27 17:58:23.433 ERROR [kafkaMessageListenerContainer-C-1] o.a.kafka.clients.consumer.internals.ConsumerCoordinator.handle():843 - [Consumer clientId=consumer-1, groupId=0] Offset commit failed on partition TopicWithDraw-0 at offset 0: The coordinator is not aware of this member.
 2019-02-27 17:58:23.439 ERROR [kafkaMessageListenerContainer-C-1] o.a.kafka.clients.consumer.internals.ConsumerCoordinator.handle():843 - [Consumer clientId=consumer-1, groupId=0] Offset commit failed on partition TopicWithDraw-0 at offset 0: The coordinator is not aware of this member.
+2019-02-28 15:38:34.651 ERROR [main] org.springframework.test.context.TestContextManager.prepareTestInstance():250 - Caught exception while allowing TestExecutionListener [org.springframework.boot.test.autoconfigure.SpringBootDependencyInjectionTestExecutionListener@3c73951] to prepare test instance [com.vm.im.VmImApplicationTests@4db46344]
+org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'com.vm.im.VmImApplicationTests': Unsatisfied dependency expressed through field 'chatService'; nested exception is org.springframework.beans.factory.BeanNotOfRequiredTypeException: Bean named 'chatServiceImpl' is expected to be of type 'com.vm.im.service.chat.Impl.ChatServiceImpl' but was actually of type 'com.sun.proxy.$Proxy122'
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:596)
+	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:90)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:374)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1378)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireBeanProperties(AbstractAutowireCapableBeanFactory.java:396)
+	at org.springframework.test.context.support.DependencyInjectionTestExecutionListener.injectDependencies(DependencyInjectionTestExecutionListener.java:119)
+	at org.springframework.test.context.support.DependencyInjectionTestExecutionListener.prepareTestInstance(DependencyInjectionTestExecutionListener.java:83)
+	at org.springframework.boot.test.autoconfigure.SpringBootDependencyInjectionTestExecutionListener.prepareTestInstance(SpringBootDependencyInjectionTestExecutionListener.java:44)
+	at org.springframework.test.context.TestContextManager.prepareTestInstance(TestContextManager.java:246)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.createTest(SpringJUnit4ClassRunner.java:227)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner$1.runReflectiveCall(SpringJUnit4ClassRunner.java:289)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.methodBlock(SpringJUnit4ClassRunner.java:291)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.runChild(SpringJUnit4ClassRunner.java:246)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.runChild(SpringJUnit4ClassRunner.java:97)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.springframework.test.context.junit4.statements.RunBeforeTestClassCallbacks.evaluate(RunBeforeTestClassCallbacks.java:61)
+	at org.springframework.test.context.junit4.statements.RunAfterTestClassCallbacks.evaluate(RunAfterTestClassCallbacks.java:70)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.run(SpringJUnit4ClassRunner.java:190)
+	at org.junit.runner.JUnitCore.run(JUnitCore.java:137)
+	at com.intellij.junit4.JUnit4IdeaTestRunner.startRunnerWithArgs(JUnit4IdeaTestRunner.java:68)
+	at com.intellij.rt.execution.junit.IdeaTestRunner$Repeater.startRunnerWithArgs(IdeaTestRunner.java:47)
+	at com.intellij.rt.execution.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:242)
+	at com.intellij.rt.execution.junit.JUnitStarter.main(JUnitStarter.java:70)
+Caused by: org.springframework.beans.factory.BeanNotOfRequiredTypeException: Bean named 'chatServiceImpl' is expected to be of type 'com.vm.im.service.chat.Impl.ChatServiceImpl' but was actually of type 'com.sun.proxy.$Proxy122'
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.checkBeanNotOfRequiredType(DefaultListableBeanFactory.java:1669)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.raiseNoMatchingBeanFound(DefaultListableBeanFactory.java:1647)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1210)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1164)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:593)
+	... 28 common frames omitted
+2019-02-28 15:48:20.084 ERROR [main] org.springframework.test.context.TestContextManager.prepareTestInstance():250 - Caught exception while allowing TestExecutionListener [org.springframework.boot.test.autoconfigure.SpringBootDependencyInjectionTestExecutionListener@3c73951] to prepare test instance [com.vm.im.VmImApplicationTests@2d73767e]
+org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'com.vm.im.VmImApplicationTests': Unsatisfied dependency expressed through field 'chatService'; nested exception is org.springframework.beans.factory.BeanNotOfRequiredTypeException: Bean named 'chatServiceImpl' is expected to be of type 'com.vm.im.service.chat.Impl.ChatServiceImpl' but was actually of type 'com.sun.proxy.$Proxy122'
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:596)
+	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:90)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:374)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1378)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireBeanProperties(AbstractAutowireCapableBeanFactory.java:396)
+	at org.springframework.test.context.support.DependencyInjectionTestExecutionListener.injectDependencies(DependencyInjectionTestExecutionListener.java:119)
+	at org.springframework.test.context.support.DependencyInjectionTestExecutionListener.prepareTestInstance(DependencyInjectionTestExecutionListener.java:83)
+	at org.springframework.boot.test.autoconfigure.SpringBootDependencyInjectionTestExecutionListener.prepareTestInstance(SpringBootDependencyInjectionTestExecutionListener.java:44)
+	at org.springframework.test.context.TestContextManager.prepareTestInstance(TestContextManager.java:246)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.createTest(SpringJUnit4ClassRunner.java:227)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner$1.runReflectiveCall(SpringJUnit4ClassRunner.java:289)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.methodBlock(SpringJUnit4ClassRunner.java:291)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.runChild(SpringJUnit4ClassRunner.java:246)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.runChild(SpringJUnit4ClassRunner.java:97)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.springframework.test.context.junit4.statements.RunBeforeTestClassCallbacks.evaluate(RunBeforeTestClassCallbacks.java:61)
+	at org.springframework.test.context.junit4.statements.RunAfterTestClassCallbacks.evaluate(RunAfterTestClassCallbacks.java:70)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.run(SpringJUnit4ClassRunner.java:190)
+	at org.junit.runner.JUnitCore.run(JUnitCore.java:137)
+	at com.intellij.junit4.JUnit4IdeaTestRunner.startRunnerWithArgs(JUnit4IdeaTestRunner.java:68)
+	at com.intellij.rt.execution.junit.IdeaTestRunner$Repeater.startRunnerWithArgs(IdeaTestRunner.java:47)
+	at com.intellij.rt.execution.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:242)
+	at com.intellij.rt.execution.junit.JUnitStarter.main(JUnitStarter.java:70)
+Caused by: org.springframework.beans.factory.BeanNotOfRequiredTypeException: Bean named 'chatServiceImpl' is expected to be of type 'com.vm.im.service.chat.Impl.ChatServiceImpl' but was actually of type 'com.sun.proxy.$Proxy122'
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.checkBeanNotOfRequiredType(DefaultListableBeanFactory.java:1669)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.raiseNoMatchingBeanFound(DefaultListableBeanFactory.java:1647)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1210)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1164)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:593)
+	... 28 common frames omitted
+2019-02-28 15:50:30.613 ERROR [main] org.springframework.test.context.TestContextManager.prepareTestInstance():250 - Caught exception while allowing TestExecutionListener [org.springframework.boot.test.autoconfigure.SpringBootDependencyInjectionTestExecutionListener@e98770d] to prepare test instance [com.vm.im.VmImApplicationTests@3d1c8f35]
+org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'com.vm.im.VmImApplicationTests': Unsatisfied dependency expressed through field 'chatService'; nested exception is org.springframework.beans.factory.BeanNotOfRequiredTypeException: Bean named 'chatServiceImpl' is expected to be of type 'com.vm.im.service.chat.Impl.ChatServiceImpl' but was actually of type 'com.sun.proxy.$Proxy122'
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:596)
+	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:90)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:374)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1378)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireBeanProperties(AbstractAutowireCapableBeanFactory.java:396)
+	at org.springframework.test.context.support.DependencyInjectionTestExecutionListener.injectDependencies(DependencyInjectionTestExecutionListener.java:119)
+	at org.springframework.test.context.support.DependencyInjectionTestExecutionListener.prepareTestInstance(DependencyInjectionTestExecutionListener.java:83)
+	at org.springframework.boot.test.autoconfigure.SpringBootDependencyInjectionTestExecutionListener.prepareTestInstance(SpringBootDependencyInjectionTestExecutionListener.java:44)
+	at org.springframework.test.context.TestContextManager.prepareTestInstance(TestContextManager.java:246)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.createTest(SpringJUnit4ClassRunner.java:227)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner$1.runReflectiveCall(SpringJUnit4ClassRunner.java:289)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.methodBlock(SpringJUnit4ClassRunner.java:291)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.runChild(SpringJUnit4ClassRunner.java:246)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.runChild(SpringJUnit4ClassRunner.java:97)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.springframework.test.context.junit4.statements.RunBeforeTestClassCallbacks.evaluate(RunBeforeTestClassCallbacks.java:61)
+	at org.springframework.test.context.junit4.statements.RunAfterTestClassCallbacks.evaluate(RunAfterTestClassCallbacks.java:70)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.run(SpringJUnit4ClassRunner.java:190)
+	at org.junit.runner.JUnitCore.run(JUnitCore.java:137)
+	at com.intellij.junit4.JUnit4IdeaTestRunner.startRunnerWithArgs(JUnit4IdeaTestRunner.java:68)
+	at com.intellij.rt.execution.junit.IdeaTestRunner$Repeater.startRunnerWithArgs(IdeaTestRunner.java:47)
+	at com.intellij.rt.execution.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:242)
+	at com.intellij.rt.execution.junit.JUnitStarter.main(JUnitStarter.java:70)
+Caused by: org.springframework.beans.factory.BeanNotOfRequiredTypeException: Bean named 'chatServiceImpl' is expected to be of type 'com.vm.im.service.chat.Impl.ChatServiceImpl' but was actually of type 'com.sun.proxy.$Proxy122'
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.checkBeanNotOfRequiredType(DefaultListableBeanFactory.java:1669)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.raiseNoMatchingBeanFound(DefaultListableBeanFactory.java:1647)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1210)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1164)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:593)
+	... 28 common frames omitted
+2019-02-28 16:16:36.170 ERROR [main] o.s.boot.diagnostics.LoggingFailureAnalysisReporter.report():42 - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field bossGroup in com.vm.im.netty.NettyServer required a bean of type 'io.netty.channel.EventLoopGroup' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'io.netty.channel.EventLoopGroup' in your configuration.
+
+2019-02-28 16:17:39.655 ERROR [main] o.s.boot.diagnostics.LoggingFailureAnalysisReporter.report():42 - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field bossGroup in com.vm.im.netty.NettyServer required a bean of type 'io.netty.channel.EventLoopGroup' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'io.netty.channel.EventLoopGroup' in your configuration.
+
+2019-02-28 16:19:08.982 ERROR [main] o.s.boot.diagnostics.LoggingFailureAnalysisReporter.report():42 - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field bossGroup in com.vm.im.netty.NettyServer required a bean of type 'io.netty.channel.EventLoopGroup' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'io.netty.channel.EventLoopGroup' in your configuration.
+
+2019-02-28 16:19:26.880 ERROR [main] o.s.boot.diagnostics.LoggingFailureAnalysisReporter.report():42 - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field bossGroup in com.vm.im.netty.NettyServer required a bean of type 'io.netty.channel.EventLoopGroup' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'io.netty.channel.EventLoopGroup' in your configuration.
+
+2019-02-28 16:19:56.647 ERROR [main] o.s.boot.diagnostics.LoggingFailureAnalysisReporter.report():42 - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field bossGroup in com.vm.im.netty.NettyServer required a bean of type 'io.netty.channel.EventLoopGroup' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'io.netty.channel.EventLoopGroup' in your configuration.
+
+2019-02-28 16:25:58.160 ERROR [main] o.s.boot.diagnostics.LoggingFailureAnalysisReporter.report():42 - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field childChannelHandler in com.vm.im.netty.NettyServer required a single bean, but 3 were found:
+	- httpRequestHandler: defined in file [/Users/yvan/work/updateyvan/plugins_jim/target/classes/com/vm/im/netty/HttpRequestHandler.class]
+	- myWebSocketServerHandler: defined in file [/Users/yvan/work/updateyvan/plugins_jim/target/classes/com/vm/im/netty/MyWebSocketServerHandler.class]
+	- chatServiceImpl: defined in file [/Users/yvan/work/updateyvan/plugins_jim/target/classes/com/vm/im/service/chat/Impl/ChatServiceImpl.class]
+
+
+Action:
+
+Consider marking one of the beans as @Primary, updating the consumer to accept multiple beans, or using @Qualifier to identify the bean that should be consumed
+
+2019-02-28 16:30:40.239 ERROR [main] o.s.boot.diagnostics.LoggingFailureAnalysisReporter.report():42 - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field bossGroup in com.vm.im.netty.NettyServer required a bean of type 'io.netty.channel.EventLoopGroup' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'io.netty.channel.EventLoopGroup' in your configuration.
+
+2019-02-28 16:31:22.227 ERROR [main] o.s.boot.diagnostics.LoggingFailureAnalysisReporter.report():42 - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field bossGroup in com.vm.im.netty.NettyServer required a bean of type 'io.netty.channel.EventLoopGroup' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'io.netty.channel.EventLoopGroup' in your configuration.
+
+2019-02-28 16:33:22.635 ERROR [main] o.s.boot.diagnostics.LoggingFailureAnalysisReporter.report():42 - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field bossGroup in com.vm.im.netty.NettyServer required a bean of type 'io.netty.channel.EventLoopGroup' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'io.netty.channel.EventLoopGroup' in your configuration.
+
+2019-02-28 16:34:25.446 ERROR [main] o.s.boot.diagnostics.LoggingFailureAnalysisReporter.report():42 - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field bossGroup in com.vm.im.netty.NettyServer required a bean of type 'io.netty.channel.EventLoopGroup' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'io.netty.channel.EventLoopGroup' in your configuration.
+
+2019-02-28 16:36:48.534 ERROR [main] o.s.boot.diagnostics.LoggingFailureAnalysisReporter.report():42 - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field bossGroup in com.vm.im.netty.NettyServer required a bean of type 'io.netty.channel.EventLoopGroup' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'io.netty.channel.EventLoopGroup' in your configuration.
+
+2019-02-28 16:48:49.904 ERROR [main] o.s.boot.diagnostics.LoggingFailureAnalysisReporter.report():42 - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field bossGroup in com.vm.im.netty.NettyServer required a bean of type 'io.netty.channel.EventLoopGroup' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'io.netty.channel.EventLoopGroup' in your configuration.
+
+2019-02-28 16:54:58.962 ERROR [main] o.s.boot.diagnostics.LoggingFailureAnalysisReporter.report():42 - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field bossGroup in com.vm.im.netty.NettyServer required a bean of type 'io.netty.channel.EventLoopGroup' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'io.netty.channel.EventLoopGroup' in your configuration.
+
+2019-02-28 16:56:07.894 ERROR [main] o.s.boot.diagnostics.LoggingFailureAnalysisReporter.report():42 - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field bossGroup in com.vm.im.netty.NettyServer required a bean of type 'io.netty.channel.EventLoopGroup' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'io.netty.channel.EventLoopGroup' in your configuration.
+
+2019-02-28 17:00:11.738 ERROR [main] o.s.boot.diagnostics.LoggingFailureAnalysisReporter.report():42 - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field bossGroup in com.vm.im.netty.NettyServer required a bean of type 'io.netty.channel.EventLoopGroup' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'io.netty.channel.EventLoopGroup' in your configuration.
+
+2019-02-28 17:01:23.484 ERROR [main] org.springframework.boot.SpringApplication.reportFailure():858 - Application run failed
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'applicationContext': Invocation of init method failed; nested exception is java.lang.NullPointerException
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeInitialization(InitDestroyAnnotationBeanPostProcessor.java:139)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsBeforeInitialization(AbstractAutowireCapableBeanFactory.java:419)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1737)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:576)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:498)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:320)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:222)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:318)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:846)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:863)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:546)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:142)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:775)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:397)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:316)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1260)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1248)
+	at com.vm.im.VmImApplication.main(VmImApplication.java:18)
+Caused by: java.lang.NullPointerException: null
+	at com.vm.im.netty.ApplicationContext.init(ApplicationContext.java:38)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleElement.invoke(InitDestroyAnnotationBeanPostProcessor.java:363)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMetadata.invokeInitMethods(InitDestroyAnnotationBeanPostProcessor.java:307)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeInitialization(InitDestroyAnnotationBeanPostProcessor.java:136)
+	... 18 common frames omitted
+2019-02-28 17:04:20.366 ERROR [main] o.s.boot.diagnostics.LoggingFailureAnalysisReporter.report():42 - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field bossGroup in com.vm.im.netty.NettyServer required a bean of type 'io.netty.channel.EventLoopGroup' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'io.netty.channel.EventLoopGroup' in your configuration.
+
+2019-02-28 17:13:05.350 ERROR [main] o.s.boot.diagnostics.LoggingFailureAnalysisReporter.report():42 - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field childChannelHandler in com.vm.im.netty.NettyServer required a single bean, but 3 were found:
+	- httpRequestHandler: defined in file [/Users/yvan/work/updateyvan/plugins_jim/target/classes/com/vm/im/netty/HttpRequestHandler.class]
+	- myWebSocketServerHandler: defined in file [/Users/yvan/work/updateyvan/plugins_jim/target/classes/com/vm/im/netty/MyWebSocketServerHandler.class]
+	- chatServiceImpl: defined in file [/Users/yvan/work/updateyvan/plugins_jim/target/classes/com/vm/im/service/chat/Impl/ChatServiceImpl.class]
+
+
+Action:
+
+Consider marking one of the beans as @Primary, updating the consumer to accept multiple beans, or using @Qualifier to identify the bean that should be consumed
+
+2019-02-28 17:23:16.881 ERROR [main] o.s.boot.diagnostics.LoggingFailureAnalysisReporter.report():42 - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field nettyServer in com.vm.im.netty.ApplicationContext required a bean of type 'io.netty.channel.EventLoopGroup' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'io.netty.channel.EventLoopGroup' in your configuration.
+

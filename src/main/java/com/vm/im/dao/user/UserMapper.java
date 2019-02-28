@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Repository
 public interface UserMapper extends BaseMapper<User> {
 
-    User selectByPrimaryKey(String id);
-
     User selectByUserName(String name);
 
     int insertSelective(User record);

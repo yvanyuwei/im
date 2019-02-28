@@ -3,22 +3,32 @@ package com.vm.im.service.chat.Impl;
 import com.alibaba.fastjson.JSONObject;
 import com.vm.im.common.enums.ChatTypeEnum;
 import com.vm.im.common.util.ResponseJson;
+import com.vm.im.entity.user.UserChatGroup;
 import com.vm.im.netty.BaseWebSocketServerHandler;
 import com.vm.im.netty.Constant;
 import com.vm.im.service.chat.ChatService;
+import com.vm.im.service.common.MessageService;
+import com.vm.im.service.group.ChatGroupService;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.text.MessageFormat;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 @Service
 public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatService {
     private static final Logger log = LoggerFactory.getLogger(ChatServiceImpl.class);
+
+    @Autowired
+    private ChatGroupService chatGroupService;
+
+    @Autowired
+    private MessageService messageService;
 
     @Override
     public void register(JSONObject param, ChannelHandlerContext ctx) {
@@ -37,19 +47,53 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
         String fromUserId = (String)param.get("fromUserId");
         String toUserId = (String)param.get("toUserId");
         String content = (String)param.get("content");
+        Long createTime = Long.valueOf(String.valueOf(param.get("createTime")));
         ChannelHandlerContext toUserCtx = Constant.onlineUserMap.get(toUserId);
-        String responseJson = new ResponseJson().success()
-                .setData("fromUserId", fromUserId)
-                .setData("content", content)
-                .setData("type", ChatTypeEnum.SINGLE_SENDING)
-                .toString();
-        log.info("==================发送的消息为：" + responseJson);
-        sendMessage(toUserCtx, responseJson);
+        messageService.saveMessage(param);
+        if (toUserCtx == null){
+            //用户不在线，发送离线消息到kafka
+        }else {
+            String responseJson = new ResponseJson().success()
+                    .setData("fromUserId", fromUserId)
+                    .setData("content", content)
+                    .setData("type", ChatTypeEnum.SINGLE_SENDING)
+                    .setData("createTime", createTime)
+                    .toString();
+            log.info("==============================发送的消息为：" + responseJson);
+            sendMessage(toUserCtx, responseJson);
+        }
     }
 
     @Override
     public void groupSend(JSONObject param, ChannelHandlerContext ctx) {
-
+        String fromUserId = (String)param.get("fromUserId");
+        String toGroupId = (String)param.get("toGroupId");
+        String content = (String)param.get("content");
+        Long createTime = Long.valueOf(String.valueOf(param.get("createTime")));
+        messageService.saveMessage(param);
+        List<UserChatGroup> groupInfo = chatGroupService.getByGroupId(toGroupId);
+        if (groupInfo == null) {
+            String responseJson = new ResponseJson().error("该群id不存在").toString();
+            sendMessage(ctx, responseJson);
+        } else {
+            String responseJson = new ResponseJson().success()
+                    .setData("fromUserId", fromUserId)
+                    .setData("content", content)
+                    .setData("toGroupId", toGroupId)
+                    .setData("type", ChatTypeEnum.GROUP_SENDING)
+                    .setData("createTime",createTime)
+                    .toString();
+            //给群里每个成员发信息
+            groupInfo.stream()
+                    .forEach(item -> {
+                        ChannelHandlerContext toCtx = Constant.onlineUserMap.get(item.getUserId());
+                        if (toCtx != null && !item.getUserId().equals(fromUserId)) {
+                            sendMessage(toCtx, responseJson);
+                        }else {
+                            //存卡夫卡消费离线数据读取到数据库
+                        }
+                    });
+        }
     }
 
     @Override
