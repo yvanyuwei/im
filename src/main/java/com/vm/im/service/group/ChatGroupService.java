@@ -1,5 +1,6 @@
 package com.vm.im.service.group;
 
+import com.vm.im.common.dto.admin.UnionOperationDTO;
 import com.vm.im.entity.group.ChatGroup;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -13,4 +14,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ChatGroupService extends IService<ChatGroup> {
 
+    ChatGroup checkGroup(UnionOperationDTO unionOperationDTO);
 }

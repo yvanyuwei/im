@@ -16,6 +16,4 @@ import org.springframework.stereotype.Repository;
 @Mapper
 @Repository
 public interface UserFriendMapper extends BaseMapper<UserFriend> {
-
-    UserFriend selectByPrimaryKey();
 }
