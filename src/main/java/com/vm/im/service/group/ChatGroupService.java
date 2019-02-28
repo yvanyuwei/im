@@ -14,5 +14,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ChatGroupService extends IService<ChatGroup> {
 
+    /**
+     * 校验聊天群状态如果不存在则抛出异常
+     *
+     * @param unionOperationDTO
+     * @return
+     */
     ChatGroup checkGroup(UnionOperationDTO unionOperationDTO);
 }

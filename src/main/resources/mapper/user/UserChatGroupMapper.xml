@@ -6,7 +6,10 @@
     <resultMap id="BaseResultMap" type="com.vm.im.entity.user.UserChatGroup">
         <id column="user_id" property="userId" />
         <result column="chat_group_id" property="chatGroupId" />
+        <result column="nickname" property="nickname" />
         <result column="top" property="top" />
+        <result column="type" property="type" />
+        <result column="can_speak" property="canSpeak" />
         <result column="del_flag" property="delFlag" />
         <result column="create_time" property="createTime" />
     </resultMap>
