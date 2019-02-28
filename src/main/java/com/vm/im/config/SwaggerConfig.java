@@ -34,7 +34,7 @@ import static com.google.common.collect.Lists.newArrayList;
 public class SwaggerConfig {
 
     // 设置默认TOKEN，方便测试
-    private static final String TOKEN = "bc8fae012a5f4117a46015b7b29ca9ea";
+    private static final String TOKEN = "afad71e8a8f944f0afc4e79e9520d71d";
 
     @Value("${swagger.config.antPattern}")
     private String antPattern = "/**";

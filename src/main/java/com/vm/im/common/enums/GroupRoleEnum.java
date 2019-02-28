@@ -28,7 +28,7 @@ public enum GroupRoleEnum {
         } else if (value == USER.value) {
             return USER;
         } else {
-            throw new IllegalArgumentException("illegal argment [" + value + "] for IcoRole");
+            throw new IllegalArgumentException("illegal argment [" + value + "] for GroupRoleEnum");
         }
     }
 }

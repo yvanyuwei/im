@@ -1,5 +1,7 @@
 package com.vm.im.entity.user;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.util.Date;
@@ -21,6 +23,7 @@ public class UserFriend implements Serializable {
     /**
      * 用户ID
      */
+    @TableId(value = "user_id", type = IdType.INPUT)
     private String userId;
 
     /**

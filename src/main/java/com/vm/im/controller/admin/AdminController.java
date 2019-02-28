@@ -3,13 +3,13 @@ package com.vm.im.controller.admin;
 
 import com.alibaba.fastjson.JSON;
 import com.vm.im.common.annot.AdminAuth;
+import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.dto.ResultBean;
 import com.vm.im.common.dto.admin.AuthOperationDTO;
 import com.vm.im.common.dto.admin.MemberOperationDTO;
 import com.vm.im.common.dto.admin.UnionOperationDTO;
 import com.vm.im.common.enums.AdminRoleEnum;
 import com.vm.im.common.enums.ResultCodeEnum;
-import com.vm.im.entity.group.ChatGroup;
 import com.vm.im.service.group.ChatGroupService;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -43,9 +43,15 @@ public class AdminController {
     @PostMapping("unionOperation")
     @ApiOperation(value = "工会操作", notes = "创建和解散工会使用接口")
     public String unionOperation(@RequestBody @Valid UnionOperationDTO unionOperationDTO) {
-        ChatGroup chatGroup = chatGroupService.checkGroup(unionOperationDTO);
+        if (CommonConstant.YES.equals(unionOperationDTO.getType())) {
+            LOG.info("收到创建工会群申请, groupId:{}", unionOperationDTO.getGroupId());
+            chatGroupService.createUnionGroup(unionOperationDTO);
+        }
 
-
+        if (CommonConstant.NO.equals(unionOperationDTO.getType())) {
+            LOG.info("收到解散工会群申请, groupId:{}", unionOperationDTO.getGroupId());
+            chatGroupService.deleteUnionGroup(unionOperationDTO);
+        }
 
         return JSON.toJSONString(new ResultBean(ResultCodeEnum.SUCCESS.getCode(),ResultCodeEnum.SUCCESS.name(), null));
     }
@@ -54,18 +60,34 @@ public class AdminController {
     @PostMapping("memberOperation")
     @ApiOperation(value = "人员增删操作", notes = "工会添加删除成员使用接口")
     public String memberOperation(@RequestBody @Valid MemberOperationDTO memberOperationDTO) {
+        if (CommonConstant.YES.equals(memberOperationDTO.getType())) {
+            LOG.info("收到群人员添加操作, groupId:{}", memberOperationDTO.getGroupId());
+            chatGroupService.addUnionMember(memberOperationDTO);
+        }
 
+        if (CommonConstant.NO.equals(memberOperationDTO.getType())) {
+            LOG.info("收到群人员删除操作, groupId:{}", memberOperationDTO.getGroupId());
+            chatGroupService.deleteUnionMember(memberOperationDTO);
+        }
 
-        return "";
+        return JSON.toJSONString(new ResultBean(ResultCodeEnum.SUCCESS.getCode(),ResultCodeEnum.SUCCESS.name(), null));
     }
 
     @AdminAuth(roles = {AdminRoleEnum.ADMIN})
     @PostMapping("authOperation")
     @ApiOperation(value = "人员权限操作", notes = "工会管理员增删使用接口")
     public String authOperation(@RequestBody @Valid AuthOperationDTO authOperationDTO) {
+        if (CommonConstant.YES.equals(authOperationDTO.getType())) {
+            LOG.info("收到群人员管理员权限添加操作, groupId:{}", authOperationDTO.getGroupId());
+            chatGroupService.addUnionMemberAuth(authOperationDTO);
+        }
 
+        if (CommonConstant.NO.equals(authOperationDTO.getType())) {
+            LOG.info("收到群人员管理员权限取消操作, groupId:{}", authOperationDTO.getGroupId());
+            chatGroupService.deleteUnionMemberAuth(authOperationDTO);
+        }
 
-        return "";
+        return JSON.toJSONString(new ResultBean(ResultCodeEnum.SUCCESS.getCode(),ResultCodeEnum.SUCCESS.name(), null));
     }
 }
 

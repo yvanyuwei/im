@@ -2,6 +2,7 @@ package com.vm.im.dao.group;
 
 import com.vm.im.entity.group.ChatGroup;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.springframework.stereotype.Repository;
 
 /**
  * <p>
@@ -11,6 +12,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author zhangqi
  * @since 2019-02-20
  */
+@Repository
 public interface ChatGroupMapper extends BaseMapper<ChatGroup> {
 
 }

@@ -4,14 +4,28 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.vm.im.entity.user.UserChatGroup">
-        <id column="user_id" property="userId" />
-        <result column="chat_group_id" property="chatGroupId" />
-        <result column="nickname" property="nickname" />
-        <result column="top" property="top" />
-        <result column="type" property="type" />
-        <result column="can_speak" property="canSpeak" />
-        <result column="del_flag" property="delFlag" />
-        <result column="create_time" property="createTime" />
+        <id column="user_id" property="userId"/>
+        <result column="chat_group_id" property="chatGroupId"/>
+        <result column="nickname" property="nickname"/>
+        <result column="top" property="top"/>
+        <result column="type" property="type"/>
+        <result column="can_speak" property="canSpeak"/>
+        <result column="del_flag" property="delFlag"/>
+        <result column="create_time" property="createTime"/>
     </resultMap>
-
+    <sql id="Base_Column_List">
+        user_id, chat_group_id, nickname, top, type, can_speak, del_flag, create_time
+    </sql>
+    <update id="deleteByGroupId" parameterType="java.lang.String">
+        update im_user_chat_group
+        set del_flag = 1
+        where chat_group_id = #{groupId,jdbcType=VARCHAR}
+    </update>
+    <select id="selectUserByGroupIdAndUid" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM im_user_chat_group
+        where user_id = #{userId,jdbcType=VARCHAR}
+        and chat_group_id = #{groupId,jdbcType=VARCHAR}
+    </select>
 </mapper>

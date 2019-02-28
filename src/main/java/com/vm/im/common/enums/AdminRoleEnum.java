@@ -21,7 +21,7 @@ public enum AdminRoleEnum {
         if (value == ADMIN.value) {
             return ADMIN;
         } else {
-            throw new IllegalArgumentException("illegal argment [" + value + "] for IcoRole");
+            throw new IllegalArgumentException("illegal argment [" + value + "] for AdminRoleEnum");
         }
     }
 }

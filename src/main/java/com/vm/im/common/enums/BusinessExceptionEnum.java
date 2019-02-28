@@ -17,6 +17,14 @@ public enum BusinessExceptionEnum {
      */
     //群组不存在
     GROUP_NOT_FOUND_EXCEPTION("2000", "Group does not have exception"),
+    //群组已存在
+    GROUP_EXIST_EXCEPTION("2001", "Group of existing exception"),
+    //群组权限认证失败
+    GROUP_AUTH_EXCEPTION("2002", "Group permission authentication exception"),
+    //群组成员已存在
+    GROUP_MEMBER_EXIST_EXCEPTION("2003", "Group member already exists"),
+    //群组成员不存在
+    GROUP_MEMBER_NOT_EXIST_EXCEPTION("2004", "Group members do not exist"),
 
 
     /**

@@ -2,6 +2,7 @@ package com.vm.im.dao.user;
 
 import com.vm.im.entity.user.UserFriend;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.springframework.stereotype.Repository;
 
 /**
  * <p>
@@ -11,6 +12,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author zhangqi
  * @since 2019-02-19
  */
+@Repository
 public interface UserFriendMapper extends BaseMapper<UserFriend> {
 
 }

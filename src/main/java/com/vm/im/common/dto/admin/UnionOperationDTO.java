@@ -32,4 +32,7 @@ public class UnionOperationDTO {
     @Max(value = 1)
     private int type;
 
+    @NotEmpty(message = "avatar不能为空")
+    private String avatar;
+
 }
