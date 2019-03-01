@@ -57,21 +57,18 @@ public class KafkaConsumer {
         while (active) {
 
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
-//            if (channelHandlerContext == null) {
-//                LOG.info("找不到用户连接, 取消用户订阅, uid:{}", groupId);
-//                close();
-//                continue;
-//            }
+            if (channelHandlerContext == null) {
+                LOG.info("找不到用户连接, 取消用户订阅, uid:{}", groupId);
+                close();
+                continue;
+            }
 
             for (ConsumerRecord<String, String> record : records) {
                 LOG.info("thread = {},topic={} read offset ={}, key={} , value= {}, partition={}",
                         threadName, record.topic(), record.offset(), record.key(), record.value(), record.partition());
 
-//                channelHandlerContext.writeAndFlush(new TextWebSocketFrame( record.value()));
-
-                System.out.printf("thread = %s,topic=%s read offset =%d, key=%s , value= %s, partition=%s\n",
-                        threadName, record.topic(), record.offset(), record.key(), record.value(), record.partition());
-
+                //TODO 暂时直接调用消息推送 后期调用netty
+                channelHandlerContext.writeAndFlush(new TextWebSocketFrame( record.value()));
             }
         }
     }

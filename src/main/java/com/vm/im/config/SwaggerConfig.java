@@ -43,9 +43,12 @@ public class SwaggerConfig {
     public Docket api() {
 
         ParameterBuilder tokenPar = new ParameterBuilder();
+        ParameterBuilder uidPar = new ParameterBuilder();
         List<Parameter> pars = new ArrayList<Parameter>();
-        tokenPar.name("Authorization").description("用户服务生成").defaultValue(TOKEN).modelRef(new ModelRef("string")).parameterType("header").required(false).build();
+        tokenPar.name("Authorization").description("用户服务生成").defaultValue(TOKEN).modelRef(new ModelRef("string")).parameterType("header").required(true).build();
+        uidPar.name("userId").description("用户id").defaultValue(TOKEN).modelRef(new ModelRef("string")).parameterType("header").required(false).build();
         pars.add(tokenPar.build());
+        pars.add(uidPar.build());
         Docket docket = new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.vm.im.controller"))//扫描包的路径
