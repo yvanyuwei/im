@@ -29,12 +29,13 @@ import java.util.Date;
 public class ChatGroupFlowServiceImpl extends ServiceImpl<ChatGroupFlowMapper, ChatGroupFlow> implements ChatGroupFlowService {
     private static final Logger LOG = LoggerFactory.getLogger(ChatGroupFlowServiceImpl.class);
 
-    @Override
+
     /**
      * 添加群主加入流水
      *
      * @param chatGroup
      */
+    @Override
     public void addGroupMaster(ChatGroup chatGroup) {
         LOG.info("开始保存群组人员流水");
         ChatGroupFlow chatGroupFlow = buildChatGroupMasterFlow(chatGroup);

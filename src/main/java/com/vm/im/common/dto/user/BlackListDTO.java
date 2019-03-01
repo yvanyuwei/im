@@ -15,5 +15,7 @@ import javax.validation.constraints.NotEmpty;
 public class BlackListDTO {
     @NotEmpty(message = "uid不能为空")
     private String uid;
+    @NotEmpty(message = "chatGroupId不能为空")
+    private String chatGroupId;
 
 }
