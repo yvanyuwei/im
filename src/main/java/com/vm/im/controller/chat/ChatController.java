@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
 
-@RestController
+@Controller
 @RequestMapping("/chatroom")
 public class ChatController {
 
@@ -25,11 +25,11 @@ public class ChatController {
     }*/
 
 
-    /*
+
     @RequestMapping(method = RequestMethod.GET)
     public String toChatroom() {
         return "/page/chatroom.html";
-    }*/
+    }
 
     /**
      * 描述：登录成功跳转页面后，调用此接口获取用户信息

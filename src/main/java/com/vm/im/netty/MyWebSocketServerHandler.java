@@ -3,23 +3,11 @@ package com.vm.im.netty;
 import com.alibaba.fastjson.JSONObject;
 import com.vm.im.common.util.ResponseJson;
 import com.vm.im.service.chat.ChatService;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.*;
+import io.netty.channel.*;
 import io.netty.handler.codec.http.websocketx.*;
-import io.netty.handler.timeout.IdleState;
-import io.netty.handler.timeout.IdleStateEvent;
-import io.netty.util.AttributeKey;
-import io.netty.util.CharsetUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-
-import java.util.Date;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -27,10 +15,11 @@ import java.util.logging.Logger;
  *
  * @author hxy
  */
-@Service
+@Component
+@ChannelHandler.Sharable
 public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
     private static final Logger logger = Logger.getLogger(WebSocketServerHandshaker.class.getName());
-    private WebSocketServerHandshaker handshaker;
+    //private WebSocketServerHandshaker handshaker;
 
     @Autowired
     private ChatService chatService;
@@ -65,7 +54,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
     private void handlerWebSocketFrame(ChannelHandlerContext ctx, WebSocketFrame frame) {
         // 判断是否关闭链路的指令
         if (frame instanceof CloseWebSocketFrame) {
-            handshaker = Constant.webSocketHandshakerMap.get(ctx.channel().id().asLongText());
+            WebSocketServerHandshaker handshaker = Constant.webSocketHandshakerMap.get(ctx.channel().id().asLongText());
             if (handshaker == null){
                 sendErrorMessage(ctx,"不存在此客户端连接");
             }else {

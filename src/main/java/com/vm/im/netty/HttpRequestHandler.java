@@ -12,9 +12,9 @@ import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 import io.netty.util.CharsetUtil;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 @Sharable
 public class HttpRequestHandler extends SimpleChannelInboundHandler<Object> {
 
@@ -39,18 +39,19 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<Object> {
      * @param req
      */
     private void handleHttpRequest(ChannelHandlerContext ctx, FullHttpRequest req) {
-        if (!req.getDecoderResult().isSuccess()) {
+        if (!req.decoderResult().isSuccess()) {
             sendHttpResponse(ctx, req,
                     new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST));
             return;
         }
+
         WebSocketServerHandshakerFactory wsFactory = new WebSocketServerHandshakerFactory(
                 "ws:/" + ctx.channel() + "/websocket", null, false);
         WebSocketServerHandshaker handshaker = wsFactory.newHandshaker(req);
         Constant.webSocketHandshakerMap.put(ctx.channel().id().asLongText(), handshaker);
 
         if (handshaker == null) {
-            WebSocketServerHandshakerFactory.sendUnsupportedWebSocketVersionResponse(ctx.channel());
+            WebSocketServerHandshakerFactory.sendUnsupportedVersionResponse(ctx.channel());
         } else {
             handshaker.handshake(ctx.channel(), req);
         }
@@ -58,14 +59,15 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<Object> {
     
     private void sendHttpResponse(ChannelHandlerContext ctx, FullHttpRequest req, DefaultFullHttpResponse res) {
         // 返回应答给客户端
-        if (res.getStatus().code() != 200) {
-            ByteBuf buf = Unpooled.copiedBuffer(res.getStatus().toString(), CharsetUtil.UTF_8);
+        if (res.status().code() != 200) {
+            ByteBuf buf = Unpooled.copiedBuffer(res.status().toString(), CharsetUtil.UTF_8);
             res.content().writeBytes(buf);
             buf.release();
         }
         // 如果是非Keep-Alive，关闭连接
+        boolean keepAlive = HttpUtil.isKeepAlive(req);
         ChannelFuture f = ctx.channel().writeAndFlush(res);
-        if (!HttpHeaders.isKeepAlive(req) || res.getStatus().code() != 200) {
+        if (!keepAlive) {
             f.addListener(ChannelFutureListener.CLOSE);
         }
     }

@@ -7,6 +7,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.util.concurrent.Future;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -17,11 +18,13 @@ import org.springframework.stereotype.Component;
  *
  * @author hxy
  */
-@Component
 public class NettyServer implements Runnable{
     private final Logger log = LoggerFactory.getLogger(NettyServer.class);
 
     //private EventLoopGroup bossGroup;
+
+    //private EventLoopGroup workerGroup;
+    //private ServerBootstrap serverBootstrap;
 
     //private ChannelHandler childChannelHandler;
 
@@ -100,9 +103,9 @@ public class NettyServer implements Runnable{
             long end = System.currentTimeMillis();
             //log.info("Netty Websocket服务器启动完成，耗时 " + (end - begin) + " ms，已绑定端口 " + inetPort + " 阻塞式等候客户端连接");
             System.out.println("Netty Websocket服务器启动完成，耗时 " + (end - begin) + " 已绑定端口 " + inetPort + " 阻塞式等候客户端连接");
-            //serverChannelFuture = serverBootstrap.bind(inetPort).sync();
-            Channel ch = serverBootstrap.bind(inetPort).sync().channel();
-            ch.closeFuture().sync();
+            serverChannelFuture = serverBootstrap.bind(inetPort).sync();
+            /*Channel ch = serverBootstrap.bind(inetPort).sync().channel();
+            ch.closeFuture().sync();*/
         } catch (Exception e) {
             log.info(e.getMessage());
             bossGroup.shutdownGracefully();

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
 
+
 /**
  * <p>
  * 用户表 服务实现类
@@ -37,7 +38,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if(!user.getPassword().equals(password)){
             return new ResponseJson().error("密码错误");
         }
-        session.setAttribute(Constant.USER_TOKEN,user.getId());
+        //session.setAttribute(Constant.USER_TOKEN,user.getId());
         LOG.info("================"+new ResponseJson().success());
         return new ResponseJson().success();
     }
