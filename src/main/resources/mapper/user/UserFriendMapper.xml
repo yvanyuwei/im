@@ -107,5 +107,13 @@
         and friend_id = #{friendId,jdbcType=VARCHAR}
     </update>
 
+    <select id="findUser" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select
+        <include refid="Base_Column_List" />
+        from im_user_friend
+        where user_id = #{uid,jdbcType=VARCHAR}
+        and friend_id like #{condition,jdbcType=VARCHAR}
+        or nickname like #{condition,jdbcType=VARCHAR}
+    </select>
 
 </mapper>

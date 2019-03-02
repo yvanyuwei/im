@@ -1,5 +1,6 @@
 package com.vm.im.service.user;
 
+import com.vm.im.entity.user.User;
 import com.vm.im.entity.user.UserCurrentChat;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -23,4 +24,13 @@ public interface UserCurrentChatService extends IService<UserCurrentChat> {
      * @return
      */
     List<UserCurrentChat> listByUid(String uid, int count);
+
+    /**
+     * 模糊查找用户
+     *
+     * @param uid
+     * @param condition
+     * @return
+     */
+    List<User> findUser(String uid, String condition);
 }

@@ -1,5 +1,6 @@
 package com.vm.im.dao.user;
 
+import com.vm.im.entity.user.User;
 import com.vm.im.entity.user.UserCurrentChat;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
@@ -26,4 +27,13 @@ public interface UserCurrentChatMapper extends BaseMapper<UserCurrentChat> {
      * @return
      */
     List<UserCurrentChat> listByUid(@Param("uid") String uid, @Param("count") int count);
+
+    /**
+     * 模糊查找用户
+     *
+     * @param uid
+     * @param condition
+     * @return
+     */
+    List<User> findUser(@Param("uid") String uid, @Param("condition") String condition);
 }

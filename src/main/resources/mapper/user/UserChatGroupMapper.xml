@@ -34,4 +34,12 @@
         from im_user_chat_group
         where chat_group_id = #{chatGroupId,jdbcType=VARCHAR}
     </select>
+    <select id="findUser" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select
+        <include refid="Base_Column_List" />
+        from im_user_chat_group
+        where chat_group_id = #{groupId,jdbcType=VARCHAR}
+        and user_id like #{condition,jdbcType=VARCHAR}
+        or nickname like #{condition,jdbcType=VARCHAR}
+    </select>
 </mapper>

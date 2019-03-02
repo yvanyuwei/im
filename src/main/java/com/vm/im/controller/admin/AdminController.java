@@ -11,6 +11,7 @@ import com.vm.im.common.dto.admin.UnionOperationDTO;
 import com.vm.im.common.enums.AdminRoleEnum;
 import com.vm.im.common.enums.ResultCodeEnum;
 import com.vm.im.service.group.ChatGroupService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +33,7 @@ import javax.validation.Valid;
  */
 @RestController
 @RequestMapping("/admin")
+@Api(value = "内部通讯相关", description = "内部用户信息通讯")
 public class AdminController {
     private static final Logger LOG = LoggerFactory.getLogger(AdminController.class);
 

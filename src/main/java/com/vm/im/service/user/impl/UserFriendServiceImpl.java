@@ -1,5 +1,6 @@
 package com.vm.im.service.user.impl;
 
+import com.vm.im.entity.user.User;
 import com.vm.im.entity.user.UserFriend;
 import com.vm.im.dao.user.UserFriendMapper;
 import com.vm.im.service.user.UserFriendService;
@@ -25,8 +26,22 @@ public class UserFriendServiceImpl extends ServiceImpl<UserFriendMapper, UserFri
 
     @Autowired
     private UserFriendMapper userFriendMapper;
+
     @Override
     public List<UserFriend> selectByPrimaryKey() {
         return null;
+    }
+
+
+    /**
+     * 模糊查找用户
+     *
+     * @param uid
+     * @param condition
+     * @return
+     */
+    @Override
+    public List<User> findUser(String uid, String condition) {
+        return userFriendMapper.findUser(uid, condition);
     }
 }

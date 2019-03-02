@@ -44,7 +44,10 @@ public class CommonConstant {
      */
     public final static String CHAT_GROUP_ID = "chatGroupId";
 
-
+    /**
+     *  模糊查询占位符 placeholder
+     */
+    public final static String PLACEHOLDER = "%";
 
 
 

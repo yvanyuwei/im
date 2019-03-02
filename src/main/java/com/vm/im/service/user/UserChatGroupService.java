@@ -1,6 +1,7 @@
 package com.vm.im.service.user;
 
 import com.vm.im.entity.group.ChatGroup;
+import com.vm.im.entity.user.User;
 import com.vm.im.entity.user.UserChatGroup;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -60,4 +61,14 @@ public interface UserChatGroupService extends IService<UserChatGroup> {
      * @param userChatGroup
      */
     void updateMemberAuth(UserChatGroup userChatGroup);
+
+    /**
+     * 模糊查找用户
+     *
+     * @param uid
+     * @param targetId
+     * @param condition
+     * @return
+     */
+    List<User> findUser(String uid, String targetId, String condition);
 }

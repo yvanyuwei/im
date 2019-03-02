@@ -19,4 +19,13 @@ import java.util.List;
 public interface UserFriendService extends IService<UserFriend> {
 
     List<UserFriend> selectByPrimaryKey();
+
+    /**
+     * 模糊查找用户
+     *
+     * @param uid
+     * @param condition
+     * @return
+     */
+    List<User> findUser(String uid, String condition);
 }

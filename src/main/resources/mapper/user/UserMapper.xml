@@ -124,4 +124,12 @@
       </trim>
     </insert>
 
+    <select id="findUser" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select
+        <include refid="Base_Column_List" />
+        from im_user
+        where id like #{condition,jdbcType=VARCHAR}
+        or name like #{condition,jdbcType=VARCHAR}
+    </select>
+
 </mapper>

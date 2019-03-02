@@ -1,5 +1,6 @@
 package com.vm.im.service.user.impl;
 
+import com.vm.im.entity.user.User;
 import com.vm.im.entity.user.UserCurrentChat;
 import com.vm.im.dao.user.UserCurrentChatMapper;
 import com.vm.im.service.user.UserCurrentChatService;
@@ -36,5 +37,17 @@ public class UserCurrentChatServiceImpl extends ServiceImpl<UserCurrentChatMappe
     @Override
     public List<UserCurrentChat> listByUid(String uid, int count) {
         return userCurrentChatMapper.listByUid(uid, count);
+    }
+
+    /**
+     * 模糊查找用户
+     *
+     * @param uid
+     * @param condition
+     * @return
+     */
+    @Override
+    public List<User> findUser(String uid, String condition) {
+        return userCurrentChatMapper.findUser(uid, condition);
     }
 }

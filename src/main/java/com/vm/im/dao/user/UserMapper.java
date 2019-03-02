@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * <p>
  * 用户表 Mapper 接口
@@ -21,4 +23,11 @@ public interface UserMapper extends BaseMapper<User> {
 
     int insertSelective(User record);
 
+    /**
+     * 模糊查找用户
+     *
+     * @param condition
+     * @return
+     */
+    List<User> findUser(String condition);
 }

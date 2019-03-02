@@ -2,8 +2,11 @@ package com.vm.im.service.user.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.vm.im.common.constant.CommonConstant;
+import com.vm.im.common.enums.BusinessExceptionEnum;
 import com.vm.im.common.enums.GroupRoleEnum;
+import com.vm.im.common.exception.BusinessException;
 import com.vm.im.entity.group.ChatGroup;
+import com.vm.im.entity.user.User;
 import com.vm.im.entity.user.UserChatGroup;
 import com.vm.im.dao.user.UserChatGroupMapper;
 import com.vm.im.service.group.ChatGroupFlowService;
@@ -107,6 +110,11 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
         chatGroupFlowService.addChatGroupFlow(userChatGroup);
     }
 
+    /**
+     * 更新用户群组权限
+     *
+     * @param userChatGroup
+     */
     @Override
     @Transactional
     public void updateMemberAuth(UserChatGroup userChatGroup) {
@@ -114,6 +122,25 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
         saveOrUpdate(userChatGroup);
         //添加群组操作流水
         chatGroupOperationFlowService.addMemberAuthOperationFlow(userChatGroup);
+    }
+
+    /**
+     * 模糊查找用户
+     *
+     * @param uid
+     * @param targetId
+     * @param condition
+     * @return
+     */
+    @Override
+    public List<User> findUser(String uid, String targetId, String condition) {
+        UserChatGroup userChatGroup = selectUserByGroupIdAndUid(targetId, uid);
+        if (userChatGroup == null || userChatGroup.getDelFlag() == CommonConstant.YES){
+            LOG.info("用户未加入该群组, 无法搜索群组成员, groupId:{}, uid:{}", targetId, uid);
+            throw new BusinessException(BusinessExceptionEnum.GROUP_MEMBER_NOT_EXIST_EXCEPTION.getFailCode(), BusinessExceptionEnum.GROUP_MEMBER_NOT_EXIST_EXCEPTION.getFailReason());
+        }
+
+        return userChatGroupMapper.findUser(targetId, condition);
     }
 
     /**

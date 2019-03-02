@@ -26,4 +26,13 @@
         order by TYPE desc, create_time desc
         limit #{count,jdbcType=INTEGER}
     </select>
+
+    <select id="findUser" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select
+        <include refid="Base_Column_List" />
+        from im_user_current_chat
+        where user_id = #{uid,jdbcType=VARCHAR}
+        and friend_id like #{condition,jdbcType=VARCHAR}
+        or nickname like #{condition,jdbcType=VARCHAR}
+    </select>
 </mapper>
