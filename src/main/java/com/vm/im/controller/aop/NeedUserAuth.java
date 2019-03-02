@@ -25,7 +25,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.Arrays;
 
 import static com.vm.im.common.constant.CommonConstant.*;
@@ -126,10 +125,4 @@ public class NeedUserAuth {
         return userInfo;
     }
 
-    /**
-     * 保存用户信息
-     */
-    public void saveUserInfo() {
-        // TODO socket连接时调用
-    }
 }
