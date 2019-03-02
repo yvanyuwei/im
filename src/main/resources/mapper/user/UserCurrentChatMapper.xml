@@ -17,4 +17,13 @@
         user_id, friend_id, type, nickname, last_message, del_flag, create_time
     </sql>
 
+    <select id="listByUid" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from im_user_current_chat
+        where user_id = #{uid,jdbcType=VARCHAR}
+        AND del_flag = 0
+        order by TYPE desc, create_time desc
+        limit #{count,jdbcType=INTEGER}
+    </select>
 </mapper>
