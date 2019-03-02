@@ -23,7 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * ClassName:MyWebSocketServerHandler Function: TODO ADD FUNCTION.
+ * ClassName:MyWebSocketServerHandler Function:
  *
  * @author hxy
  */
