@@ -4,16 +4,17 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.vm.im.entity.user.UserCurrentChat">
-        <id column="user_id" property="userId" />
-        <result column="friend_id" property="friendId" />
-        <result column="nickname" property="nickname" />
-        <result column="last_message" property="lastMessage" />
-        <result column="del_flag" property="delFlag" />
-        <result column="create_time" property="createTime" />
+        <id column="user_id" property="userId"/>
+        <result column="friend_id" property="friendId"/>
+        <result column="type" property="type"/>
+        <result column="nickname" property="nickname"/>
+        <result column="last_message" property="lastMessage"/>
+        <result column="del_flag" property="delFlag"/>
+        <result column="create_time" property="createTime"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        user_id, chat_group_id, nickname, last_message, del_flag, create_time
+        user_id, friend_id, type, nickname, last_message, del_flag, create_time
     </sql>
 
 </mapper>

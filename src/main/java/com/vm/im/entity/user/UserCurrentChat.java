@@ -4,8 +4,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
-import java.time.LocalDateTime;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * <p>
@@ -28,9 +28,14 @@ public class UserCurrentChat implements Serializable {
     private String userId;
 
     /**
-     * 好友ID
+     * 好友ID/群组ID
      */
     private String friendId;
+
+    /**
+     * 类型 1: 好友, 3:群组
+     */
+    private Integer type;
 
     /**
      * 好友昵称
@@ -50,7 +55,7 @@ public class UserCurrentChat implements Serializable {
     /**
      * 最后消息时间
      */
-    private LocalDateTime createTime;
+    private Date createTime;
 
 
     public String getUserId() {
@@ -67,6 +72,14 @@ public class UserCurrentChat implements Serializable {
 
     public void setFriendId(String friendId) {
         this.friendId = friendId;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 
     public String getNickname() {
@@ -93,11 +106,11 @@ public class UserCurrentChat implements Serializable {
         this.delFlag = delFlag;
     }
 
-    public LocalDateTime getCreateTime() {
+    public Date getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(LocalDateTime createTime) {
+    public void setCreateTime(Date createTime) {
         this.createTime = createTime;
     }
 
@@ -106,6 +119,7 @@ public class UserCurrentChat implements Serializable {
         return "UserCurrentChat{" +
                 "userId=" + userId +
                 ", friendId=" + friendId +
+                ", type=" + type +
                 ", nickname=" + nickname +
                 ", lastMessage=" + lastMessage +
                 ", delFlag=" + delFlag +
