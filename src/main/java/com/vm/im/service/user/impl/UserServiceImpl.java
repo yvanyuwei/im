@@ -2,11 +2,14 @@ package com.vm.im.service.user.impl;
 
 import com.vm.im.common.dto.user.FindUserDTO;
 import com.vm.im.common.enums.FindUserTypeEnum;
+import com.alibaba.fastjson.JSON;
+import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.util.ResponseJson;
 import com.vm.im.common.vo.user.FindUserVO;
+import com.vm.im.controller.aop.NeedUserAuth;
 import com.vm.im.entity.user.User;
 import com.vm.im.dao.user.UserMapper;
-import com.vm.im.netty.Constant;
+import com.vm.im.entity.user.UserToken;
 import com.vm.im.service.user.UserChatGroupService;
 import com.vm.im.service.user.UserCurrentChatService;
 import com.vm.im.service.user.UserFriendService;
@@ -22,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.vm.im.common.constant.CommonConstant.PLACEHOLDER;
+import java.util.Date;
+
 
 /**
  * <p>
@@ -47,6 +52,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Autowired
     private UserFriendService userFriendService;
 
+    @Autowired
+    private NeedUserAuth needUserAuth;
 
     @Override
     public ResponseJson login(String username, String password, HttpSession session) {
@@ -57,8 +64,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (!user.getPassword().equals(password)) {
             return new ResponseJson().error("密码错误");
         }
-        session.setAttribute(Constant.USER_TOKEN, user.getId());
-        LOG.info("================" + new ResponseJson().success());
+        //session.setAttribute(Constant.USER_TOKEN,user.getId());
+        LOG.info("================"+new ResponseJson().success());
         return new ResponseJson().success();
     }
 
@@ -96,8 +103,33 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 LOG.info("未知的搜索目标");
                 break;
         }
-
         return userList;
+    }
+
+    /**
+     * 保存用户信息
+     */
+    public void saveUserInfo() {
+        String userMsg = needUserAuth.checkToken();
+        if (userMsg != null){
+            UserToken userToken = JSON.parseObject(userMsg, UserToken.class);
+            User user = buildUserMessage(userToken);
+            saveOrUpdate(user);
+        }
+    }
+
+    private User buildUserMessage(UserToken userToken){
+        User user = new User();
+        user.setId(String.valueOf(userToken.getId()));
+        user.setAvatar(userToken.getImage());
+        user.setName(userToken.getUsername());
+        user.setMobile(userToken.getPhonenum());
+        user.setEmail(userToken.getMail());
+        user.setPassword(userToken.getPassword());
+        user.setDelFlag(CommonConstant.NO);
+        user.setCreateTime(new Date(userToken.getCreatetime()));
+        LOG.info("构建用户信息, userChatGroup:{}",JSON.toJSONString(user));
+        return user;
     }
 
     /**

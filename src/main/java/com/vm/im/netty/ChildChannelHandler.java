@@ -7,6 +7,7 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.handler.timeout.IdleStateHandler;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.concurrent.Executors;
@@ -20,12 +21,12 @@ import java.util.concurrent.TimeUnit;
  */
 public class ChildChannelHandler extends ChannelInitializer<SocketChannel> {
 
-    @Resource(name = "myWebSocketServerHandler")
+    /*@Resource(name = "myWebSocketServerHandler")
     private ChannelHandler myWebSocketServerHandler;
 
     @Resource(name = "httpRequestHandler")
     private ChannelHandler httpRequestHandler;
-
+*/
 
     @Override
     protected void initChannel(SocketChannel e) throws Exception {
@@ -39,8 +40,8 @@ public class ChildChannelHandler extends ChannelInitializer<SocketChannel> {
         // ChunkedWriteHandler：向客户端发送HTML5文件
         e.pipeline().addLast("http-chunked", new ChunkedWriteHandler());
         // 在管道中添加我们自己的接收数据实现方法
-        e.pipeline().addLast("http-handler",httpRequestHandler);
+        e.pipeline().addLast("http-handler",new HttpRequestHandler());
 
-        e.pipeline().addLast("websocket-handler", myWebSocketServerHandler);
+        e.pipeline().addLast("websocket-handler", new MyWebSocketServerHandler());
     }
 }

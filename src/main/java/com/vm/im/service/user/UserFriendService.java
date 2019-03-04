@@ -1,8 +1,10 @@
 package com.vm.im.service.user;
 
 import com.vm.im.common.vo.user.FindUserVO;
+import com.alibaba.fastjson.JSONObject;
 import com.vm.im.entity.user.UserFriend;
 import com.baomidou.mybatisplus.extension.service.IService;
+import io.netty.channel.ChannelHandlerContext;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +19,13 @@ import java.util.List;
  */
 @Service
 public interface UserFriendService extends IService<UserFriend> {
+
+    /**
+     * 查询用户好友列表
+     * @param param
+     * @param ctx
+     */
+    void selectUserFriend(JSONObject param, ChannelHandlerContext ctx);
 
     List<UserFriend> selectByPrimaryKey();
 

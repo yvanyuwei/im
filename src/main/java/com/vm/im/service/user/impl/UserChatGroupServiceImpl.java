@@ -1,11 +1,14 @@
 package com.vm.im.service.user.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.enums.BusinessExceptionEnum;
+import com.vm.im.common.enums.ChatTypeEnum;
 import com.vm.im.common.enums.GroupRoleEnum;
 import com.vm.im.common.exception.BusinessException;
 import com.vm.im.common.vo.user.FindUserVO;
+import com.vm.im.common.util.ResponseJson;
 import com.vm.im.entity.group.ChatGroup;
 import com.vm.im.entity.user.UserChatGroup;
 import com.vm.im.dao.user.UserChatGroupMapper;
@@ -13,6 +16,8 @@ import com.vm.im.service.group.ChatGroupFlowService;
 import com.vm.im.service.group.ChatGroupOperationFlowService;
 import com.vm.im.service.user.UserChatGroupService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -141,6 +146,17 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
         }
 
         return userChatGroupMapper.findUser(targetId, condition);
+    }
+
+    @Override
+    public void userGroupList(JSONObject param, ChannelHandlerContext ctx) {
+        List<UserChatGroup> userChatGroup = userChatGroupMapper.selectByPrimaryKey(String.valueOf(param.get("userId")),
+                CommonConstant.NO);
+        String responseJson = new ResponseJson().success()
+                .setData("type", ChatTypeEnum.USER_GROUP_LIST)
+                .setData("content", userChatGroup)
+                .toString();
+        ctx.channel().writeAndFlush(new TextWebSocketFrame(responseJson));
     }
 
     /**

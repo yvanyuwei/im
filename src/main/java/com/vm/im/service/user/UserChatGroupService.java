@@ -1,9 +1,11 @@
 package com.vm.im.service.user;
 
 import com.vm.im.common.vo.user.FindUserVO;
+import com.alibaba.fastjson.JSONObject;
 import com.vm.im.entity.group.ChatGroup;
 import com.vm.im.entity.user.UserChatGroup;
 import com.baomidou.mybatisplus.extension.service.IService;
+import io.netty.channel.ChannelHandlerContext;
 
 import java.util.List;
 
@@ -71,4 +73,11 @@ public interface UserChatGroupService extends IService<UserChatGroup> {
      * @return
      */
     List<FindUserVO> findUser(String uid, String targetId, String condition);
+
+    /**
+     * Query groupList information based on user ID
+     * @param param
+     * @param ctx
+     */
+    void userGroupList(JSONObject param, ChannelHandlerContext ctx);
 }

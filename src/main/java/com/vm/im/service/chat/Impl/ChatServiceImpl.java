@@ -1,14 +1,19 @@
 package com.vm.im.service.chat.Impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.enums.ChatTypeEnum;
 import com.vm.im.common.util.ResponseJson;
 import com.vm.im.entity.user.UserChatGroup;
+import com.vm.im.entity.user.UserFriend;
+import com.vm.im.kafka.KafkaManager;
 import com.vm.im.netty.BaseWebSocketServerHandler;
 import com.vm.im.netty.Constant;
 import com.vm.im.service.chat.ChatService;
 import com.vm.im.service.common.MessageService;
 import com.vm.im.service.group.ChatGroupService;
+import com.vm.im.service.user.UserFriendService;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.slf4j.Logger;
@@ -30,6 +35,9 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
     @Autowired
     private MessageService messageService;
 
+    @Autowired
+    private KafkaManager kafkaManager;
+
     @Override
     public void register(JSONObject param, ChannelHandlerContext ctx) {
         String userId = (String)param.get("userId");
@@ -49,10 +57,12 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
         String content = (String)param.get("content");
         Long createTime = Long.valueOf(String.valueOf(param.get("createTime")));
         ChannelHandlerContext toUserCtx = Constant.onlineUserMap.get(toUserId);
-        messageService.saveMessage(param);
         if (toUserCtx == null){
-            //用户不在线，发送离线消息到kafka
+            //todo
+            kafkaManager.sendMeessage(JSON.toJSONString(param), fromUserId + CommonConstant.USER_TOPIC);
         }else {
+            messageService.saveMessage(param);
+            kafkaManager.sendMeessage(JSON.toJSONString(param), fromUserId + CommonConstant.USER_TOPIC);
             String responseJson = new ResponseJson().success()
                     .setData("fromUserId", fromUserId)
                     .setData("content", content)
@@ -62,6 +72,7 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
             log.info("==============================发送的消息为：" + responseJson);
             sendMessage(toUserCtx, responseJson);
         }
+
     }
 
     @Override
@@ -71,6 +82,7 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
         String content = (String)param.get("content");
         Long createTime = Long.valueOf(String.valueOf(param.get("createTime")));
         messageService.saveMessage(param);
+        kafkaManager.sendMeessage(JSON.toJSONString(param),toGroupId + CommonConstant.GROUP_TOPIC);
         List<UserChatGroup> groupInfo = chatGroupService.getByGroupId(toGroupId);
         if (groupInfo == null) {
             String responseJson = new ResponseJson().error("该群id不存在").toString();
@@ -90,7 +102,7 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
                         if (toCtx != null && !item.getUserId().equals(fromUserId)) {
                             sendMessage(toCtx, responseJson);
                         }else {
-                            //存卡夫卡消费离线数据读取到数据库
+                            // todo 存卡夫卡消费离线数据读取到数据库
                         }
                     });
         }

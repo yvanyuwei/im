@@ -45,6 +45,17 @@ public class CommonConstant {
     public final static String CHAT_GROUP_ID = "chatGroupId";
 
     /**
+     *  群主题
+     */
+    public final static String GROUP_TOPIC = "GroupTopic";
+
+    /**
+     *  用户主题
+     */
+    public final static String USER_TOPIC = "Topic";
+
+
+    /**
      *  模糊查询占位符 placeholder
      */
     public final static String PLACEHOLDER = "%";

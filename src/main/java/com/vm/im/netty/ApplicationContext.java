@@ -16,8 +16,8 @@ public class ApplicationContext {
 
     private final Logger logger = LoggerFactory.getLogger(ApplicationContext.class);
 
-    @Autowired
-    private NettyServer nettyServer;
+
+    private NettyServer nettyServer = new NettyServer();
     //@Autowired
     //private UserInfoDao userInfoDao;
     @Autowired
@@ -35,10 +35,13 @@ public class ApplicationContext {
     public void init() {
         nettyThread = new Thread(nettyServer);
         logger.info("开启独立线程，启动Netty WebSocket服务器...");
+        System.out.println("开启独立线程，启动Netty WebSocket服务器...");
         nettyThread.start();
         logger.info("加载用户数据...");
+        System.out.println("加载用户数据...");
         //userInfoDao.loadUserInfo();
         logger.info("加载用户交流群数据...");
+        System.out.println("加载用户交流群数据...");
         chatGroupService.loadGroupInfo();
     }
 
@@ -51,7 +54,7 @@ public class ApplicationContext {
     @PreDestroy
     public void close() {
         logger.info("正在释放Netty Websocket相关连接...");
-        //nettyServer.close();
+        nettyServer.close();
         logger.info("正在关闭Netty Websocket服务器线程...");
         nettyThread.stop();
         logger.info("系统成功关闭！");

@@ -24,6 +24,13 @@
     <sql id="Base_Column_List">
         user_id, chat_group_id, nickname, top, type, can_speak, del_flag, create_time
     </sql>
+
+    <select id="selectByGroupId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+      select
+        <include refid="Base_Column_List" />
+      from im_user_chat_group
+      where chat_group_id = #{chatGroupId,jdbcType=VARCHAR}
+    </select>
     <update id="deleteByGroupId" parameterType="java.lang.String">
         update im_user_chat_group
         set del_flag = 1
@@ -55,5 +62,13 @@
         LEFT JOIN `im_user` iu
         ON gn.`user_id` = iu.`id`
         where iu.del_flag = 0
+    </select>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from im_user_chat_group
+        where user_id = #{userId,jdbcType=VARCHAR}
+        and del_flag = #{delFlag,jdbcType=INTEGER}
     </select>
 </mapper>

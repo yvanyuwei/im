@@ -26,6 +26,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.Arrays;
 
 import static com.vm.im.common.constant.CommonConstant.*;
@@ -99,7 +101,7 @@ public class NeedUserAuth {
      *
      * @return 用户信息
      */
-    public String checkToken() throws IOException {
+    public String checkToken() {
         LOG.info("开始用户身份认证");
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         String authorization = request.getHeader(AUTHORIZATION);
@@ -118,8 +120,14 @@ public class NeedUserAuth {
         }
 
         LOG.info("userInfo:{}", userInfo);
-        JsonNode ret = objectMapper.readTree(userInfo);
-        String token = ret.get(REDIS_TOKEN).asText();
+        JsonNode ret = null;
+        String token = null;
+        try {
+            ret = objectMapper.readTree(userInfo);
+            token = ret.get(REDIS_TOKEN).asText();
+        } catch (IOException e) {
+            LOG.info("用户信息转换异常");
+        }
         if (!authorization.equals(token)) {
             LOG.info("用户token 认证失败, uid:{}", uid);
             throw new BusinessException(BusinessExceptionEnum.USER_AUTH_EXCEPTION.getFailCode(), BusinessExceptionEnum.USER_AUTH_EXCEPTION.getFailReason());

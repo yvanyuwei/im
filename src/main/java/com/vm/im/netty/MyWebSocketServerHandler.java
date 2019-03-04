@@ -3,37 +3,41 @@ package com.vm.im.netty;
 import com.alibaba.fastjson.JSONObject;
 import com.vm.im.common.util.ResponseJson;
 import com.vm.im.service.chat.ChatService;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
+import com.vm.im.service.user.UserChatGroupService;
+import com.vm.im.service.user.UserFriendService;
+import com.vm.im.service.user.UserService;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.websocketx.*;
-import io.netty.handler.timeout.IdleState;
-import io.netty.handler.timeout.IdleStateEvent;
-import io.netty.util.AttributeKey;
-import io.netty.util.CharsetUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.springframework.stereotype.Component;
 
 /**
  * ClassName:MyWebSocketServerHandler Function:
  *
  * @author hxy
  */
-@Service
+@Component
+@ChannelHandler.Sharable
+//@ServerEndpoint(value="/websocket/{userId}",configurator = SpringConfigurator.class)
 public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
-    private static final Logger logger = Logger.getLogger(WebSocketServerHandshaker.class.getName());
-    private WebSocketServerHandshaker handshaker;
+    private static final Logger Log = LoggerFactory.getLogger(MyWebSocketServerHandler.class);
+    //private WebSocketServerHandshaker handshaker;
 
     @Autowired
     private ChatService chatService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private UserFriendService userFriendService;
+
+    @Autowired
+    private UserChatGroupService userChatGroupService;
 
     /**
      * channel 通道 action 活跃的 当客户端主动链接服务端的链接后，
@@ -53,7 +57,9 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
      * 解码时它是ByteBuf类型的
      */
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame msg) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame msg) {
+        //用户链接时更新保存用户数据
+        //userService.saveUserInfo();
         handlerWebSocketFrame(ctx,msg);
     }
 
@@ -65,7 +71,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
     private void handlerWebSocketFrame(ChannelHandlerContext ctx, WebSocketFrame frame) {
         // 判断是否关闭链路的指令
         if (frame instanceof CloseWebSocketFrame) {
-            handshaker = Constant.webSocketHandshakerMap.get(ctx.channel().id().asLongText());
+            WebSocketServerHandshaker handshaker = Constant.webSocketHandshakerMap.get(ctx.channel().id().asLongText());
             if (handshaker == null){
                 sendErrorMessage(ctx,"不存在此客户端连接");
             }else {
@@ -107,6 +113,11 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
             case "GROUP_SENDING":
                 chatService.groupSend(param, ctx);
                 break;
+            case "USER_FRIEND_LIST":
+                userFriendService.selectUserFriend(param, ctx);
+                break;
+            case "USER_GROUP_LIST":
+                userChatGroupService.userGroupList(param,ctx);
             default:
                 chatService.typeError(ctx);
                 break;
@@ -127,8 +138,13 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
      * 可以传输数据
      */
     @Override
-    public void channelInactive(ChannelHandlerContext ctx) {
-        chatService.remove(ctx);
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception{
+        try {
+            chatService.remove(ctx);
+        }catch (Exception e){
+            Log.info("移除握手错误："+e.getMessage());
+        }
+
     }
 
     /**

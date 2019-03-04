@@ -29,7 +29,6 @@ import java.util.Date;
 public class ChatGroupFlowServiceImpl extends ServiceImpl<ChatGroupFlowMapper, ChatGroupFlow> implements ChatGroupFlowService {
     private static final Logger LOG = LoggerFactory.getLogger(ChatGroupFlowServiceImpl.class);
 
-
     /**
      * 添加群主加入流水
      *

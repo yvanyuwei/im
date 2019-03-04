@@ -46,11 +46,9 @@ public class WebLogAspect {
     public void dobefore(JoinPoint joinPoint) {        //方法里面注入连接点
         logger.info("================================前置通知=================================");                     //info ,debug ,warn ,erro四种级别，这里我们注入info级别
         startTime.set(System.currentTimeMillis());
- 
         //获取servlet请求对象---因为这不是控制器，这里不能注入HttpServletRequest，但springMVC本身提供ServletRequestAttributes可以拿到
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
- 
         logger.info("URL:" + request.getRequestURL().toString());         // 向那个url发的请求
         logger.info("METHOD:" + request.getMethod());
         logger.info("CLASS_METHOD:" + joinPoint.getSignature().getDeclaringTypeName() + "."

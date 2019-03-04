@@ -29,4 +29,7 @@ public interface UserFriendMapper extends BaseMapper<UserFriend> {
      * @return
      */
     List<FindUserVO> findUser(@Param("uid") String uid, @Param("condition") String condition);
+
+    List<UserFriend> selectByPrimaryKey(@Param("userId")String userId,@Param("friendId")String friendId,@Param(
+            "delFlag")Integer delFlag);
 }

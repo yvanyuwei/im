@@ -20,6 +20,7 @@ import java.util.List;
 
 import static com.vm.im.common.constant.CommonConstant.USERID;
 
+
 /**
  * <p>
  * 用户表 前端控制器

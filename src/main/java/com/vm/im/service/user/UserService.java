@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
+
 /**
  * <p>
  * 用户表 服务类
@@ -22,6 +23,11 @@ public interface UserService extends IService<User> {
     ResponseJson login(String username, String password, HttpSession session);
 
     ResponseJson getByUserId(String userId);
+
+    /**
+     * 保存或更新用户信息
+     */
+    void saveUserInfo();
 
     /**
      * 根据查找目标体查找用户

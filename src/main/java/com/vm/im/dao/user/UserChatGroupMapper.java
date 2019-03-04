@@ -49,4 +49,6 @@ public interface UserChatGroupMapper extends BaseMapper<UserChatGroup> {
      * @return
      */
     List<FindUserVO> findUser(@Param("groupId") String groupId, @Param("condition") String condition);
+
+    List<UserChatGroup> selectByPrimaryKey(@Param("userId")String userId, @Param("delFlag")Integer delFlag);
 }
