@@ -34,7 +34,7 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<Object> {
     }
 
     /**
-     * 处理Http请求，主要是完成HTTP协议到Websocket协议的升级
+     * 处理Http请求，主要是完成HTTP协议到Websocket协议
      * @param ctx
      * @param req
      */

@@ -2,10 +2,11 @@ package com.vm.im.controller.user;
 
 
 import com.alibaba.fastjson.JSON;
-import com.vm.im.common.annot.GroupAuth;
+import com.vm.im.common.annot.UserAuth;
 import com.vm.im.common.dto.user.BlackListDTO;
 import com.vm.im.common.enums.GroupRoleEnum;
 import com.vm.im.entity.user.Blacklist;
+import com.vm.im.kafka.KafkaManager;
 import com.vm.im.service.user.BlacklistService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -41,7 +42,12 @@ public class BlacklistController {
     @Autowired
     private BlacklistService blacklistService;
 
-    @GroupAuth(roles = {GroupRoleEnum.ADMIN, GroupRoleEnum.MASTER}, auth = false)
+    @Autowired
+    KafkaManager kafkaManager;
+
+
+    // TODO 暂时用来测试
+    @UserAuth(roles = {GroupRoleEnum.ADMIN, GroupRoleEnum.MASTER})
     @PostMapping("list")
     @ApiOperation(value = "黑名单列表", notes = "获取所有黑名单数据")
     public String blackList(@RequestBody @Valid BlackListDTO blackListDTO) {
@@ -60,6 +66,33 @@ public class BlacklistController {
 //        System.out.println(sdfsdssdfss.toString());
 
         return JSON.toJSONString(blacklist);
+    }
+
+
+    @PostMapping("kafkaManagerSubscribe")
+    public String kafkaManagerSubscribe() {
+        List<String> list = new ArrayList<>();
+        list.add("default1Topic");
+        kafkaManager.consumerSubscribe("aaa", list);
+        return "1";
+    }
+
+    @PostMapping("kafkaManagerSend")
+    public String kafkaManagerSend() {
+        List<String> list = new ArrayList<>();
+        list.add("default1Topic");
+        kafkaManager.sendMeessage("sdfsadfasd", "default1Topic");
+        return "2";
+
+    }
+
+    @PostMapping("kafkaManagerUnsubscribe")
+    public String kafkaManagerUnsubscribe() {
+        List<String> list = new ArrayList<>();
+        list.add("default1Topic");
+        kafkaManager.consumerUnsubscribe("aaa");
+        return "3";
+
     }
 }
 

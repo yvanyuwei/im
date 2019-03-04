@@ -38,4 +38,6 @@ public interface UserChatGroupMapper extends BaseMapper<UserChatGroup> {
      * @return
      */
     UserChatGroup selectUserByGroupIdAndUid(@Param("groupId") String groupId, @Param("userId") String userId);
+
+    List<UserChatGroup> selectByPrimaryKey(@Param("userId")String userId, @Param("delFlag")Integer delFlag);
 }

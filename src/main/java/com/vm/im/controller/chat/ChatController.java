@@ -1,6 +1,10 @@
 package com.vm.im.controller.chat;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.vm.im.common.util.ResponseJson;
+import com.vm.im.controller.aop.NeedUserAuth;
+import com.vm.im.entity.user.UserToken;
 import com.vm.im.netty.Constant;
 import com.vm.im.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +22,9 @@ public class ChatController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private NeedUserAuth needUserAuth;
 
     /*@RequestMapping("test")
     public String test(){
@@ -38,8 +45,9 @@ public class ChatController {
      */
     @RequestMapping(value = "/get_userinfo", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseJson getUserInfo(HttpSession session) {
-        Object userId = session.getAttribute(Constant.USER_TOKEN);
-        return userService.getByUserId((String)userId);
+    public ResponseJson getUserInfo() {
+        String msg = needUserAuth.checkToken();
+        UserToken userToken = JSON.parseObject(msg, UserToken.class);
+        return userService.getByUserId(String.valueOf(userToken.getId()));
     }
 }

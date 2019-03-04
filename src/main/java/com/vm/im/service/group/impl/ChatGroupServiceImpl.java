@@ -1,6 +1,7 @@
 package com.vm.im.service.group.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.dto.admin.AuthOperationDTO;
 import com.vm.im.common.dto.admin.MemberOperationDTO;
@@ -10,6 +11,7 @@ import com.vm.im.common.enums.BusinessExceptionEnum;
 import com.vm.im.common.enums.GroupLeverEnum;
 import com.vm.im.common.enums.GroupRoleEnum;
 import com.vm.im.common.exception.BusinessException;
+import com.vm.im.common.util.StringUtil;
 import com.vm.im.dao.user.UserChatGroupMapper;
 import com.vm.im.entity.group.ChatGroup;
 import com.vm.im.dao.group.ChatGroupMapper;
@@ -21,9 +23,13 @@ import com.vm.im.dao.group.ChatGroupMapper;
 import com.vm.im.entity.user.UserChatGroup;
 import com.vm.im.service.group.ChatGroupFlowService;
 import com.vm.im.service.group.ChatGroupOperationFlowService;
+import com.vm.im.service.group.ChatGroupFlowService;
+import com.vm.im.service.group.ChatGroupOperationFlowService;
+import com.vm.im.netty.Constant;
 import com.vm.im.service.group.ChatGroupService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.vm.im.service.user.UserChatGroupService;
+import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +58,7 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
     @Autowired
     private UserChatGroupMapper userChatGroupMapper;
 
+    @Autowired
     private ChatGroupFlowService chatGroupFlowService;
 
     @Autowired
@@ -270,6 +277,11 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
         return result;
     }
 
+    @Override
+    public ChatGroup checkGroup(UnionOperationDTO unionOperationDTO) {
+        return null;
+    }
+
     /**
      * 构建用户群组信息
      *
@@ -311,10 +323,7 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
     }
 
 
-    @Override
-    public ChatGroup checkGroup(UnionOperationDTO unionOperationDTO) {
-        return null;
-    }
+
 
     @Override
     public List<UserChatGroup> getByGroupId(String groupId) {

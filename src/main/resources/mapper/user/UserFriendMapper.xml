@@ -18,11 +18,13 @@
       user_id, friend_id, nickname, top, friend_group_id, create_time, del_flag, remarks
     </sql>
 
-    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.vm.im.entity.user.UserFriend" >
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />
         from im_user_friend
         where user_id = #{userId,jdbcType=VARCHAR}
+        or friend_id = #{friendId,jdbcType=VARCHAR}
+        and del_flag = #{delFlag,jdbcType=INTEGER}
     </select>
 
     <insert id="insertSelective" parameterType="com.vm.im.entity.user.UserFriend" >

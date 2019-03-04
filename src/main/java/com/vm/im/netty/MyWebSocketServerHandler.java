@@ -1,14 +1,22 @@
 package com.vm.im.netty;
 
 import com.alibaba.fastjson.JSONObject;
+import com.oracle.tools.packager.Log;
+import com.vm.im.common.annot.AdminAuth;
 import com.vm.im.common.util.ResponseJson;
 import com.vm.im.service.chat.ChatService;
-import io.netty.channel.*;
+import com.vm.im.service.group.impl.ChatGroupFlowServiceImpl;
+import com.vm.im.service.user.UserChatGroupService;
+import com.vm.im.service.user.UserFriendService;
+import com.vm.im.service.user.UserService;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-import java.util.logging.Logger;
 
 /**
  * ClassName:MyWebSocketServerHandler Function: TODO ADD FUNCTION.
@@ -17,12 +25,22 @@ import java.util.logging.Logger;
  */
 @Component
 @ChannelHandler.Sharable
+//@ServerEndpoint(value="/websocket/{userId}",configurator = SpringConfigurator.class)
 public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
-    private static final Logger logger = Logger.getLogger(WebSocketServerHandshaker.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(MyWebSocketServerHandler.class);
     //private WebSocketServerHandshaker handshaker;
 
     @Autowired
     private ChatService chatService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private UserFriendService userFriendService;
+
+    @Autowired
+    private UserChatGroupService userChatGroupService;
 
     /**
      * channel 通道 action 活跃的 当客户端主动链接服务端的链接后，
@@ -42,7 +60,9 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
      * 解码时它是ByteBuf类型的
      */
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame msg) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame msg) {
+        //用户链接时更新保存用户数据
+        //userService.saveUserInfo();
         handlerWebSocketFrame(ctx,msg);
     }
 
@@ -96,6 +116,11 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
             case "GROUP_SENDING":
                 chatService.groupSend(param, ctx);
                 break;
+            case "USER_FRIEND_LIST":
+                userFriendService.selectUserFriend(param, ctx);
+                break;
+            case "USER_GROUP_LIST":
+                userChatGroupService.userGroupList(param,ctx);
             default:
                 chatService.typeError(ctx);
                 break;
@@ -116,8 +141,13 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
      * 可以传输数据
      */
     @Override
-    public void channelInactive(ChannelHandlerContext ctx) {
-        chatService.remove(ctx);
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception{
+        try {
+            chatService.remove(ctx);
+        }catch (Exception e){
+            Log.info("移除握手错误："+e.getMessage());
+        }
+
     }
 
     /**

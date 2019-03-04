@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface GroupAuth {
+public @interface UserAuth {
 
     boolean auth() default true;
 

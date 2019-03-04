@@ -1,8 +1,10 @@
 package com.vm.im.service.user;
 
+import com.alibaba.fastjson.JSONObject;
 import com.vm.im.entity.group.ChatGroup;
 import com.vm.im.entity.user.UserChatGroup;
 import com.baomidou.mybatisplus.extension.service.IService;
+import io.netty.channel.ChannelHandlerContext;
 
 import java.util.List;
 
@@ -60,4 +62,11 @@ public interface UserChatGroupService extends IService<UserChatGroup> {
      * @param userChatGroup
      */
     void updateMemberAuth(UserChatGroup userChatGroup);
+
+    /**
+     * Query groupList information based on user ID
+     * @param param
+     * @param ctx
+     */
+    void userGroupList(JSONObject param, ChannelHandlerContext ctx);
 }
