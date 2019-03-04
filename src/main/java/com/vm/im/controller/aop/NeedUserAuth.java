@@ -99,7 +99,7 @@ public class NeedUserAuth {
      *
      * @return 用户信息
      */
-    public String checkToken() throws IOException {
+    public String checkToken()  {
         LOG.info("开始用户身份认证");
         String authorization = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader(AUTHORIZATION);
         String uid = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader(USERID);
@@ -117,8 +117,14 @@ public class NeedUserAuth {
         }
 
         LOG.info("userInfo:{}", userInfo);
-        JsonNode ret = objectMapper.readTree(userInfo);
-        String token = ret.get(REDIS_TOKEN).asText();
+        JsonNode ret = null;
+        String token = null;
+        try {
+            ret = objectMapper.readTree(userInfo);
+            token = ret.get(REDIS_TOKEN).asText();
+        } catch (IOException e) {
+            LOG.info("用户信息转换异常");
+        }
         if (!authorization.equals(token)) {
             LOG.info("用户token 认证失败, uid:{}", uid);
             throw new BusinessException(BusinessExceptionEnum.USER_AUTH_EXCEPTION.getFailCode(), BusinessExceptionEnum.USER_AUTH_EXCEPTION.getFailReason());
