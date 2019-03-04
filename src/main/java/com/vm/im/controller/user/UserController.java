@@ -30,7 +30,7 @@ import static com.vm.im.common.constant.CommonConstant.USERID;
  */
 @RestController
 @RequestMapping("/user")
-@Api(value = "黑名单", description = "用户黑名单相关接口")
+@Api(value = "用户相关", description = "用户相关接口")
 public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
