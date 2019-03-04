@@ -19,6 +19,7 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import java.text.MessageFormat;
 import java.util.Iterator;
@@ -55,7 +56,7 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
         String fromUserId = (String)param.get("fromUserId");
         String toUserId = (String)param.get("toUserId");
         String content = (String)param.get("content");
-        Long createTime = Long.valueOf(String.valueOf(param.get("createTime")));
+        //Long createTime = Long.valueOf(String.valueOf(param.get("createTime")));
         ChannelHandlerContext toUserCtx = Constant.onlineUserMap.get(toUserId);
         if (toUserCtx == null){
             //todo
@@ -67,7 +68,7 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
                     .setData("fromUserId", fromUserId)
                     .setData("content", content)
                     .setData("type", ChatTypeEnum.SINGLE_SENDING)
-                    .setData("createTime", createTime)
+                    //.setData("createTime", createTime)
                     .toString();
             log.info("==============================发送的消息为：" + responseJson);
             sendMessage(toUserCtx, responseJson);
@@ -80,7 +81,7 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
         String fromUserId = (String)param.get("fromUserId");
         String toGroupId = (String)param.get("toGroupId");
         String content = (String)param.get("content");
-        Long createTime = Long.valueOf(String.valueOf(param.get("createTime")));
+        //Long createTime = Long.valueOf(String.valueOf(param.get("createTime")));
         messageService.saveMessage(param);
         kafkaManager.sendMeessage(JSON.toJSONString(param),toGroupId + CommonConstant.GROUP_TOPIC);
         List<UserChatGroup> groupInfo = chatGroupService.getByGroupId(toGroupId);
@@ -93,7 +94,7 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
                     .setData("content", content)
                     .setData("toGroupId", toGroupId)
                     .setData("type", ChatTypeEnum.GROUP_SENDING)
-                    .setData("createTime",createTime)
+                    //.setData("createTime",createTime)
                     .toString();
             //给群里每个成员发信息
             groupInfo.stream()

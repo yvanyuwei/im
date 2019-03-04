@@ -1,6 +1,7 @@
 package com.vm.im.service.common.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.vm.im.common.enums.ChatTypeEnum;
 import com.vm.im.entity.common.Message;
 import com.vm.im.dao.common.MessageMapper;
 import com.vm.im.service.common.MessageService;
@@ -29,18 +30,23 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
     @Autowired
     private MessageMapper messageMapper;
 
-    @Async
+    //@Async
     public void saveMessage(JSONObject param) {
         Message msg = new Message();
         msg.setFromId(String.valueOf(param.get("fromUserId")));
-        msg.setToId(String.valueOf(param.get("toUserId")));
-        msg.setContent(String.valueOf(param.get("content")));
-        msg.setCreateTime(new Date(Long.valueOf(String.valueOf(param.get("createTime")))));
-        if (param.get("toUserId") != null){
+        String type = String.valueOf(param.get("type"));
+        if (type.equals(ChatTypeEnum.SINGLE_SENDING.name())){
+            String toUserId = String.valueOf(param.get("toUserId"));
+            msg.setToId(toUserId);
             msg.setType(1);
-        }else if(param.get("toGroupId") != null){
+        }else if(type.equals(ChatTypeEnum.GROUP_SENDING.name())){
+            String toGroupId = String.valueOf(param.get("toGroupId"));
+            msg.setToId(toGroupId);
             msg.setType(3);
         }
-        messageMapper.insert(msg);
+        msg.setContent(String.valueOf(param.get("content")));
+        //msg.setCreateTime(new Date(Long.valueOf(String.valueOf(param.get("createTime")))));
+        save(msg);
+        //messageMapper.(msg);
     }
 }

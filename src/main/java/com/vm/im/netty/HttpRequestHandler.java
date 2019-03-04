@@ -41,7 +41,7 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<Object> {
     private void handleHttpRequest(ChannelHandlerContext ctx, FullHttpRequest req) {
         if (!req.decoderResult().isSuccess()) {
             sendHttpResponse(ctx, req,
-                    new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST));
+                    new DefaultFullHttpResponse(HttpVersion.HTTP_1_0, HttpResponseStatus.BAD_REQUEST));
             return;
         }
 

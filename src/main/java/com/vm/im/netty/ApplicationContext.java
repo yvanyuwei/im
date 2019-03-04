@@ -16,8 +16,8 @@ public class ApplicationContext {
 
     private final Logger logger = LoggerFactory.getLogger(ApplicationContext.class);
 
-
-    private NettyServer nettyServer = new NettyServer();
+    @Autowired
+    private NettyServer nettyServer;
     //@Autowired
     //private UserInfoDao userInfoDao;
     @Autowired
