@@ -119,7 +119,7 @@
 
     <select id="findUser" resultMap="FindUserResultMap" parameterType="java.lang.String">
         select
-        iu.`id` id , iu.`avatar` avatar, fn.`nickname` name, iu.`sign`
+        iu.`id` id , iu.`avatar` avatar, fn.`nickname` name, iu.`sign` sign
         from (SELECT iuf.`friend_id`  friend_id, iuf.`nickname` nickname
               FROM im_user_friend iuf
               where iuf.user_id = #{uid,jdbcType=VARCHAR}

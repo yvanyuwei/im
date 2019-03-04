@@ -46,7 +46,7 @@
 
     <select id="findUser" resultMap="FindUserResultMap" parameterType="java.lang.String">
         SELECT
-        iu.`id` id , iu.`avatar` avatar, cn.`nickname` name, iu.`sign`
+        iu.`id` id , iu.`avatar` avatar, cn.`nickname` name, iu.`sign` sign
         FROM (SELECT iucc.friend_id friend_id, iucc.nickname nickname, iucc.type type
               FROM im_user_current_chat iucc
               where iucc.user_id = #{uid,jdbcType=VARCHAR}
