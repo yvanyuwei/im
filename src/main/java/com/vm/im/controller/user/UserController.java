@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSON;
 import com.vm.im.common.annot.UserAuth;
 import com.vm.im.common.dto.user.FindUserDTO;
 import com.vm.im.common.util.ResponseJson;
-import com.vm.im.entity.user.User;
+import com.vm.im.common.vo.user.FindUserVO;
 import com.vm.im.service.user.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -58,7 +58,7 @@ public class UserController {
     @ApiOperation(value = "查找用户", notes = "模糊查找用户")
     @PostMapping("findUser")
     public String findUser(@RequestBody @Valid FindUserDTO findUserDTO, @RequestHeader(value=USERID) String uid){
-        List<User> userList = userService.findUserList(findUserDTO, uid);
+        List<FindUserVO> userList = userService.findUserList(findUserDTO, uid);
         return JSON.toJSONString(userList);
     }
 }

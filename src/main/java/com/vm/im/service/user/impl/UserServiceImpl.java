@@ -3,6 +3,7 @@ package com.vm.im.service.user.impl;
 import com.vm.im.common.dto.user.FindUserDTO;
 import com.vm.im.common.enums.FindUserTypeEnum;
 import com.vm.im.common.util.ResponseJson;
+import com.vm.im.common.vo.user.FindUserVO;
 import com.vm.im.entity.user.User;
 import com.vm.im.dao.user.UserMapper;
 import com.vm.im.netty.Constant;
@@ -75,8 +76,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      * @return
      */
     @Override
-    public List<User> findUserList(FindUserDTO findUserDTO, String uid) {
-        List<User> userList = new ArrayList<>();
+    public List<FindUserVO> findUserList(FindUserDTO findUserDTO, String uid) {
+        List<FindUserVO> userList = new ArrayList<>();
         findUserDTO.setCondition(PLACEHOLDER + findUserDTO.getCondition() + PLACEHOLDER);
         switch (FindUserTypeEnum.valueOf(findUserDTO.getType())) {
             case CHAT_GROUP:
@@ -106,7 +107,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      * @return
      */
     @Override
-    public List<User> findUser(String condition) {
+    public List<FindUserVO> findUser(String condition) {
         return userMapper.findUser(condition);
     }
 }

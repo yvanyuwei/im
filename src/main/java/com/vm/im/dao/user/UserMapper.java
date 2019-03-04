@@ -1,5 +1,6 @@
 package com.vm.im.dao.user;
 
+import com.vm.im.common.vo.user.FindUserVO;
 import com.vm.im.entity.user.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
@@ -29,5 +30,5 @@ public interface UserMapper extends BaseMapper<User> {
      * @param condition
      * @return
      */
-    List<User> findUser(String condition);
+    List<FindUserVO> findUser(String condition);
 }

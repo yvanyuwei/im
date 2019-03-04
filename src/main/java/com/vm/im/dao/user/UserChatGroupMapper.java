@@ -1,6 +1,6 @@
 package com.vm.im.dao.user;
 
-import com.vm.im.entity.user.User;
+import com.vm.im.common.vo.user.FindUserVO;
 import com.vm.im.entity.user.UserChatGroup;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
@@ -48,5 +48,5 @@ public interface UserChatGroupMapper extends BaseMapper<UserChatGroup> {
      * @param condition
      * @return
      */
-    List<User> findUser(@Param("groupId") String groupId, @Param("condition") String condition);
+    List<FindUserVO> findUser(@Param("groupId") String groupId, @Param("condition") String condition);
 }

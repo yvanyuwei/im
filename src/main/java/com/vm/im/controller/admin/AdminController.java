@@ -6,6 +6,7 @@ import com.vm.im.common.annot.AdminAuth;
 import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.dto.ResultBean;
 import com.vm.im.common.dto.admin.AuthOperationDTO;
+import com.vm.im.common.dto.admin.CreateUserDTO;
 import com.vm.im.common.dto.admin.MemberOperationDTO;
 import com.vm.im.common.dto.admin.UnionOperationDTO;
 import com.vm.im.common.enums.AdminRoleEnum;
@@ -89,6 +90,14 @@ public class AdminController {
             chatGroupService.deleteUnionMemberAuth(authOperationDTO);
         }
 
+        return JSON.toJSONString(new ResultBean(ResultCodeEnum.SUCCESS.getCode(),ResultCodeEnum.SUCCESS.name(), null));
+    }
+
+    @AdminAuth(roles = {AdminRoleEnum.ADMIN})
+    @PostMapping("createUser")
+    @ApiOperation(value = "创建用户", notes = "创建用户使用接口")
+    public String createUser(@RequestBody @Valid CreateUserDTO createUserDTO) {
+// TODO 暂时不急 接口先定好
         return JSON.toJSONString(new ResultBean(ResultCodeEnum.SUCCESS.getCode(),ResultCodeEnum.SUCCESS.name(), null));
     }
 }

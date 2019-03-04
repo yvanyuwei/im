@@ -1,6 +1,6 @@
 package com.vm.im.service.user.impl;
 
-import com.vm.im.entity.user.User;
+import com.vm.im.common.vo.user.FindUserVO;
 import com.vm.im.entity.user.UserCurrentChat;
 import com.vm.im.dao.user.UserCurrentChatMapper;
 import com.vm.im.service.user.UserCurrentChatService;
@@ -47,7 +47,7 @@ public class UserCurrentChatServiceImpl extends ServiceImpl<UserCurrentChatMappe
      * @return
      */
     @Override
-    public List<User> findUser(String uid, String condition) {
+    public List<FindUserVO> findUser(String uid, String condition) {
         return userCurrentChatMapper.findUser(uid, condition);
     }
 }

@@ -5,8 +5,8 @@ import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.enums.BusinessExceptionEnum;
 import com.vm.im.common.enums.GroupRoleEnum;
 import com.vm.im.common.exception.BusinessException;
+import com.vm.im.common.vo.user.FindUserVO;
 import com.vm.im.entity.group.ChatGroup;
-import com.vm.im.entity.user.User;
 import com.vm.im.entity.user.UserChatGroup;
 import com.vm.im.dao.user.UserChatGroupMapper;
 import com.vm.im.service.group.ChatGroupFlowService;
@@ -133,7 +133,7 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
      * @return
      */
     @Override
-    public List<User> findUser(String uid, String targetId, String condition) {
+    public List<FindUserVO> findUser(String uid, String targetId, String condition) {
         UserChatGroup userChatGroup = selectUserByGroupIdAndUid(targetId, uid);
         if (userChatGroup == null || userChatGroup.getDelFlag() == CommonConstant.YES){
             LOG.info("用户未加入该群组, 无法搜索群组成员, groupId:{}, uid:{}", targetId, uid);

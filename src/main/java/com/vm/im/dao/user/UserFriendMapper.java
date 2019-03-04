@@ -1,6 +1,6 @@
 package com.vm.im.dao.user;
 
-import com.vm.im.entity.user.User;
+import com.vm.im.common.vo.user.FindUserVO;
 import com.vm.im.entity.user.UserFriend;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
@@ -28,5 +28,5 @@ public interface UserFriendMapper extends BaseMapper<UserFriend> {
      * @param condition
      * @return
      */
-    List<User> findUser(@Param("uid") String uid, @Param("condition") String condition);
+    List<FindUserVO> findUser(@Param("uid") String uid, @Param("condition") String condition);
 }

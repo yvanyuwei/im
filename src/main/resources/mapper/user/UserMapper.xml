@@ -18,6 +18,13 @@
         <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     </resultMap>
+    <!-- 查找好友映射结果 -->
+    <resultMap id="FindUserResultMap" type="com.vm.im.common.vo.user.FindUserVO">
+        <id column="id" property="id" jdbcType="VARCHAR" />
+        <result column="avatar" property="avatar" jdbcType="VARCHAR" />
+        <result column="sign" property="sign" jdbcType="VARCHAR" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+    </resultMap>
 
     <sql id="Base_Column_List" >
       id, avatar, name, sex, birthday, sign, mobile, email, password, iv, remarks, del_flag,
@@ -124,11 +131,12 @@
       </trim>
     </insert>
 
-    <select id="findUser" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    <select id="findUser" resultMap="FindUserResultMap" parameterType="java.lang.String" >
         select
-        <include refid="Base_Column_List" />
+        id, name, avatar, sign
         from im_user
-        where id like #{condition,jdbcType=VARCHAR}
+        where del_flag = 0
+        and id like #{condition,jdbcType=VARCHAR}
         or name like #{condition,jdbcType=VARCHAR}
     </select>
 

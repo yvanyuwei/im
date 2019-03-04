@@ -2,6 +2,7 @@ package com.vm.im.service.user;
 
 import com.vm.im.common.dto.user.FindUserDTO;
 import com.vm.im.common.util.ResponseJson;
+import com.vm.im.common.vo.user.FindUserVO;
 import com.vm.im.entity.user.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -29,7 +30,7 @@ public interface UserService extends IService<User> {
      * @param uid
      * @return
      */
-    List<User> findUserList(FindUserDTO findUserDTO, String uid);
+    List<FindUserVO> findUserList(FindUserDTO findUserDTO, String uid);
 
     /**
      * 模糊查找用户
@@ -37,5 +38,5 @@ public interface UserService extends IService<User> {
      * @param condition
      * @return
      */
-    List<User> findUser(String condition);
+    List<FindUserVO> findUser(String condition);
 }
