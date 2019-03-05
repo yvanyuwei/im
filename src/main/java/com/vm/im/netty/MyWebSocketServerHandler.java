@@ -1,34 +1,21 @@
 package com.vm.im.netty;
 
 import com.alibaba.fastjson.JSONObject;
-import com.oracle.tools.packager.Log;
-import com.vm.im.common.annot.AdminAuth;
 import com.vm.im.common.util.ResponseJson;
 import com.vm.im.service.chat.ChatService;
-import com.vm.im.service.chat.Impl.ChatServiceImpl;
-import com.vm.im.service.group.impl.ChatGroupFlowServiceImpl;
 import com.vm.im.service.user.UserChatGroupService;
 import com.vm.im.service.user.UserFriendService;
-import com.vm.im.service.user.UserService;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.*;
-import org.aspectj.weaver.ast.Var;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
-import org.springframework.web.socket.server.standard.SpringConfigurator;
-
-import javax.annotation.PostConstruct;
-import javax.websocket.server.ServerEndpoint;
 
 /**
- * ClassName:MyWebSocketServerHandler Function: TODO ADD FUNCTION.
+ * ClassName:MyWebSocketServerHandler Function:
  *
  * @author hxy
  */
@@ -107,6 +94,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
         JSONObject param = null;
         try {
             param = JSONObject.parseObject(request);
+            System.out.println("param" + param);
         } catch (Exception e) {
             sendErrorMessage(ctx, "JSON字符串转换出错！");
             e.printStackTrace();
@@ -155,7 +143,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
         try {
             chatService.remove(ctx);
         }catch (Exception e){
-            Log.info("移除握手错误："+e.getMessage());
+            LOG.info("移除握手错误："+e.getMessage());
         }
 
     }

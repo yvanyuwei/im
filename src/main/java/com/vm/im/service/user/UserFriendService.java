@@ -1,11 +1,11 @@
 package com.vm.im.service.user;
 
+import com.vm.im.common.vo.user.FindUserVO;
 import com.alibaba.fastjson.JSONObject;
-import com.vm.im.common.dto.user.UserFriendListDTO;
-import com.vm.im.entity.user.User;
 import com.vm.im.entity.user.UserFriend;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.netty.channel.ChannelHandlerContext;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,4 +27,17 @@ public interface UserFriendService extends IService<UserFriend> {
      * @param ctx
      */
     void selectUserFriend(JSONObject param, ChannelHandlerContext ctx);
+
+    /**
+     * 模糊查找用户
+     *
+     * @param uid
+     * @param condition
+     * @return
+     */
+    List<FindUserVO> findUser(String uid, String condition);
+
+    void updateUserMessage(String name, String friend_id, String nickname);
+
+    List<UserFriend> selectByFriendId(String friendId, Integer delFlag);
 }

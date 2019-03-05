@@ -55,6 +55,10 @@ public class CommonConstant {
     public final static String USER_TOPIC = "Topic";
 
 
+    /**
+     *  模糊查询占位符 placeholder
+     */
+    public final static String PLACEHOLDER = "%";
 
 
 

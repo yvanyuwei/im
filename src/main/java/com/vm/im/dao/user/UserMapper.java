@@ -1,9 +1,12 @@
 package com.vm.im.dao.user;
 
+import com.vm.im.common.vo.user.FindUserVO;
 import com.vm.im.entity.user.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 
 /**
@@ -22,4 +25,11 @@ public interface UserMapper extends BaseMapper<User> {
 
     int insertSelective(User record);
 
+    /**
+     * 模糊查找用户
+     *
+     * @param condition
+     * @return
+     */
+    List<FindUserVO> findUser(String condition);
 }

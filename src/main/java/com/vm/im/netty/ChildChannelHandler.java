@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * ClassName:ChildChannelHandler
- * Function: TODO ADD FUNCTION.
+ * Function:
  *
  * @author hxy
  */

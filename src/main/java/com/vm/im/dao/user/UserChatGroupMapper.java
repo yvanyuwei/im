@@ -1,13 +1,16 @@
 package com.vm.im.dao.user;
 
+import com.vm.im.common.vo.user.FindUserVO;
 import com.vm.im.entity.user.UserChatGroup;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
-import org.springframework.stereotype.Repository;
+
+import javax.annotation.PostConstruct;
 
 /**
  * <p>
@@ -39,5 +42,20 @@ public interface UserChatGroupMapper extends BaseMapper<UserChatGroup> {
      */
     UserChatGroup selectUserByGroupIdAndUid(@Param("groupId") String groupId, @Param("userId") String userId);
 
+
+    /**
+     * 模糊查找用户
+     *
+     * @param groupId
+     * @param condition
+     * @return
+     */
+    List<FindUserVO> findUser(@Param("groupId") String groupId, @Param("condition") String condition);
+
     List<UserChatGroup> selectByPrimaryKey(@Param("userId")String userId, @Param("delFlag")Integer delFlag);
+
+    List<UserChatGroup> selectByUserId(String userId);
+
+    void updateUserMessage(@Param("nickname") String name, @Param("groupId") String groupId,
+                      @Param("nickname") String nickname);
 }

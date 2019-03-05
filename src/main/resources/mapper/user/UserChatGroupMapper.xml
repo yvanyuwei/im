@@ -13,6 +13,14 @@
         <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     </resultMap>
+
+    <!-- 查找好友映射结果 -->
+    <resultMap id="FindUserResultMap" type="com.vm.im.common.vo.user.FindUserVO">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="avatar" property="avatar" jdbcType="VARCHAR"/>
+        <result column="sign" property="sign" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+    </resultMap>
     <sql id="Base_Column_List">
         user_id, chat_group_id, nickname, top, type, can_speak, del_flag, create_time
     </sql>
@@ -41,6 +49,20 @@
         from im_user_chat_group
         where chat_group_id = #{chatGroupId,jdbcType=VARCHAR}
     </select>
+    <select id="findUser" resultMap="FindUserResultMap" parameterType="java.lang.String" >
+        select
+        iu.`id` id , iu.`avatar` avatar, gn.`nickname` name, iu.`sign`
+        from (SELECT
+              iucg.`user_id` user_id, iucg.`nickname` nickname
+              FROM im_user_chat_group iucg
+              where iucg.chat_group_id = #{groupId,jdbcType=VARCHAR}
+              and iucg.del_flag = 0
+              and iucg.user_id like #{condition,jdbcType=VARCHAR}
+              or iucg.nickname like #{condition,jdbcType=VARCHAR}) gn
+        LEFT JOIN `im_user` iu
+        ON gn.`user_id` = iu.`id`
+        where iu.del_flag = 0
+    </select>
 
     <select id="selectByPrimaryKey" resultMap="BaseResultMap">
         select
@@ -49,4 +71,23 @@
         where user_id = #{userId,jdbcType=VARCHAR}
         and del_flag = #{delFlag,jdbcType=INTEGER}
     </select>
+
+    <select id="selectByUserId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select
+        <include refid="Base_Column_List" />
+        from im_user_chat_group
+        where user_id = #{userId,jdbcType=VARCHAR}
+        and del_flag = 0
+    </select>
+
+    <update id="updateUserMessage" parameterType="java.lang.String">
+        update im_user_chat_group
+        <set>
+            <if test="nickname != null">
+                nickname = #{nickname,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where chat_group_id = #{groupId,jdbcType=VARCHAR}
+        and nickname = #{nickname,jdbcType=VARCHAR}
+    </update>
 </mapper>

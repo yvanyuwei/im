@@ -27,10 +27,7 @@ import java.sql.Date;
 public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> implements MessageService {
     private static final Logger LOG = LoggerFactory.getLogger(MessageServiceImpl.class);
 
-    @Autowired
-    private MessageMapper messageMapper;
-
-    //@Async
+    @Async
     public void saveMessage(JSONObject param) {
         Message msg = new Message();
         msg.setFromId(String.valueOf(param.get("fromUserId")));

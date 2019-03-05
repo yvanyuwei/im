@@ -9,7 +9,7 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 
 /**
  * ClassName:Global
- * Function: TODO ADD FUNCTION.
+ * Function:
  *
  * @author hxy
  */

@@ -24,6 +24,8 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -99,10 +101,11 @@ public class NeedUserAuth {
      *
      * @return 用户信息
      */
-    public String checkToken()  {
+    public String checkToken() {
         LOG.info("开始用户身份认证");
-        String authorization = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader(AUTHORIZATION);
-        String uid = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader(USERID);
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String authorization = request.getHeader(AUTHORIZATION);
+        String uid = request.getHeader(USERID);
 
         if (StringUtil.isBlank(authorization) || StringUtil.isBlank(uid)) {
             LOG.info("该操作需要认证用户身份, AUTHORIZATION, USERID 不能为空");
@@ -131,4 +134,5 @@ public class NeedUserAuth {
         }
         return userInfo;
     }
+
 }

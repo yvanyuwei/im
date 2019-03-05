@@ -1,10 +1,12 @@
 package com.vm.im.service.user;
 
+import com.vm.im.common.vo.user.FindUserVO;
 import com.alibaba.fastjson.JSONObject;
 import com.vm.im.entity.group.ChatGroup;
 import com.vm.im.entity.user.UserChatGroup;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.netty.channel.ChannelHandlerContext;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -64,9 +66,23 @@ public interface UserChatGroupService extends IService<UserChatGroup> {
     void updateMemberAuth(UserChatGroup userChatGroup);
 
     /**
+     * 模糊查找用户
+     *
+     * @param uid
+     * @param targetId
+     * @param condition
+     * @return
+     */
+    List<FindUserVO> findUser(String uid, String targetId, String condition);
+
+    /**
      * Query groupList information based on user ID
      * @param param
      * @param ctx
      */
     void userGroupList(JSONObject param, ChannelHandlerContext ctx);
+
+    List<UserChatGroup> selectByUserId(String userId);
+
+    void updateUserMessage(String name, String groupId, String nickname);
 }

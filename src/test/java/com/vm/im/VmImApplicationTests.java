@@ -1,17 +1,12 @@
 package com.vm.im;
 
-import com.vm.im.common.constant.CommonConstant;
-import com.vm.im.common.enums.ChatTypeEnum;
-import com.vm.im.common.util.ResponseJson;
 import com.vm.im.dao.user.UserChatGroupMapper;
 import com.vm.im.dao.user.UserFriendMapper;
 import com.vm.im.entity.user.User;
-import com.vm.im.entity.user.UserChatGroup;
 import com.vm.im.entity.user.UserFriend;
 import com.vm.im.service.user.UserChatGroupService;
 import com.vm.im.service.user.UserFriendService;
 import com.vm.im.service.user.UserService;
-import com.vm.im.service.user.impl.UserServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +28,7 @@ public class VmImApplicationTests {
 
     @Autowired
     private UserService userService;
+
     @Autowired
     private UserChatGroupMapper userChatGroupMapper;
 
@@ -55,10 +51,9 @@ public class VmImApplicationTests {
 
     @Test
     public void test111(){
-        User user = new User();
-        user.setId("1");
-        user.setMobile("1234567890");
-        userService.saveOrUpdate(user);
+        /*List<UserFriend> userFriend = userFriendMapper.selectByFriendId("1",0);
+        System.out.println(userFriend);*/
+        userFriendMapper.updateUserMessage("test","2","123");
     }
 }
 

@@ -6,11 +6,13 @@ import com.vm.im.common.annot.AdminAuth;
 import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.dto.ResultBean;
 import com.vm.im.common.dto.admin.AuthOperationDTO;
+import com.vm.im.common.dto.admin.CreateUserDTO;
 import com.vm.im.common.dto.admin.MemberOperationDTO;
 import com.vm.im.common.dto.admin.UnionOperationDTO;
 import com.vm.im.common.enums.AdminRoleEnum;
 import com.vm.im.common.enums.ResultCodeEnum;
 import com.vm.im.service.group.ChatGroupService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +34,7 @@ import javax.validation.Valid;
  */
 @RestController
 @RequestMapping("/admin")
+@Api(value = "内部通讯相关", description = "内部用户信息通讯")
 public class AdminController {
     private static final Logger LOG = LoggerFactory.getLogger(AdminController.class);
 
@@ -87,6 +90,14 @@ public class AdminController {
             chatGroupService.deleteUnionMemberAuth(authOperationDTO);
         }
 
+        return JSON.toJSONString(new ResultBean(ResultCodeEnum.SUCCESS.getCode(),ResultCodeEnum.SUCCESS.name(), null));
+    }
+
+    @AdminAuth(roles = {AdminRoleEnum.ADMIN})
+    @PostMapping("createUser")
+    @ApiOperation(value = "创建用户", notes = "创建用户使用接口")
+    public String createUser(@RequestBody @Valid CreateUserDTO createUserDTO) {
+// TODO 暂时不急 接口先定好
         return JSON.toJSONString(new ResultBean(ResultCodeEnum.SUCCESS.getCode(),ResultCodeEnum.SUCCESS.name(), null));
     }
 }

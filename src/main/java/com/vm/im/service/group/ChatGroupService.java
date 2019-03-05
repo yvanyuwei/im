@@ -1,6 +1,5 @@
 package com.vm.im.service.group;
 
-import com.alibaba.fastjson.JSONObject;
 import com.vm.im.common.dto.admin.AuthOperationDTO;
 import com.vm.im.common.dto.admin.MemberOperationDTO;
 import com.vm.im.common.dto.admin.UnionOperationDTO;
@@ -8,7 +7,6 @@ import com.vm.im.common.enums.GroupRoleEnum;
 import com.vm.im.entity.group.ChatGroup;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.vm.im.entity.user.UserChatGroup;
-import io.netty.channel.ChannelHandlerContext;
 
 import java.util.List;
 
@@ -22,6 +20,11 @@ import java.util.List;
  */
 public interface ChatGroupService extends IService<ChatGroup> {
 
+    /**
+     * 创建公会群
+     *
+     * @param unionOperationDTO
+     */
     void createUnionGroup(UnionOperationDTO unionOperationDTO);
 
     /**
@@ -96,4 +99,5 @@ public interface ChatGroupService extends IService<ChatGroup> {
      *                  Load information for Groups
      */
     void loadGroupInfo();
+
 }
