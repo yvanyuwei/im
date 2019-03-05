@@ -96,8 +96,9 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
             param = JSONObject.parseObject(request);
             System.out.println("param" + param);
         } catch (Exception e) {
-            sendErrorMessage(ctx, "JSON字符串转换出错！");
-            e.printStackTrace();
+            Log.info("JSON字符串转换出错");
+            sendErrorMessage(ctx, "参数错误！");
+            return;
         }
         if (param == null) {
             sendErrorMessage(ctx, "消息参数为空！");

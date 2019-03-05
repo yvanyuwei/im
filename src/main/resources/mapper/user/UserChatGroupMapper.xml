@@ -51,7 +51,7 @@
     </select>
     <select id="findUser" resultMap="FindUserResultMap" parameterType="java.lang.String" >
         select
-        iu.`id` id , iu.`avatar` avatar, gn.`nickname` name, iu.`sign`
+        iu.`id` id , iu.`avatar` avatar, gn.`nickname` name, iu.`sign` sign
         from (SELECT
               iucg.`user_id` user_id, iucg.`nickname` nickname
               FROM im_user_chat_group iucg
