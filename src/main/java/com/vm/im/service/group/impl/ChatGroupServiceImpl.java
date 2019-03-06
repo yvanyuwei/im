@@ -26,6 +26,7 @@ import com.vm.im.service.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -279,9 +280,10 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
         return result;
     }
 
+    @Scheduled(cron = "0/2 * *  * * ? ")
     @Override
-    public ChatGroup checkGroup(UnionOperationDTO unionOperationDTO) {
-        return null;
+    public void checkGroup() {
+        System.out.println("你好");
     }
 
     /**

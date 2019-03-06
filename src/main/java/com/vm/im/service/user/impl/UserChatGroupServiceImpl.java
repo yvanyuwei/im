@@ -9,9 +9,11 @@ import com.vm.im.common.enums.GroupRoleEnum;
 import com.vm.im.common.exception.BusinessException;
 import com.vm.im.common.vo.user.FindUserVO;
 import com.vm.im.common.util.ResponseJson;
+import com.vm.im.common.vo.user.UserChatVO;
 import com.vm.im.entity.group.ChatGroup;
 import com.vm.im.entity.user.UserChatGroup;
 import com.vm.im.dao.user.UserChatGroupMapper;
+import com.vm.im.netty.Constant;
 import com.vm.im.service.group.ChatGroupFlowService;
 import com.vm.im.service.group.ChatGroupOperationFlowService;
 import com.vm.im.service.user.UserChatGroupService;
@@ -148,15 +150,28 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
         return userChatGroupMapper.findUser(targetId, condition);
     }
 
+    /**
+     * 查询工会列表
+     * @param param
+     * @param ctx
+     */
     @Override
     public void userGroupList(JSONObject param, ChannelHandlerContext ctx) {
-        List<UserChatGroup> userChatGroup = userChatGroupMapper.selectByPrimaryKey(String.valueOf(param.get("userId")),
-                CommonConstant.NO);
-        String responseJson = new ResponseJson().success()
-                .setData("type", ChatTypeEnum.USER_GROUP_LIST)
-                .setData("content", userChatGroup)
-                .toString();
-        ctx.channel().writeAndFlush(new TextWebSocketFrame(responseJson));
+        String userId = String.valueOf(param.get("userId"));
+        while(Constant.onlineUserMap.get(userId) != null) {
+            List<UserChatVO> userChatGroup = userChatGroupMapper.selectByPrimaryKey(String.valueOf(param.get("userId"))
+                    /*CommonConstant.NO*/);
+            String responseJson = new ResponseJson().success()
+                    .setData("type", ChatTypeEnum.USER_GROUP_LIST)
+                    .setData("content", userChatGroup)
+                    .toString();
+            ctx.channel().writeAndFlush(new TextWebSocketFrame(responseJson));
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override

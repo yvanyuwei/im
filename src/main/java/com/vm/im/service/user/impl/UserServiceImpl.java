@@ -1,34 +1,38 @@
 package com.vm.im.service.user.impl;
 
-import com.vm.im.common.dto.user.FindUserDTO;
-import com.vm.im.common.enums.FindUserTypeEnum;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.vm.im.common.constant.CommonConstant;
+import com.vm.im.common.dto.admin.CreateUserDTO;
+import com.vm.im.common.dto.user.FindUserDTO;
+import com.vm.im.common.enums.ChatTypeEnum;
+import com.vm.im.common.enums.FindUserTypeEnum;
 import com.vm.im.common.util.ResponseJson;
 import com.vm.im.common.vo.user.FindUserVO;
-import com.vm.im.controller.aop.NeedUserAuth;
-import com.vm.im.dao.user.UserFriendMapper;
-import com.vm.im.entity.user.User;
-import com.vm.im.dao.user.UserMapper;
 import com.vm.im.common.vo.user.UserToken;
+import com.vm.im.controller.aop.NeedUserAuth;
+import com.vm.im.dao.user.UserMapper;
+import com.vm.im.entity.user.User;
 import com.vm.im.entity.user.UserChatGroup;
 import com.vm.im.entity.user.UserFriend;
+import com.vm.im.netty.Constant;
 import com.vm.im.service.user.UserChatGroupService;
 import com.vm.im.service.user.UserCurrentChatService;
 import com.vm.im.service.user.UserFriendService;
 import com.vm.im.service.user.UserService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static com.vm.im.common.constant.CommonConstant.PLACEHOLDER;
-import java.util.Date;
 
 
 /**
@@ -74,6 +78,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public ResponseJson getByUserId(String userId) {
+        //saveUserInfo();
         User user = userMapper.selectById(userId);
         return new ResponseJson().success().setData("userInfo", user);
     }
@@ -112,12 +117,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     /**
      * 更新保存用户信息
      */
-    public void saveUserInfo() {
-        String userMsg = needUserAuth.checkToken();
-        if (userMsg != null){
+    //@Scheduled(cron = "0/10 * *  * * ? ")
+    public void saveUserInfo(JSONObject param, ChannelHandlerContext ctx) {
+        String userId = String.valueOf(param.get("userId"));
+        while(Constant.onlineUserMap.get(userId) != null) {
+            String userMsg = needUserAuth.checkToken();
             UserToken userToken = JSON.parseObject(userMsg, UserToken.class);
             User user = buildUserMessage(userToken);
-            //todo 查询token里的用户名是否和user表一样，不一样的update，如果用户不存在user表，则save
             saveOrUpdate(user);
             List<UserFriend> userFriends = userFriendService.selectByFriendId(user.getId(), CommonConstant.NO);
             for (UserFriend userFriend : userFriends) {
@@ -132,10 +138,34 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                             userChatGroup.getNickname());
                 }
             }
-            //todo 查询user_friend和chat_group 更改nickname
+            String responseJson = new ResponseJson().success()
+                    .setData("userId",userId)
+                    .setData("type", ChatTypeEnum.USER_MSG_SYNC)
+                    .toString();
+            sendMessage(ctx, responseJson);
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
+    private void sendMessage(ChannelHandlerContext ctx, String message) {
+        ctx.channel().writeAndFlush(new TextWebSocketFrame(message));
+    }
+
+    @Override
+    public void createUser(CreateUserDTO createUserDTO) {
+        User user = buildUserMsg(createUserDTO);
+        save(user);
+    }
+
+    /**
+     * 构建用户信息
+     * @param userToken
+     * @return
+     */
     private User buildUserMessage(UserToken userToken){
         User user = new User();
         user.setId(String.valueOf(userToken.getId()));
@@ -150,6 +180,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return user;
     }
 
+    private User buildUserMsg(CreateUserDTO createUserDTO){
+        User user = new User();
+        user.setId(String.valueOf(createUserDTO.getId()));
+        user.setAvatar(createUserDTO.getAvatar());
+        user.setName(createUserDTO.getName());
+        if (createUserDTO.getMobile() != null){
+            user.setMobile(createUserDTO.getMobile());
+        }
+        if (createUserDTO.getEmail() != null) {
+            user.setEmail(createUserDTO.getEmail());
+        }
+        user.setCreateTime(new Date(Long.valueOf(createUserDTO.getCreateTime())));
+        user.setDelFlag(CommonConstant.NO);
+        LOG.info("构建用户信息, userChatGroup:{}",JSON.toJSONString(user));
+        return user;
+    }
     /**
      * 模糊查找用户
      *

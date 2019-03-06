@@ -1,10 +1,13 @@
 package com.vm.im.service.user;
 
+import com.alibaba.fastjson.JSONObject;
+import com.vm.im.common.dto.admin.CreateUserDTO;
 import com.vm.im.common.dto.user.FindUserDTO;
 import com.vm.im.common.util.ResponseJson;
 import com.vm.im.common.vo.user.FindUserVO;
 import com.vm.im.entity.user.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import io.netty.channel.ChannelHandlerContext;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
@@ -27,7 +30,7 @@ public interface UserService extends IService<User> {
     /**
      * 保存或更新用户信息
      */
-    void saveUserInfo();
+    void saveUserInfo(JSONObject param, ChannelHandlerContext ctx);
 
     /**
      * 根据查找目标体查找用户
@@ -45,4 +48,6 @@ public interface UserService extends IService<User> {
      * @return
      */
     List<FindUserVO> findUser(String condition);
+
+    void createUser(CreateUserDTO createUserDTO);
 }

@@ -13,7 +13,9 @@ public enum ChatTypeEnum {
 
     USER_FRIEND_LIST,
 
-    USER_GROUP_LIST;
+    USER_GROUP_LIST,
+
+    USER_MSG_SYNC;
 
     public static void main(String[] args) {
         System.out.println(ChatTypeEnum.REGISTER);
