@@ -6,21 +6,19 @@ import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.enums.ChatTypeEnum;
 import com.vm.im.common.util.ResponseJson;
 import com.vm.im.entity.user.UserChatGroup;
-import com.vm.im.entity.user.UserFriend;
 import com.vm.im.kafka.KafkaManager;
 import com.vm.im.netty.BaseWebSocketServerHandler;
 import com.vm.im.netty.Constant;
 import com.vm.im.service.chat.ChatService;
 import com.vm.im.service.common.MessageService;
 import com.vm.im.service.group.ChatGroupService;
-import com.vm.im.service.user.UserFriendService;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+
 import java.text.MessageFormat;
 import java.util.Iterator;
 import java.util.List;
@@ -56,24 +54,21 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
         String fromUserId = (String)param.get("fromUserId");
         String toUserId = (String)param.get("toUserId");
         String content = (String)param.get("content");
-        //Long createTime = Long.valueOf(String.valueOf(param.get("createTime")));
+        Long createTime = Long.valueOf(String.valueOf(param.get("createTime")));
+        String fromUserIdAvatar = String.valueOf(param.get("fromUserIdAvatar"));
         ChannelHandlerContext toUserCtx = Constant.onlineUserMap.get(toUserId);
-        if (toUserCtx == null){
-            //todo
-            kafkaManager.sendMeessage(JSON.toJSONString(param), fromUserId + CommonConstant.USER_TOPIC);
-        }else {
-            messageService.saveMessage(param);
-            kafkaManager.sendMeessage(JSON.toJSONString(param), fromUserId + CommonConstant.USER_TOPIC);
-            String responseJson = new ResponseJson().success()
-                    .setData("fromUserId", fromUserId)
-                    .setData("content", content)
-                    .setData("type", ChatTypeEnum.SINGLE_SENDING)
-                    //.setData("createTime", createTime)
-                    .toString();
-            log.info("==============================发送的消息为：" + responseJson);
-            sendMessage(toUserCtx, responseJson);
-        }
-
+        messageService.saveMessage(param);
+        String responseJson = new ResponseJson().success()
+                .setData("fromUserId", fromUserId)
+                .setData("toUserId",toUserId)
+                .setData("content", content)
+                .setData("type", ChatTypeEnum.SINGLE_SENDING)
+                .setData("createTime",createTime)
+                .setData("fromUserIdAvatar",fromUserIdAvatar)
+                .toString();
+        log.info("==============================发送的消息为：" + responseJson);
+        //kafkaManager.sendMeessage(responseJson, fromUserId + CommonConstant.USER_TOPIC);
+        sendMessage(toUserCtx, responseJson);
     }
 
     @Override
@@ -81,9 +76,9 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
         String fromUserId = (String)param.get("fromUserId");
         String toGroupId = (String)param.get("toGroupId");
         String content = (String)param.get("content");
-        //Long createTime = Long.valueOf(String.valueOf(param.get("createTime")));
+        Long createTime = Long.valueOf(String.valueOf(param.get("createTime")));
+        String fromUserIdAvatar = String.valueOf(param.get("fromUserIdAvatar"));
         messageService.saveMessage(param);
-        kafkaManager.sendMeessage(JSON.toJSONString(param),toGroupId + CommonConstant.GROUP_TOPIC);
         List<UserChatGroup> groupInfo = chatGroupService.getByGroupId(toGroupId);
         if (groupInfo == null) {
             String responseJson = new ResponseJson().error("该群id不存在").toString();
@@ -94,10 +89,12 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
                     .setData("content", content)
                     .setData("toGroupId", toGroupId)
                     .setData("type", ChatTypeEnum.GROUP_SENDING)
-                    //.setData("createTime",createTime)
+                    .setData("createTime",createTime)
+                    .setData("fromUserIdAvatar",fromUserIdAvatar)
                     .toString();
+            kafkaManager.sendMeessage(responseJson,toGroupId + CommonConstant.GROUP_TOPIC);
             //给群里每个成员发信息
-            groupInfo.stream()
+            /*groupInfo.stream()
                     .forEach(item -> {
                         ChannelHandlerContext toCtx = Constant.onlineUserMap.get(item.getUserId());
                         if (toCtx != null && !item.getUserId().equals(fromUserId)) {
@@ -105,8 +102,9 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
                         }else {
                             // todo 存卡夫卡消费离线数据读取到数据库
                         }
-                    });
+                    });*/
         }
+
     }
 
     @Override
@@ -135,7 +133,7 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
     @Override
     public void typeError(ChannelHandlerContext ctx) {
         String responseJson = new ResponseJson()
-                .error("该类型不存在！")
+                .error("该type类型不存在！")
                 .toString();
         sendMessage(ctx, responseJson);
     }

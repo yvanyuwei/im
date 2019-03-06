@@ -11,6 +11,8 @@ public enum BusinessExceptionEnum {
     //用户认证异常
     USER_AUTH_EXCEPTION("1000", "User authentication exception"),
 
+    USER_EXIST_EXCEPTION("1001", "User exist exception"),
+
 
     /**
      * 群组相关异常

@@ -10,8 +10,12 @@ import com.vm.im.common.dto.admin.CreateUserDTO;
 import com.vm.im.common.dto.admin.MemberOperationDTO;
 import com.vm.im.common.dto.admin.UnionOperationDTO;
 import com.vm.im.common.enums.AdminRoleEnum;
+import com.vm.im.common.enums.BusinessExceptionEnum;
 import com.vm.im.common.enums.ResultCodeEnum;
+import com.vm.im.common.exception.BusinessException;
+import com.vm.im.entity.user.User;
 import com.vm.im.service.group.ChatGroupService;
+import com.vm.im.service.user.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -40,6 +44,8 @@ public class AdminController {
 
     @Autowired
     private ChatGroupService chatGroupService;
+    @Autowired
+    private UserService userService;
 
 
     @AdminAuth(roles = {AdminRoleEnum.ADMIN})
@@ -98,6 +104,12 @@ public class AdminController {
     @ApiOperation(value = "创建用户", notes = "创建用户使用接口")
     public String createUser(@RequestBody @Valid CreateUserDTO createUserDTO) {
 // TODO 暂时不急 接口先定好
+        User userMsg = userService.getById(createUserDTO.getId());
+        if (userMsg == null){
+            userService.createUser(createUserDTO);
+        }else{
+            throw new BusinessException(BusinessExceptionEnum.USER_EXIST_EXCEPTION.getFailCode(), BusinessExceptionEnum.USER_EXIST_EXCEPTION.getFailReason());
+        }
         return JSON.toJSONString(new ResultBean(ResultCodeEnum.SUCCESS.getCode(),ResultCodeEnum.SUCCESS.name(), null));
     }
 }

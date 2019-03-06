@@ -1,6 +1,7 @@
 package com.vm.im.dao.user;
 
 import com.vm.im.common.vo.user.FindUserVO;
+import com.vm.im.common.vo.user.UserChatVO;
 import com.vm.im.entity.user.UserChatGroup;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
@@ -52,10 +53,27 @@ public interface UserChatGroupMapper extends BaseMapper<UserChatGroup> {
      */
     List<FindUserVO> findUser(@Param("groupId") String groupId, @Param("condition") String condition);
 
-    List<UserChatGroup> selectByPrimaryKey(@Param("userId")String userId, @Param("delFlag")Integer delFlag);
+    /**
+     *                  根据用户ID查询工会列表信息
+     * @param userId    用户id
+     * @param delFlag   状态情况
+     * @return          返回当前用户id的工会列表
+     */
+    List<UserChatVO> selectByPrimaryKey(@Param("userId")String userId/*, @Param("delFlag")Integer delFlag*/);
 
+    /**
+     *                  根据好友ID查询好友列表信息
+     * @param userId    好友id
+     * @return          返回当前好友id的列表
+     */
     List<UserChatGroup> selectByUserId(String userId);
 
+    /**
+     *                  更新用户信息
+     * @param name      需要更新的昵称
+     * @param groupId   好友id
+     * @param nickname  给好友备注的名称/好友昵称
+     */
     void updateUserMessage(@Param("nickname") String name, @Param("groupId") String groupId,
                       @Param("nickname") String nickname);
 }

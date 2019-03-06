@@ -1,10 +1,12 @@
 package com.vm.im.netty;
 
 import com.alibaba.fastjson.JSONObject;
+import com.oracle.tools.packager.Log;
 import com.vm.im.common.util.ResponseJson;
 import com.vm.im.service.chat.ChatService;
 import com.vm.im.service.user.UserChatGroupService;
 import com.vm.im.service.user.UserFriendService;
+import com.vm.im.service.user.UserService;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -29,15 +31,18 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
 
     @Autowired
     public void setChatService(ChatService chatService,UserFriendService userFriendService,
-                               UserChatGroupService userChatGroupService) {
+                               UserChatGroupService userChatGroupService,UserService userService) {
         MyWebSocketServerHandler.chatService = chatService;
         MyWebSocketServerHandler.userChatGroupService = userChatGroupService;
         MyWebSocketServerHandler.userFriendService = userFriendService;
+        MyWebSocketServerHandler.userService = userService;
     }
 
     private static UserFriendService userFriendService;
 
     private static UserChatGroupService userChatGroupService;
+
+    private static UserService userService;
 
     /**
      * channel 通道 action 活跃的 当客户端主动链接服务端的链接后，
@@ -58,8 +63,6 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
      */
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame msg) {
-        //用户链接时更新保存用户数据
-        //userService.saveUserInfo();
         handlerWebSocketFrame(ctx,msg);
     }
 
@@ -86,7 +89,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
         }
         // 本例程仅支持文本消息，不支持二进制消息
         if (!(frame instanceof TextWebSocketFrame)) {
-            sendErrorMessage(ctx, "本例程仅支持文本消息，不支持二进制消息");
+            sendErrorMessage(ctx, "仅支持文本消息，不支持二进制消息");
         }
         //客服端发送过来的消息
         String request = ((TextWebSocketFrame) frame).text();
@@ -94,10 +97,10 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
         JSONObject param = null;
         try {
             param = JSONObject.parseObject(request);
-            System.out.println("param" + param);
         } catch (Exception e) {
-            sendErrorMessage(ctx, "JSON字符串转换出错！");
-            e.printStackTrace();
+            Log.info("JSON字符串转换出错！");
+            sendErrorMessage(ctx, "参数错误！");
+            return;
         }
         if (param == null) {
             sendErrorMessage(ctx, "消息参数为空！");
@@ -119,6 +122,10 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
                 break;
             case "USER_GROUP_LIST":
                 userChatGroupService.userGroupList(param,ctx);
+                break;
+            case "USER_MSG_SYNC":
+                userService.saveUserInfo(param,ctx);
+                break;
             default:
                 chatService.typeError(ctx);
                 break;

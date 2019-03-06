@@ -30,6 +30,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
     @Async
     public void saveMessage(JSONObject param) {
         Message msg = new Message();
+        msg.setCreateTime(new Date(Long.valueOf(String.valueOf(param.get("createTime")))));
         msg.setFromId(String.valueOf(param.get("fromUserId")));
         String type = String.valueOf(param.get("type"));
         if (type.equals(ChatTypeEnum.SINGLE_SENDING.name())){

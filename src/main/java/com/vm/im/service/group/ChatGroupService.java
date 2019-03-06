@@ -86,7 +86,7 @@ public interface ChatGroupService extends IService<ChatGroup> {
      */
     UserChatGroup checkUnionGroupAndMember(String groupId, String userId, GroupRoleEnum roleEnum);
 
-    ChatGroup checkGroup(UnionOperationDTO unionOperationDTO);
+    void checkGroup();
 
     /**
      *                  Query group information based on group ID

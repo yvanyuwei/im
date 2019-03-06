@@ -21,6 +21,21 @@
         <result column="sign" property="sign" jdbcType="VARCHAR"/>
         <result column="name" property="name" jdbcType="VARCHAR"/>
     </resultMap>
+
+    <resultMap id="UserChatResultMap" type="com.vm.im.common.vo.user.UserChatVO">
+        <id column="groupId" property="groupId" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="avatar" property="avatar" jdbcType="VARCHAR"/>
+        <result column="master" property="master" jdbcType="VARCHAR"/>
+        <result column="nickname" property="nickname" jdbcType="VARCHAR"/>
+        <result column="useravatar" property="useravatar" jdbcType="VARCHAR"/>
+        <result column="userid" property="userid" jdbcType="VARCHAR"/>
+        <result column="chat_group_id" property="chatGroupId" jdbcType="VARCHAR"/>
+        <result column="can_speak" property="canSpeak" jdbcType="INTEGER"/>
+        <result column="type" property="type" jdbcType="INTEGER"/>
+        <result column="top" property="top" jdbcType="INTEGER"/>
+    </resultMap>
+
     <sql id="Base_Column_List">
         user_id, chat_group_id, nickname, top, type, can_speak, del_flag, create_time
     </sql>
@@ -31,11 +46,13 @@
       from im_user_chat_group
       where chat_group_id = #{chatGroupId,jdbcType=VARCHAR}
     </select>
+
     <update id="deleteByGroupId" parameterType="java.lang.String">
         update im_user_chat_group
         set del_flag = 1
         where chat_group_id = #{groupId,jdbcType=VARCHAR}
     </update>
+
     <select id="selectUserByGroupIdAndUid" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List" />
@@ -43,12 +60,14 @@
         where user_id = #{userId,jdbcType=VARCHAR}
         and chat_group_id = #{groupId,jdbcType=VARCHAR}
     </select>
+
     <select id="selectByGroupId" resultMap="BaseResultMap" parameterType="java.lang.String" >
         select
         <include refid="Base_Column_List" />
         from im_user_chat_group
         where chat_group_id = #{chatGroupId,jdbcType=VARCHAR}
     </select>
+
     <select id="findUser" resultMap="FindUserResultMap" parameterType="java.lang.String" >
         select
         iu.`id` id , iu.`avatar` avatar, gn.`nickname` name, iu.`sign`
@@ -64,12 +83,32 @@
         where iu.del_flag = 0
     </select>
 
-    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    <select id="selectByPrimaryKey" resultMap="UserChatResultMap" parameterType="java.lang.String">
+        /*select
+          icg.id, icg.name, icg.avatar, icg.master, cg.nickname, cg.user_id, cg.can_speak
+        from (SELECT
+              iucg.user_id,iucg.chat_group_id,iucg.nickname,iucg.can_speak
+              FROM im_user_chat_group iucg
+              where iucg.user_id = #{userId,jdbcType=VARCHAR}
+              and iucg.del_flag = 0) cg
+        LEFT JOIN im_chat_group icg
+        ON cg.chat_group_id = icg.id
+        where icg.del_flag = 0;*/
         select
-        <include refid="Base_Column_List"/>
-        from im_user_chat_group
-        where user_id = #{userId,jdbcType=VARCHAR}
-        and del_flag = #{delFlag,jdbcType=INTEGER}
+          icg.`id` groupId, icg.name, icg.avatar, icg.master, iut.*
+        from (SELECT
+				iu.`avatar` useravatar,iu.`id` userid ,cg.chat_group_id,cg.nickname,cg.can_speak,cg.type,cg.top
+			  from(SELECT
+					  iucg.user_id,iucg.chat_group_id,iucg.nickname,iucg.can_speak,iucg.type,iucg.top
+					FROM im_user_chat_group iucg
+					where iucg.chat_group_id = #{chatGroupId,jdbcType=VARCHAR}
+					and iucg.del_flag = 0) cg
+			  LEFT JOIN im_user iu
+			  ON iu.id = cg.user_id
+			  WHERE del_flag = 0) iut
+        LEFT JOIN im_chat_group icg
+        ON icg.id = iut.chat_group_id
+        where icg.del_flag = 0;
     </select>
 
     <select id="selectByUserId" resultMap="BaseResultMap" parameterType="java.lang.String" >
@@ -90,4 +129,5 @@
         where chat_group_id = #{groupId,jdbcType=VARCHAR}
         and nickname = #{nickname,jdbcType=VARCHAR}
     </update>
+
 </mapper>

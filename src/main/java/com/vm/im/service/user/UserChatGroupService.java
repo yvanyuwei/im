@@ -82,7 +82,18 @@ public interface UserChatGroupService extends IService<UserChatGroup> {
      */
     void userGroupList(JSONObject param, ChannelHandlerContext ctx);
 
+    /**
+     *                  根据ID查询聊天组列表信息
+     * @param userId    id
+     * @return          返回当前id的列表
+     */
     List<UserChatGroup> selectByUserId(String userId);
 
+    /**
+     *                  更新用户信息
+     * @param name      需要更新的昵称
+     * @param groupId   工会id
+     * @param nickname  备注的名称/名称
+     */
     void updateUserMessage(String name, String groupId, String nickname);
 }

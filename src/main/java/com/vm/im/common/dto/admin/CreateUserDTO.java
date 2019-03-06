@@ -23,9 +23,9 @@ public class CreateUserDTO {
     @NotEmpty(message = "name不能为空")
     private String name;
 
-    private int mobile;
+    private String mobile;
 
-    private int email;
+    private String email;
 
     @NotEmpty(message = "createTime不能为空")
     private String createTime;
