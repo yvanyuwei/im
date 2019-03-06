@@ -49,5 +49,9 @@ public interface UserService extends IService<User> {
      */
     List<FindUserVO> findUser(String condition);
 
+    /**
+     * 创建添加用户
+     * @param createUserDTO
+     */
     void createUser(CreateUserDTO createUserDTO);
 }

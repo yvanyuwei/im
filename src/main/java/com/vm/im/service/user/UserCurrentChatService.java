@@ -3,6 +3,7 @@ package com.vm.im.service.user;
 import com.vm.im.common.vo.user.FindUserVO;
 import com.vm.im.entity.user.UserCurrentChat;
 import com.baomidou.mybatisplus.extension.service.IService;
+import io.netty.channel.ChannelHandlerContext;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ public interface UserCurrentChatService extends IService<UserCurrentChat> {
      * @param count list size
      * @return
      */
-    List<UserCurrentChat> listByUid(String uid, int count);
+    void listByUid(String uid, int count, ChannelHandlerContext ctx);
 
     /**
      * 模糊查找用户

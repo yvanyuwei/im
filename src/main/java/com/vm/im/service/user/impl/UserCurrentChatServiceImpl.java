@@ -1,10 +1,15 @@
 package com.vm.im.service.user.impl;
 
+import com.vm.im.common.enums.ChatTypeEnum;
+import com.vm.im.common.util.ResponseJson;
 import com.vm.im.common.vo.user.FindUserVO;
 import com.vm.im.entity.user.UserCurrentChat;
 import com.vm.im.dao.user.UserCurrentChatMapper;
+import com.vm.im.netty.Constant;
 import com.vm.im.service.user.UserCurrentChatService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +40,15 @@ public class UserCurrentChatServiceImpl extends ServiceImpl<UserCurrentChatMappe
      * @return
      */
     @Override
-    public List<UserCurrentChat> listByUid(String uid, int count) {
-        return userCurrentChatMapper.listByUid(uid, count);
+    public void listByUid(String uid, int count, ChannelHandlerContext ctx) {
+        if(Constant.onlineUserMap.get(uid) != null) {
+            List<UserCurrentChat> userCurrentChats = userCurrentChatMapper.listByUid(uid, count);
+            String responseJson = new ResponseJson().success()
+                    .setData("type", ChatTypeEnum.USER_CURRENT_CHAT)
+                    .setData("content", userCurrentChats)
+                    .toString();
+            ctx.channel().writeAndFlush(new TextWebSocketFrame(responseJson));
+        }
     }
 
     /**

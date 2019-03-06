@@ -9,6 +9,7 @@ import com.vm.im.common.enums.GroupRoleEnum;
 import com.vm.im.common.exception.BusinessException;
 import com.vm.im.common.vo.user.FindUserVO;
 import com.vm.im.common.util.ResponseJson;
+import com.vm.im.common.vo.user.UserChatGroupVO;
 import com.vm.im.common.vo.user.UserChatVO;
 import com.vm.im.entity.group.ChatGroup;
 import com.vm.im.entity.user.UserChatGroup;
@@ -16,6 +17,7 @@ import com.vm.im.dao.user.UserChatGroupMapper;
 import com.vm.im.netty.Constant;
 import com.vm.im.service.group.ChatGroupFlowService;
 import com.vm.im.service.group.ChatGroupOperationFlowService;
+import com.vm.im.service.group.ChatGroupService;
 import com.vm.im.service.user.UserChatGroupService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.netty.channel.ChannelHandlerContext;
@@ -29,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -50,6 +53,9 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
 
     @Autowired
     private ChatGroupOperationFlowService chatGroupOperationFlowService;
+
+    @Autowired
+    private ChatGroupService chatGroupService;
 
     /**
      * 添加群主加入指定群组
@@ -150,6 +156,24 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
         return userChatGroupMapper.findUser(targetId, condition);
     }
 
+    @Override
+    public void loadGroupUser(JSONObject param, ChannelHandlerContext ctx) {
+        String userId = String.valueOf(param.get("userId"));
+        if(Constant.onlineUserMap.get(userId) != null) {
+            List<UserChatGroupVO> userChatGroupVOS = userChatGroupMapper.selectByUidAndGid(String.valueOf(param.get("userId")), String.valueOf(param.get("chatGroupId")));
+            String responseJson = new ResponseJson().success()
+                    .setData("type", ChatTypeEnum.LOAD_GROUP_USER)
+                    .setData("content", userChatGroupVOS)
+                    .toString();
+            ctx.channel().writeAndFlush(new TextWebSocketFrame(responseJson));
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                LOG.info("加载用户数据不成功" + e.getMessage());
+            }
+        }
+    }
+
     /**
      * 查询工会列表
      * @param param
@@ -158,7 +182,7 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
     @Override
     public void userGroupList(JSONObject param, ChannelHandlerContext ctx) {
         String userId = String.valueOf(param.get("userId"));
-        while(Constant.onlineUserMap.get(userId) != null) {
+        if(Constant.onlineUserMap.get(userId) != null) {
             List<UserChatVO> userChatGroup = userChatGroupMapper.selectByPrimaryKey(String.valueOf(param.get("userId"))
                     /*CommonConstant.NO*/);
             String responseJson = new ResponseJson().success()
@@ -166,10 +190,20 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
                     .setData("content", userChatGroup)
                     .toString();
             ctx.channel().writeAndFlush(new TextWebSocketFrame(responseJson));
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        }
+    }
+
+    public void flushGroupMsg(String groupId){
+        List<UserChatGroup> userChatGroup = chatGroupService.getByGroupId(groupId);
+        for (UserChatGroup chatGroup : userChatGroup) {
+            Map<String, ChannelHandlerContext> onlineUserMap = Constant.onlineUserMap;
+            ChannelHandlerContext ctx = onlineUserMap.get(chatGroup.getUserId());
+            if (ctx != null){
+                JSONObject param = new JSONObject();
+                param.put("userId",chatGroup.getUserId());
+                param.put("chatGroupId",groupId);
+                loadGroupUser(param,ctx);
+                userGroupList(param,ctx);
             }
         }
     }

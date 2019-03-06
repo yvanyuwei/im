@@ -22,7 +22,7 @@
         <result column="name" property="name" jdbcType="VARCHAR"/>
     </resultMap>
 
-    <resultMap id="UserMsgResultMap" type="com.vm.im.common.vo.user.FindUserVO">
+    <resultMap id="UserMsgResultMap" type="com.vm.im.common.vo.user.UserMsgVO">
         <id column="id" property="id" jdbcType="VARCHAR"/>
         <result column="avatar" property="avatar" jdbcType="VARCHAR"/>
         <result column="sign" property="sign" jdbcType="VARCHAR"/>
@@ -43,8 +43,8 @@
         from (SELECT
               iuf.user_id,iuf.friend_id,iuf.nickname
               FROM im_user_friend iuf
-              where iuf.user_id = #{userId,jdbcType=VARCHAR}
-              and iuf.friend_id = #{friendId,jdbcType=VARCHAR}
+              where (iuf.user_id = #{userId,jdbcType=VARCHAR}
+              or iuf.friend_id = #{friendId,jdbcType=VARCHAR})
               and iuf.del_flag = 0) uf
         LEFT JOIN im_user iu
         ON uf.user_id = iu.id
@@ -117,13 +117,9 @@
 
     <update id="updateUserMessage" parameterType="java.lang.String">
         update im_user_friend
-        <set>
-            <if test="nickname != null">
-                nickname = #{nickname,jdbcType=VARCHAR},
-            </if>
-        </set>
-        where friend_id = #{friendId,jdbcType=VARCHAR}
-        and nickname = #{nickname,jdbcType=VARCHAR}
+          set nickname = #{nickname,jdbcType=VARCHAR}
+          where friend_id = #{friendId,jdbcType=VARCHAR}
+          and nickname = #{nickname,jdbcType=VARCHAR}
     </update>
 
     <select id="findUser" resultMap="FindUserResultMap" parameterType="java.lang.String">

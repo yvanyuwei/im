@@ -120,7 +120,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     //@Scheduled(cron = "0/10 * *  * * ? ")
     public void saveUserInfo(JSONObject param, ChannelHandlerContext ctx) {
         String userId = String.valueOf(param.get("userId"));
-        while(Constant.onlineUserMap.get(userId) != null) {
+        if(Constant.onlineUserMap.get(userId) != null) {
             String userMsg = needUserAuth.checkToken();
             UserToken userToken = JSON.parseObject(userMsg, UserToken.class);
             User user = buildUserMessage(userToken);
@@ -143,11 +143,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                     .setData("type", ChatTypeEnum.USER_MSG_SYNC)
                     .toString();
             sendMessage(ctx, responseJson);
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         }
     }
 

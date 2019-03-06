@@ -96,4 +96,17 @@ public interface UserChatGroupService extends IService<UserChatGroup> {
      * @param nickname  备注的名称/名称
      */
     void updateUserMessage(String name, String groupId, String nickname);
+
+    /**
+     *                  加载群用户列表
+     * @param param
+     * @param ctx
+     */
+    void loadGroupUser(JSONObject param, ChannelHandlerContext ctx);
+
+    /**
+     *                  刷新群组信息
+     * @param groupId
+     */
+    void flushGroupMsg(String groupId);
 }
