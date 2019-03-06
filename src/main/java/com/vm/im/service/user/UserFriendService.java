@@ -37,7 +37,19 @@ public interface UserFriendService extends IService<UserFriend> {
      */
     List<FindUserVO> findUser(String uid, String condition);
 
+    /**
+     *                  更新用户信息
+     * @param name      需要更新的昵称
+     * @param friend_id 好友id
+     * @param nickname  给好友备注的名称/好友昵称
+     */
     void updateUserMessage(String name, String friend_id, String nickname);
 
+    /**
+     *                  根据好友ID查询好友列表信息
+     * @param friendId  好友id
+     * @param delFlag   状态情况
+     * @return          返回当前好友id的列表
+     */
     List<UserFriend> selectByFriendId(String friendId, Integer delFlag);
 }

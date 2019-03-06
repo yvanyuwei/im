@@ -13,6 +13,8 @@ public enum BusinessExceptionEnum {
     //用户不存在
     USER_NOT_EXIST_EXCEPTION("1001", "The user does not exist"),
 
+    USER_EXIST_EXCEPTION("1001", "User exist exception"),
+
 
     /**
      * 群组相关异常

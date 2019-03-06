@@ -1,9 +1,17 @@
 package com.vm.im;
 
+import com.alibaba.fastjson.JSON;
+import com.vm.im.common.constant.CommonConstant;
+import com.vm.im.common.dto.admin.CreateUserDTO;
+import com.vm.im.common.util.ResponseJson;
+import com.vm.im.common.vo.user.UserChatVO;
 import com.vm.im.dao.user.UserChatGroupMapper;
 import com.vm.im.dao.user.UserFriendMapper;
 import com.vm.im.entity.user.User;
+import com.vm.im.entity.user.UserChatGroup;
 import com.vm.im.entity.user.UserFriend;
+import com.vm.im.netty.Constant;
+import com.vm.im.service.group.ChatGroupService;
 import com.vm.im.service.user.UserChatGroupService;
 import com.vm.im.service.user.UserFriendService;
 import com.vm.im.service.user.UserService;
@@ -34,9 +42,17 @@ public class VmImApplicationTests {
 
     @Autowired
     private UserFriendMapper userFriendMapper;
+    @Autowired
+    private ChatGroupService chatGroupService;
 
     @Test
-    public void contextLoads() {
+    public void contextLoads() throws InterruptedException {
+        CreateUserDTO createUserDTO = new CreateUserDTO();
+        createUserDTO.setCreateTime("132312312132");
+        createUserDTO.setAvatar("231212");
+        createUserDTO.setId("23123123");
+        createUserDTO.setName("231312312");
+        userService.createUser(createUserDTO);
     }
 
     @Test
@@ -53,7 +69,10 @@ public class VmImApplicationTests {
     public void test111(){
         /*List<UserFriend> userFriend = userFriendMapper.selectByFriendId("1",0);
         System.out.println(userFriend);*/
-        userFriendMapper.updateUserMessage("test","2","123");
+        //serFriendMapper.updateUserMessage("test","2","123");
+        List<UserChatVO> userChatVOS = userChatGroupMapper.selectByPrimaryKey("1");
+        System.out.println(userChatVOS);
+
     }
 }
 

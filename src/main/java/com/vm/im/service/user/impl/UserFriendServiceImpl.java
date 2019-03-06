@@ -8,9 +8,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.enums.ChatTypeEnum;
 import com.vm.im.common.util.ResponseJson;
+import com.vm.im.common.vo.user.UserMsgVO;
 import com.vm.im.controller.aop.NeedUserAuth;
 import com.vm.im.entity.user.UserFriend;
 import com.vm.im.dao.user.UserFriendMapper;
+import com.vm.im.netty.Constant;
 import com.vm.im.service.user.UserFriendService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.netty.channel.ChannelHandlerContext;
@@ -36,30 +38,25 @@ public class UserFriendServiceImpl extends ServiceImpl<UserFriendMapper, UserFri
     @Autowired
     private UserFriendMapper userFriendMapper;
 
-    @Autowired
-    private NeedUserAuth needUserAuth;
-
     public void selectUserFriend(JSONObject param, ChannelHandlerContext ctx){
-        /*String userMsg = null;
-        try {
-            userMsg = needUserAuth.checkToken();
-        } catch (IOException e) {
-            // todo 异常
-            LOG.error("==================");
-        }*/
-        //UserFriend userFriend = new UserFriend();
-        //UserToken userToken = JSON.parseObject(userMsg, UserToken.class);
-        List<UserFriend> userFriends = userFriendMapper.selectByPrimaryKey(String.valueOf(param.get("userId")), String.valueOf(param.get("friendId")), CommonConstant.NO);
-        //new ResultBean(ResultCodeEnum.SUCCESS.getCode(),ResultCodeEnum.SUCCESS.name(), null)
+        String userId = String.valueOf(param.get("userId"));
+        while(Constant.onlineUserMap.get(userId) != null) {
+            List<UserMsgVO> userFriends = userFriendMapper.selectByPrimaryKey(String.valueOf(param.get("userId")), String.valueOf(param.get("friendId")));
+            //new ResultBean(ResultCodeEnum.SUCCESS.getCode(),ResultCodeEnum.SUCCESS.name(), null)
         /*String responseJson = JSON.toJSONString(new ResultBean(ResultCodeEnum.SUCCESS.getCode(),
                 ResultCodeEnum.SUCCESS.name(),null));*/
-        String responseJson = new ResponseJson().success()
-                .setData("type", ChatTypeEnum.USER_FRIEND_LIST)
-                .setData("content",userFriends)
-                .toString();
-        ctx.channel().writeAndFlush(new TextWebSocketFrame(responseJson));
+            String responseJson = new ResponseJson().success()
+                    .setData("type", ChatTypeEnum.USER_FRIEND_LIST)
+                    .setData("content", userFriends)
+                    .toString();
+            ctx.channel().writeAndFlush(new TextWebSocketFrame(responseJson));
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
-
 
     @Override
     public void updateUserMessage(String name, String friend_id, String nickname) {
