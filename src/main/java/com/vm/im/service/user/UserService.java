@@ -30,7 +30,7 @@ public interface UserService extends IService<User> {
     /**
      * 保存或更新用户信息
      */
-    void saveUserInfo(JSONObject param, ChannelHandlerContext ctx);
+    void saveUserInfo(String userMsg/*JSONObject param, ChannelHandlerContext ctx*/);
 
     /**
      * 根据查找目标体查找用户
@@ -49,5 +49,9 @@ public interface UserService extends IService<User> {
      */
     List<FindUserVO> findUser(String condition);
 
+    /**
+     * 创建添加用户
+     * @param createUserDTO
+     */
     void createUser(CreateUserDTO createUserDTO);
 }

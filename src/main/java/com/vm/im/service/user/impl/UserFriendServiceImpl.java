@@ -40,22 +40,14 @@ public class UserFriendServiceImpl extends ServiceImpl<UserFriendMapper, UserFri
 
     public void selectUserFriend(JSONObject param, ChannelHandlerContext ctx){
         String userId = String.valueOf(param.get("userId"));
-        while(Constant.onlineUserMap.get(userId) != null) {
+        if(Constant.onlineUserMap.get(userId) != null) {
             List<UserMsgVO> userFriends = userFriendMapper.selectByPrimaryKey(String.valueOf(param.get("userId")), String.valueOf(param.get("friendId")));
-            //new ResultBean(ResultCodeEnum.SUCCESS.getCode(),ResultCodeEnum.SUCCESS.name(), null)
-        /*String responseJson = JSON.toJSONString(new ResultBean(ResultCodeEnum.SUCCESS.getCode(),
-                ResultCodeEnum.SUCCESS.name(),null));*/
             String responseJson = new ResponseJson().success()
                     .setData("type", ChatTypeEnum.USER_FRIEND_LIST)
                     .setData("content", userFriends)
                     .toString();
             ctx.channel().writeAndFlush(new TextWebSocketFrame(responseJson));
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+       }
     }
 
     @Override

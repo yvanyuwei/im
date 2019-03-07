@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.vm.im.common.util.ResponseJson;
 import com.vm.im.service.chat.ChatService;
 import com.vm.im.service.user.UserChatGroupService;
+import com.vm.im.service.user.UserCurrentChatService;
 import com.vm.im.service.user.UserFriendService;
 import com.vm.im.service.user.UserService;
 import io.netty.channel.ChannelHandler;
@@ -30,11 +31,13 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
 
     @Autowired
     public void setChatService(ChatService chatService,UserFriendService userFriendService,
-                               UserChatGroupService userChatGroupService,UserService userService) {
+                               UserChatGroupService userChatGroupService,UserService userService,
+                               UserCurrentChatService userCurrentChatService) {
         MyWebSocketServerHandler.chatService = chatService;
         MyWebSocketServerHandler.userChatGroupService = userChatGroupService;
         MyWebSocketServerHandler.userFriendService = userFriendService;
         MyWebSocketServerHandler.userService = userService;
+        MyWebSocketServerHandler.userCurrentChatService = userCurrentChatService;
     }
 
     private static UserFriendService userFriendService;
@@ -42,6 +45,8 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
     private static UserChatGroupService userChatGroupService;
 
     private static UserService userService;
+
+    private static UserCurrentChatService userCurrentChatService;
 
     /**
      * channel 通道 action 活跃的 当客户端主动链接服务端的链接后，
@@ -122,8 +127,11 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
             case "USER_GROUP_LIST":
                 userChatGroupService.userGroupList(param,ctx);
                 break;
-            case "USER_MSG_SYNC":
-                userService.saveUserInfo(param,ctx);
+            case "LOAD_GROUP_USER":
+                userChatGroupService.loadGroupUser(param,ctx);
+                break;
+            case "USER_CURRENT_CHAT":
+                userCurrentChatService.listByUid(param,ctx);
                 break;
             default:
                 chatService.typeError(ctx);
