@@ -2,6 +2,7 @@ package com.vm.im.service.user;
 
 import com.vm.im.common.vo.user.FindUserVO;
 import com.alibaba.fastjson.JSONObject;
+import com.vm.im.common.vo.user.UserChatVO;
 import com.vm.im.entity.group.ChatGroup;
 import com.vm.im.entity.user.UserChatGroup;
 import com.baomidou.mybatisplus.extension.service.IService;

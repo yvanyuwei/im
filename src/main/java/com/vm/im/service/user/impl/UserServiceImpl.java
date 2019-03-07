@@ -1,12 +1,10 @@
 package com.vm.im.service.user.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.dto.admin.CreateUserDTO;
 import com.vm.im.common.dto.user.FindUserDTO;
-import com.vm.im.common.enums.ChatTypeEnum;
 import com.vm.im.common.enums.FindUserTypeEnum;
 import com.vm.im.common.util.ResponseJson;
 import com.vm.im.common.vo.user.FindUserVO;
@@ -16,7 +14,6 @@ import com.vm.im.dao.user.UserMapper;
 import com.vm.im.entity.user.User;
 import com.vm.im.entity.user.UserChatGroup;
 import com.vm.im.entity.user.UserFriend;
-import com.vm.im.netty.Constant;
 import com.vm.im.service.user.UserChatGroupService;
 import com.vm.im.service.user.UserCurrentChatService;
 import com.vm.im.service.user.UserFriendService;
@@ -58,23 +55,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Autowired
     private UserFriendService userFriendService;
-
-    @Autowired
-    private NeedUserAuth needUserAuth;
-
-   /* @Override
-    public ResponseJson login(String username, String password, HttpSession session) {
-        User user = userMapper.selectByUserName(username);
-        if (user == null) {
-            return new ResponseJson().error("用户名不存在");
-        }
-        if (!user.getPassword().equals(password)) {
-            return new ResponseJson().error("密码错误");
-        }
-        //session.setAttribute(Constant.USER_TOKEN,user.getId());
-        LOG.info("================"+new ResponseJson().success());
-        return new ResponseJson().success();
-    }*/
 
     @Override
     public ResponseJson getByUserId(String userId) {
@@ -118,36 +98,26 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      * 更新保存用户信息
      */
     //@Scheduled(cron = "0/10 * *  * * ? ")
-    public void saveUserInfo(JSONObject param, ChannelHandlerContext ctx) {
-        String userId = String.valueOf(param.get("userId"));
-        if(Constant.onlineUserMap.get(userId) != null) {
-            String userMsg = needUserAuth.checkToken();
-            UserToken userToken = JSON.parseObject(userMsg, UserToken.class);
-            User user = buildUserMessage(userToken);
-            saveOrUpdate(user);
-            List<UserFriend> userFriends = userFriendService.selectByFriendId(user.getId(), CommonConstant.NO);
-            for (UserFriend userFriend : userFriends) {
-                if (!user.getName().equals(userFriend.getNickname())){
-                    userFriendService.updateUserMessage(user.getName(),userFriend.getFriendId(),userFriend.getNickname());
-                }
+    public void saveUserInfo(String userMsg) {
+        /*String userId = String.valueOf(param.get("userId"));
+        if(Constant.onlineUserMap.get(userId) != null) {*/
+        UserToken userToken = JSON.parseObject(userMsg, UserToken.class);
+        User user = buildUserMessage(userToken);
+        saveOrUpdate(user);
+        List<UserFriend> userFriends = userFriendService.selectByFriendId(user.getId(), CommonConstant.NO);
+        for (UserFriend userFriend : userFriends) {
+            if (!user.getName().equals(userFriend.getNickname())){
+                userFriendService.updateUserMessage(user.getName(),userFriend.getFriendId(),userFriend.getNickname());
             }
-            List<UserChatGroup> userChatGroups = userChatGroupService.selectByUserId(user.getId());
-            for (UserChatGroup userChatGroup : userChatGroups) {
-                if (!user.getName().equals(userChatGroup.getNickname())){
-                    userChatGroupService.updateUserMessage(user.getName(),userChatGroup.getChatGroupId(),
-                            userChatGroup.getNickname());
-                }
-            }
-            String responseJson = new ResponseJson().success()
-                    .setData("userId",userId)
-                    .setData("type", ChatTypeEnum.USER_MSG_SYNC)
-                    .toString();
-            sendMessage(ctx, responseJson);
         }
-    }
-
-    private void sendMessage(ChannelHandlerContext ctx, String message) {
-        ctx.channel().writeAndFlush(new TextWebSocketFrame(message));
+        List<UserChatGroup> userChatGroups = userChatGroupService.selectByUserId(user.getId());
+        for (UserChatGroup userChatGroup : userChatGroups) {
+            if (!user.getName().equals(userChatGroup.getNickname())){
+                userChatGroupService.updateUserMessage(user.getName(),userChatGroup.getChatGroupId(),
+                        userChatGroup.getNickname());
+            }
+        }
+        //}
     }
 
     @Override

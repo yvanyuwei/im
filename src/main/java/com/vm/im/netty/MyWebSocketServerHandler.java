@@ -128,15 +128,11 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
             case "USER_GROUP_LIST":
                 userChatGroupService.userGroupList(param,ctx);
                 break;
-            case "USER_MSG_SYNC":
-                userService.saveUserInfo(param,ctx);
-                break;
             case "LOAD_GROUP_USER":
                 userChatGroupService.loadGroupUser(param,ctx);
                 break;
             case "USER_CURRENT_CHAT":
-                userCurrentChatService.listByUid(String.valueOf(param.get("userId")),
-                        Integer.parseInt(String.valueOf(param.get("count"))),ctx);
+                userCurrentChatService.listByUid(param,ctx);
                 break;
             default:
                 chatService.typeError(ctx);

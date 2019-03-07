@@ -1,5 +1,6 @@
 package com.vm.im.dao.user;
 
+import com.vm.im.common.vo.user.FindCurrentVO;
 import com.vm.im.common.vo.user.FindUserVO;
 import com.vm.im.entity.user.UserCurrentChat;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -26,7 +27,7 @@ public interface UserCurrentChatMapper extends BaseMapper<UserCurrentChat> {
      * @param count list size
      * @return
      */
-    List<UserCurrentChat> listByUid(@Param("uid") String uid, @Param("count") int count);
+    List<FindCurrentVO> listByUid(@Param("uid") String uid, @Param("count") int count);
 
     /**
      * 模糊查找用户
@@ -36,4 +37,7 @@ public interface UserCurrentChatMapper extends BaseMapper<UserCurrentChat> {
      * @return
      */
     List<FindUserVO> findUser(@Param("uid") String uid, @Param("condition") String condition);
+
+
+    List<String> fingFriendByUid(@Param("userId") String userId);
 }

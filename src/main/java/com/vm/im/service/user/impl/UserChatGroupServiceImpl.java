@@ -14,6 +14,7 @@ import com.vm.im.common.vo.user.UserChatVO;
 import com.vm.im.entity.group.ChatGroup;
 import com.vm.im.entity.user.UserChatGroup;
 import com.vm.im.dao.user.UserChatGroupMapper;
+import com.vm.im.kafka.KafkaManager;
 import com.vm.im.netty.Constant;
 import com.vm.im.service.group.ChatGroupFlowService;
 import com.vm.im.service.group.ChatGroupOperationFlowService;
@@ -28,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import java.util.List;
@@ -56,6 +58,9 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
 
     @Autowired
     private ChatGroupService chatGroupService;
+
+    @Autowired
+    private KafkaManager kafkaManager;
 
     /**
      * 添加群主加入指定群组
@@ -166,11 +171,11 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
                     .setData("content", userChatGroupVOS)
                     .toString();
             ctx.channel().writeAndFlush(new TextWebSocketFrame(responseJson));
-            try {
+            /*try {
                 Thread.sleep(5000);
             } catch (InterruptedException e) {
-                LOG.info("加载用户数据不成功" + e.getMessage());
-            }
+                LOG.info("加载用户数据不成功" + e.getMessage());*/
+           // }
         }
     }
 
@@ -182,9 +187,17 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
     @Override
     public void userGroupList(JSONObject param, ChannelHandlerContext ctx) {
         String userId = String.valueOf(param.get("userId"));
+        List<UserChatVO> userChatGroup = new ArrayList<>();
         if(Constant.onlineUserMap.get(userId) != null) {
-            List<UserChatVO> userChatGroup = userChatGroupMapper.selectByPrimaryKey(String.valueOf(param.get("userId"))
+            userChatGroup = userChatGroupMapper.selectByPrimaryKey(String.valueOf(param.get("userId"))
                     /*CommonConstant.NO*/);
+            List<String> list = new ArrayList<>();
+            list.add(userId+ CommonConstant.USER_TOPIC);
+            for (UserChatVO userChatVO : userChatGroup) {
+                list.add(userChatVO.getId()+CommonConstant.GROUP_TOPIC);
+            }
+            list.add(userId);
+            kafkaManager.consumerSubscribe(userId,list);
             String responseJson = new ResponseJson().success()
                     .setData("type", ChatTypeEnum.USER_GROUP_LIST)
                     .setData("content", userChatGroup)
@@ -193,6 +206,10 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
         }
     }
 
+    /**
+     * 刷新群组信息
+     * @param groupId
+     */
     public void flushGroupMsg(String groupId){
         List<UserChatGroup> userChatGroup = chatGroupService.getByGroupId(groupId);
         for (UserChatGroup chatGroup : userChatGroup) {
@@ -220,7 +237,6 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
 
     /**
      * 构建群主群组信息
-     *
      * @param chatGroup
      * @return
      */

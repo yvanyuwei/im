@@ -1,5 +1,7 @@
 package com.vm.im.netty;
 
+import com.vm.im.controller.aop.NeedUserAuth;
+import com.vm.im.service.user.UserService;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
@@ -12,12 +14,19 @@ import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 import io.netty.util.CharsetUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 @Sharable
 public class HttpRequestHandler extends SimpleChannelInboundHandler<Object> {
 
+
+    @Autowired
+    private NeedUserAuth needUserAuth;
+
+    @Autowired
+    private UserService userService;
     /**
      * 读取完连接的消息后，对消息进行处理。
      * 这里仅处理HTTP请求，WebSocket请求交给下一个处理器。
@@ -27,6 +36,9 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<Object> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Object msg){
         if (msg instanceof FullHttpRequest) {
+            // todo 校验用户有效性
+            /*String userMsg = needUserAuth.checkToken();
+            userService.saveUserInfo(userMsg);*/
             handleHttpRequest(ctx, (FullHttpRequest) msg);
         } else if (msg instanceof WebSocketFrame) {
             ctx.fireChannelRead(((WebSocketFrame) msg).retain());

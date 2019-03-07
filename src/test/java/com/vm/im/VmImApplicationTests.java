@@ -4,13 +4,17 @@ import com.alibaba.fastjson.JSON;
 import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.dto.admin.CreateUserDTO;
 import com.vm.im.common.util.ResponseJson;
+import com.vm.im.common.vo.user.FindCurrentVO;
 import com.vm.im.common.vo.user.UserChatGroupVO;
 import com.vm.im.common.vo.user.UserChatVO;
 import com.vm.im.common.vo.user.UserMsgVO;
+import com.vm.im.controller.user.UserCurrentChatController;
 import com.vm.im.dao.user.UserChatGroupMapper;
+import com.vm.im.dao.user.UserCurrentChatMapper;
 import com.vm.im.dao.user.UserFriendMapper;
 import com.vm.im.entity.user.User;
 import com.vm.im.entity.user.UserChatGroup;
+import com.vm.im.entity.user.UserCurrentChat;
 import com.vm.im.entity.user.UserFriend;
 import com.vm.im.netty.Constant;
 import com.vm.im.service.group.ChatGroupService;
@@ -46,6 +50,8 @@ public class VmImApplicationTests {
     private UserFriendMapper userFriendMapper;
     @Autowired
     private ChatGroupService chatGroupService;
+    @Autowired
+    private UserCurrentChatMapper userCurrentChatMapper;
 
     @Test
     public void contextLoads() throws InterruptedException {
@@ -78,8 +84,11 @@ public class VmImApplicationTests {
 
         List<UserMsgVO> userMsgVOS = userFriendMapper.selectByPrimaryKey("1", "1");*/
 
-        userFriendService.updateUserMessage("nihao1","100083","nidao");
+        //userFriendService.updateUserMessage("nihao1","100083","nidao");
         //System.out.println(userMsgVOS);
+
+        List<String> list = userCurrentChatMapper.fingFriendByUid("180160");
+        System.out.println(list);
 
     }
 }
