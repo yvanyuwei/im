@@ -280,12 +280,6 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
         return result;
     }
 
-    @Scheduled(cron = "0/2 * *  * * ? ")
-    @Override
-    public void checkGroup() {
-        System.out.println("你好");
-    }
-
     /**
      * 构建用户群组信息
      *

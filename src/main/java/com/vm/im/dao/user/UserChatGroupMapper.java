@@ -1,6 +1,7 @@
 package com.vm.im.dao.user;
 
 import com.vm.im.common.vo.user.FindUserVO;
+import com.vm.im.common.vo.user.UserChatGroupVO;
 import com.vm.im.common.vo.user.UserChatVO;
 import com.vm.im.entity.user.UserChatGroup;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -56,10 +57,18 @@ public interface UserChatGroupMapper extends BaseMapper<UserChatGroup> {
     /**
      *                  根据用户ID查询工会列表信息
      * @param userId    用户id
-     * @param delFlag   状态情况
      * @return          返回当前用户id的工会列表
      */
     List<UserChatVO> selectByPrimaryKey(@Param("userId")String userId/*, @Param("delFlag")Integer delFlag*/);
+
+
+    /**
+     *                     根据用户id和群id查询群成员信息列表
+     * @param userId       用户id
+     * @param chatGroupId  群id
+     * @return             返回群成员信息列表
+     */
+    List<UserChatGroupVO> selectByUidAndGid(@Param("userId") String userId , @Param("chatGroupId") String chatGroupId);
 
     /**
      *                  根据好友ID查询好友列表信息

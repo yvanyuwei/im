@@ -6,14 +6,15 @@ import javax.validation.constraints.NotEmpty;
 
 
 @Data
-public class UserFriendListDTO {
+public class UserCurrentDTO {
     @NotEmpty(message = "uid不能为空")
     private String uid;
 
     @NotEmpty(message = "friendId不能为空")
     private String friendId;
 
-    @NotEmpty(message = "timestamp不能为空")
-    private String timestamp;
+    @NotEmpty(message = "message不能为空")
+    private String lastMessage;
+
 
 }

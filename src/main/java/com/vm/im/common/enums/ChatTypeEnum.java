@@ -15,7 +15,11 @@ public enum ChatTypeEnum {
 
     USER_GROUP_LIST,
 
-    USER_MSG_SYNC;
+    USER_MSG_SYNC,
+
+    USER_CURRENT_CHAT,
+
+    LOAD_GROUP_USER;
 
     public static void main(String[] args) {
         System.out.println(ChatTypeEnum.REGISTER);
