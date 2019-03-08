@@ -14,5 +14,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface MessageService extends IService<Message> {
 
-    void saveMessage(JSONObject param);
+    void saveMessage(JSONObject param,Long createTime);
 }

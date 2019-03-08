@@ -21,6 +21,7 @@ import com.vm.im.service.group.ChatGroupService;
 import com.vm.im.service.user.UserChatGroupService;
 import com.vm.im.service.user.UserFriendService;
 import com.vm.im.service.user.UserService;
+import org.aspectj.weaver.ast.Var;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,8 +88,9 @@ public class VmImApplicationTests {
         //userFriendService.updateUserMessage("nihao1","100083","nidao");
         //System.out.println(userMsgVOS);
 
-        List<String> list = userCurrentChatMapper.fingFriendByUid("180160");
-        System.out.println(list);
+        //List<String> list = userCurrentChatMapper.fingFriendByUid("180160");
+        List<UserChatVO> userChatVOS = userChatGroupMapper.selectByPrimaryKey("1");
+        System.out.println(userChatVOS);
 
     }
 }

@@ -28,9 +28,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
     private static final Logger LOG = LoggerFactory.getLogger(MessageServiceImpl.class);
 
     @Async
-    public void saveMessage(JSONObject param) {
+    public void saveMessage(JSONObject param,Long createTime) {
         Message msg = new Message();
-        msg.setCreateTime(new Date(Long.valueOf(String.valueOf(param.get("createTime")))));
+        msg.setCreateTime(new Date(createTime));
         msg.setFromId(String.valueOf(param.get("fromUserId")));
         String type = String.valueOf(param.get("type"));
         if (type.equals(ChatTypeEnum.SINGLE_SENDING.name())){

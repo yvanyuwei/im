@@ -187,22 +187,23 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
     @Override
     public void userGroupList(JSONObject param, ChannelHandlerContext ctx) {
         String userId = String.valueOf(param.get("userId"));
-        List<UserChatVO> userChatGroup = new ArrayList<>();
         if(Constant.onlineUserMap.get(userId) != null) {
-            userChatGroup = userChatGroupMapper.selectByPrimaryKey(String.valueOf(param.get("userId"))
-                    /*CommonConstant.NO*/);
-            List<String> list = new ArrayList<>();
-            list.add(userId+ CommonConstant.USER_TOPIC);
-            for (UserChatVO userChatVO : userChatGroup) {
-                list.add(userChatVO.getId()+CommonConstant.GROUP_TOPIC);
+            List<String> groupList = userChatGroupMapper.selectGroupIdByUid(String.valueOf(param.get("userId")));
+            for (String str : groupList) {
+                List<UserChatVO> userChatGroup = userChatGroupMapper.selectByPrimaryKey(str);
+                List<String> list = new ArrayList<>();
+                list.add(userId+ CommonConstant.USER_TOPIC);
+                for (UserChatVO userChatVO : userChatGroup) {
+                    list.add(userChatVO.getId()+CommonConstant.GROUP_TOPIC);
+                }
+                list.add(userId);
+                kafkaManager.consumerSubscribe(userId,list);
+                String responseJson = new ResponseJson().success()
+                        .setData("type", ChatTypeEnum.USER_GROUP_LIST)
+                        .setData("content", userChatGroup)
+                        .toString();
+                ctx.channel().writeAndFlush(new TextWebSocketFrame(responseJson));
             }
-            list.add(userId);
-            kafkaManager.consumerSubscribe(userId,list);
-            String responseJson = new ResponseJson().success()
-                    .setData("type", ChatTypeEnum.USER_GROUP_LIST)
-                    .setData("content", userChatGroup)
-                    .toString();
-            ctx.channel().writeAndFlush(new TextWebSocketFrame(responseJson));
         }
     }
 
