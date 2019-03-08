@@ -90,4 +90,50 @@
     <select id="fingFriendByUid" resultType="java.lang.String" parameterType="java.lang.String">
         select friend_id from im_user_current_chat where user_id = #{userId,jdbcType=VARCHAR}
     </select>
+
+    <select id="selectByFriendId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+          <include refid="Base_Column_List" />
+        from im_user_current_chat
+        where friend_id = #{friendId,jdbcType=VARCHAR}
+        and del_flag = 0
+    </select>
+
+    <update id="updateUserMessage" parameterType="java.lang.String">
+        update im_user_current_chat
+            <set>
+                <if test="nickname != null">
+                    nickname = #{name,jdbcType=VARCHAR},
+                </if>
+            </set>
+        where friend_id = #{friendId,jdbcType=VARCHAR}
+        and (nickname = #{nickname,jdbcType=VARCHAR} or nickname is null )
+
+        <!-- <where>
+            <if test="friend_id != null">
+                 friend_id = #{friendId,jdbcType=VARCHAR}
+            </if>
+            <if test="nickname != null">
+                 nickname = #{nickname,jdbcType=VARCHAR}
+            </if>
+        </where>-->
+        <!--<trim prefix="where" prefixOverrides="and|or">
+            <if test="friend_id != null">
+               and friend_id = #{friendId,jdbcType=VARCHAR}
+            </if>
+            <if test="nickname != null">
+              and nickname = #{nickname,jdbcType=VARCHAR}
+            </if>
+        </trim>-->
+
+      <!--  update im_user_current_chat
+          <trim prefix="set nickname = #{name,jdbcType=VARCHAR} "  suffix=" where ">
+            <if test="friend_id != null">
+               friend_id = #{friendId,jdbcType=VARCHAR}
+            </if>
+              <if test="nickname != null">
+                  and nickname = #{nickname,jdbcType=VARCHAR}
+              </if>
+          </trim>-->
+    </update>
 </mapper>

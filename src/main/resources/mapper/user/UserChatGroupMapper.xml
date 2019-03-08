@@ -174,11 +174,11 @@
         update im_user_chat_group
         <set>
             <if test="nickname != null">
-                nickname = #{nickname,jdbcType=VARCHAR},
+                nickname = #{name,jdbcType=VARCHAR},
             </if>
         </set>
-        where chat_group_id = #{groupId,jdbcType=VARCHAR}
-        and nickname = #{nickname,jdbcType=VARCHAR}
+        where friend_id = #{friendId,jdbcType=VARCHAR}
+        and (nickname = #{nickname,jdbcType=VARCHAR} or nickname is null )
     </update>
 
 </mapper>

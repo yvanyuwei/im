@@ -45,7 +45,7 @@ public interface UserFriendMapper extends BaseMapper<UserFriend> {
      * @param friend_id 好友id
      * @param nickname  给好友备注的名称/好友昵称
      */
-    void updateUserMessage(@Param("nickname") String name ,@Param("friendId") String friend_id,
+    void updateUserMessage(@Param("nickname") String name ,@Param("friendId") String friendId,
                            @Param("nickname") String nickname);
 
     /**

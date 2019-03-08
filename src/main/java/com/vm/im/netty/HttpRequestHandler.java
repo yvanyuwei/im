@@ -1,6 +1,10 @@
 package com.vm.im.netty;
 
 import com.vm.im.controller.aop.NeedUserAuth;
+import com.vm.im.service.chat.ChatService;
+import com.vm.im.service.user.UserChatGroupService;
+import com.vm.im.service.user.UserCurrentChatService;
+import com.vm.im.service.user.UserFriendService;
 import com.vm.im.service.user.UserService;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -22,11 +26,15 @@ import org.springframework.stereotype.Component;
 public class HttpRequestHandler extends SimpleChannelInboundHandler<Object> {
 
 
-    @Autowired
-    private NeedUserAuth needUserAuth;
+    private static NeedUserAuth needUserAuth;
 
     @Autowired
-    private UserService userService;
+    public void setChatService(NeedUserAuth needUserAuth,UserService userService) {
+        HttpRequestHandler.needUserAuth = needUserAuth;
+        HttpRequestHandler.userService = userService;
+    }
+
+    private static UserService userService;
     /**
      * 读取完连接的消息后，对消息进行处理。
      * 这里仅处理HTTP请求，WebSocket请求交给下一个处理器。

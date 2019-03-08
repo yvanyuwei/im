@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.enums.ChatTypeEnum;
 import com.vm.im.common.util.ResponseJson;
+import com.vm.im.controller.aop.NeedUserAuth;
 import com.vm.im.entity.user.UserChatGroup;
 import com.vm.im.kafka.KafkaManager;
 import com.vm.im.netty.BaseWebSocketServerHandler;
@@ -13,6 +14,7 @@ import com.vm.im.service.chat.ChatService;
 import com.vm.im.service.common.MessageService;
 import com.vm.im.service.group.ChatGroupService;
 import com.vm.im.service.user.UserCurrentChatService;
+import com.vm.im.service.user.UserService;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.slf4j.Logger;
@@ -41,8 +43,18 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
     @Autowired
     private KafkaManager kafkaManager;
 
+    @Autowired
+    private NeedUserAuth needUserAuth;
+
+    @Autowired
+    private UserService userService;
+
     @Override
     public void register(JSONObject param, ChannelHandlerContext ctx) {
+        String userMsg = needUserAuth.checkTokenTow(String.valueOf(param.get("userId")));
+        log.info("======================="+ userMsg);
+        System.out.println(userMsg);
+        userService.saveUserInfo(userMsg);
         String userId = (String)param.get("userId");
         Constant.onlineUserMap.put(userId, ctx);
         String responseJson = new ResponseJson().success()

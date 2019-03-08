@@ -1,16 +1,12 @@
 package com.vm.im.netty;
 
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.handler.timeout.IdleStateHandler;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -21,15 +17,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class ChildChannelHandler extends ChannelInitializer<SocketChannel> {
 
-    /*@Resource(name = "myWebSocketServerHandler")
-    private ChannelHandler myWebSocketServerHandler;
-
-    @Resource(name = "httpRequestHandler")
-    private ChannelHandler httpRequestHandler;
-*/
-
     @Override
-    protected void initChannel(SocketChannel e) throws Exception {
+    protected void initChannel(SocketChannel e){
         // 设置30秒没有读到数据，则触发一个READER_IDLE事件。
         e.pipeline().addLast("ping", new IdleStateHandler(60, 30, 60 * 10, TimeUnit.SECONDS));
         // pipeline.addLast(new IdleStateHandler(30, 0, 0));

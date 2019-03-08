@@ -119,7 +119,7 @@
         update im_user_friend
           set nickname = #{nickname,jdbcType=VARCHAR}
           where friend_id = #{friendId,jdbcType=VARCHAR}
-          and nickname = #{nickname,jdbcType=VARCHAR}
+        and (nickname = #{nickname,jdbcType=VARCHAR} or nickname is null )
     </update>
 
     <select id="findUser" resultMap="FindUserResultMap" parameterType="java.lang.String">

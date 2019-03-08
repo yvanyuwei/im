@@ -4,7 +4,6 @@ import lombok.Data;
 
 @Data
 public class UserToken {
-    private int contributiontotal;
     private long id;
     private String username;
     private String image;

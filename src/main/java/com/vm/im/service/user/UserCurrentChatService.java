@@ -5,6 +5,7 @@ import com.vm.im.common.vo.user.FindUserVO;
 import com.vm.im.entity.user.UserCurrentChat;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.netty.channel.ChannelHandlerContext;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -39,4 +40,8 @@ public interface UserCurrentChatService extends IService<UserCurrentChat> {
      * @param userId
      */
     void flushCurrentMsgList(String userId,String friendId ,int count,JSONObject param);
+
+    List<UserCurrentChat> selectByFriendId(String friendId);
+
+    void updateUserMessage(String name, String friendId, String nickname);
 }

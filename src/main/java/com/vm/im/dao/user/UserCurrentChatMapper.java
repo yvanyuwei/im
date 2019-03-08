@@ -40,4 +40,9 @@ public interface UserCurrentChatMapper extends BaseMapper<UserCurrentChat> {
 
 
     List<String> fingFriendByUid(@Param("userId") String userId);
+
+    List<UserCurrentChat> selectByFriendId(String friendId);
+
+    void updateUserMessage(@Param("name") String name , @Param("friendId") String friendId ,
+                           @Param("nickname") String nickname);
 }

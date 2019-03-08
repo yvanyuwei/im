@@ -13,6 +13,7 @@ import com.vm.im.controller.aop.NeedUserAuth;
 import com.vm.im.dao.user.UserMapper;
 import com.vm.im.entity.user.User;
 import com.vm.im.entity.user.UserChatGroup;
+import com.vm.im.entity.user.UserCurrentChat;
 import com.vm.im.entity.user.UserFriend;
 import com.vm.im.service.user.UserChatGroupService;
 import com.vm.im.service.user.UserCurrentChatService;
@@ -118,6 +119,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             }
         }
         //}
+        List<UserCurrentChat> userCurrentChats = userCurrentChatService.selectByFriendId(user.getId());
+        for (UserCurrentChat userCurrentChat : userCurrentChats) {
+            if (!user.getName().equals(userCurrentChat.getNickname())) {
+                userCurrentChatService.updateUserMessage(user.getName(), userCurrentChat.getFriendId(),
+                        userCurrentChat.getNickname());
+            }
+
+        }
     }
 
     @Override

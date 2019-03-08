@@ -135,4 +135,8 @@ public class NeedUserAuth {
         return userInfo;
     }
 
+    public String checkTokenTow(String uid) {
+        String userInfo = (String) redisUtil.get(REDIS_TOKEN_PREFIX + uid);
+        return userInfo;
+    }
 }
