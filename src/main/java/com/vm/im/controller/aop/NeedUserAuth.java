@@ -26,8 +26,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.Arrays;
 
 import static com.vm.im.common.constant.CommonConstant.*;
