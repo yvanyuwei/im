@@ -3,10 +3,16 @@ package com.vm.im.config;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+/**
+ * @ClassName: CorsConfig
+ * @Description: 跨域资源共享(Cross Origin Resource Sharing)
+ * @Author zhangqi
+ * @Date 2019年03月08日17时28分
+ * @Version 1.0
+ */
 @Configuration
-public class MyWebAppConfigurer implements WebMvcConfigurer {
+public class CorsConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
