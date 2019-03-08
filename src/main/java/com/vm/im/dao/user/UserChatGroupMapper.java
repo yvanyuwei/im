@@ -56,10 +56,10 @@ public interface UserChatGroupMapper extends BaseMapper<UserChatGroup> {
 
     /**
      *                  根据用户ID查询工会列表信息
-     * @param userId    用户id
+     * @param groupId   组id
      * @return          返回当前用户id的工会列表
      */
-    List<UserChatVO> selectByPrimaryKey(@Param("userId")String userId/*, @Param("delFlag")Integer delFlag*/);
+    List<UserChatVO> selectByPrimaryKey(@Param("ChatGroupId")String groupId);
 
 
     /**
@@ -85,4 +85,7 @@ public interface UserChatGroupMapper extends BaseMapper<UserChatGroup> {
      */
     void updateUserMessage(@Param("nickname") String name, @Param("groupId") String groupId,
                       @Param("nickname") String nickname);
+
+
+    List<String> selectGroupIdByUid(@Param("userId") String userId);
 }

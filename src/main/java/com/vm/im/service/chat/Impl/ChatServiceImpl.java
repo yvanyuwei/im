@@ -61,7 +61,7 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
         Long createTime = System.currentTimeMillis();
         String fromUserIdAvatar = String.valueOf(param.get("fromUserIdAvatar"));
         ChannelHandlerContext toUserCtx = Constant.onlineUserMap.get(toUserId);
-        messageService.saveMessage(param);
+        messageService.saveMessage(param,createTime);
         userCurrentChatService.flushCurrentMsgList(fromUserId,toUserId,500,param);
         String responseJson = new ResponseJson().success()
                 .setData("fromUserId", fromUserId)
@@ -87,7 +87,7 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
         String content = (String)param.get("content");
         Long createTime = System.currentTimeMillis();
         String fromUserIdAvatar = String.valueOf(param.get("fromUserIdAvatar"));
-        messageService.saveMessage(param);
+        messageService.saveMessage(param,createTime);
         List<UserChatGroup> groupInfo = chatGroupService.getByGroupId(toGroupId);
         if (groupInfo == null) {
             String responseJson = new ResponseJson().error("该群id不存在").toString();
