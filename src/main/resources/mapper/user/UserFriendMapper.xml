@@ -124,13 +124,13 @@
 
     <select id="findUser" resultMap="FindUserResultMap" parameterType="java.lang.String">
         select
-        iu.`id` id , iu.`avatar` avatar, fn.`nickname` name, iu.`sign`
+        iu.`id` id , iu.`avatar` avatar, fn.`nickname` name, iu.`sign` sign
         from (SELECT iuf.`friend_id`  friend_id, iuf.`nickname` nickname
               FROM im_user_friend iuf
               where iuf.user_id = #{uid,jdbcType=VARCHAR}
               and iuf.del_flag = 0
-              and iuf.friend_id like #{condition,jdbcType=VARCHAR}
-              or iuf.nickname like #{condition,jdbcType=VARCHAR}) fn
+              and (iuf.friend_id like #{condition,jdbcType=VARCHAR}
+              or iuf.nickname like #{condition,jdbcType=VARCHAR})) fn
         left join `im_user` iu
         ON iu.`id` = fn.`friend_id`
         where iu.del_flag = 0

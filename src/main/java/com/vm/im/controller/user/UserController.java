@@ -3,7 +3,9 @@ package com.vm.im.controller.user;
 
 import com.alibaba.fastjson.JSON;
 import com.vm.im.common.annot.UserAuth;
+import com.vm.im.common.dto.ResultBean;
 import com.vm.im.common.dto.user.FindUserDTO;
+import com.vm.im.common.enums.ResultCodeEnum;
 import com.vm.im.common.util.ResponseJson;
 import com.vm.im.common.vo.user.FindUserVO;
 import com.vm.im.service.user.UserService;
@@ -60,6 +62,6 @@ public class UserController {
     @PostMapping("findUser")
     public String findUser(@RequestBody @Valid FindUserDTO findUserDTO, @RequestHeader(value=USERID) String uid){
         List<FindUserVO> userList = userService.findUserList(findUserDTO, uid);
-        return JSON.toJSONString(userList);
+        return JSON.toJSONString(new ResultBean(ResultCodeEnum.SUCCESS.getCode(),JSON.toJSONString(userList), null));
     }
 }

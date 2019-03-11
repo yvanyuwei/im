@@ -1,7 +1,6 @@
 package com.vm.im.service.group.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.dto.admin.AuthOperationDTO;
 import com.vm.im.common.dto.admin.MemberOperationDTO;
@@ -15,23 +14,15 @@ import com.vm.im.common.util.StringUtil;
 import com.vm.im.dao.user.UserChatGroupMapper;
 import com.vm.im.entity.group.ChatGroup;
 import com.vm.im.dao.group.ChatGroupMapper;
+import com.vm.im.entity.user.User;
 import com.vm.im.entity.user.UserChatGroup;
-import com.vm.im.service.group.ChatGroupFlowService;
-import com.vm.im.service.group.ChatGroupOperationFlowService;
-import com.vm.im.netty.Constant;
-import com.vm.im.common.util.StringUtil;
-import com.vm.im.entity.group.ChatGroup;
-import com.vm.im.dao.group.ChatGroupMapper;
-import com.vm.im.entity.user.UserChatGroup;
-import com.vm.im.service.group.ChatGroupFlowService;
-import com.vm.im.service.group.ChatGroupOperationFlowService;
 import com.vm.im.service.group.ChatGroupFlowService;
 import com.vm.im.service.group.ChatGroupOperationFlowService;
 import com.vm.im.netty.Constant;
 import com.vm.im.service.group.ChatGroupService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.vm.im.service.user.UserChatGroupService;
-import io.netty.channel.ChannelHandlerContext;
+import com.vm.im.service.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +60,9 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
 
     @Autowired
     private ChatGroupOperationFlowService chatGroupOperationFlowService;
+
+    @Autowired
+    private UserService userService;
 
     /**
      * 创建工会群
@@ -153,13 +147,19 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
     public void addUnionMember(MemberOperationDTO memberOperationDTO) {
         checkUnionGroupAndMember(memberOperationDTO.getGroupId(), null, null);
 
-        UserChatGroup tepm = userChatGroupService.selectUserByGroupIdAndUid(memberOperationDTO.getGroupId(), memberOperationDTO.getUId());
+        UserChatGroup tepm = userChatGroupService.selectUserByGroupIdAndUid(memberOperationDTO.getGroupId(), memberOperationDTO.getUid());
         if (tepm != null && CommonConstant.NO == tepm.getDelFlag()) {
-            LOG.info("用户早已添加该群, groupId:{}, uId:{}", memberOperationDTO.getGroupId(), memberOperationDTO.getUId());
+            LOG.info("用户早已添加该群, groupId:{}, uId:{}", memberOperationDTO.getGroupId(), memberOperationDTO.getUid());
             throw new BusinessException(BusinessExceptionEnum.GROUP_MEMBER_EXIST_EXCEPTION.getFailCode(), BusinessExceptionEnum.GROUP_MEMBER_EXIST_EXCEPTION.getFailReason());
         }
 
-        UserChatGroup userChatGroup = bulidUserChatGroup(memberOperationDTO);
+        User user = userService.getById(memberOperationDTO.getUid());
+        if (user == null || CommonConstant.YES == user.getDelFlag()){
+            LOG.info("用户不存在, groupId:{}, uId:{}", memberOperationDTO.getGroupId(), memberOperationDTO.getUid());
+            throw new BusinessException(BusinessExceptionEnum.USER_NOT_EXIST_EXCEPTION.getFailCode(), BusinessExceptionEnum.USER_NOT_EXIST_EXCEPTION.getFailReason());
+        }
+
+        UserChatGroup userChatGroup = bulidUserChatGroup(memberOperationDTO, user.getName());
 
         userChatGroupService.addGroupMember(userChatGroup);
     }
@@ -173,9 +173,9 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
     public void deleteUnionMember(MemberOperationDTO memberOperationDTO) {
         checkUnionGroupAndMember(memberOperationDTO.getGroupId(), null, null);
 
-        UserChatGroup userChatGroup = userChatGroupService.selectUserByGroupIdAndUid(memberOperationDTO.getGroupId(), memberOperationDTO.getUId());
+        UserChatGroup userChatGroup = userChatGroupService.selectUserByGroupIdAndUid(memberOperationDTO.getGroupId(), memberOperationDTO.getUid());
         if (userChatGroup == null || CommonConstant.YES == userChatGroup.getDelFlag()) {
-            LOG.info("群组用户不存在, groupId:{}, uId:{}", memberOperationDTO.getGroupId(), memberOperationDTO.getUId());
+            LOG.info("群组用户不存在, groupId:{}, uId:{}", memberOperationDTO.getGroupId(), memberOperationDTO.getUid());
             throw new BusinessException(BusinessExceptionEnum.GROUP_MEMBER_NOT_EXIST_EXCEPTION.getFailCode(), BusinessExceptionEnum.GROUP_MEMBER_NOT_EXIST_EXCEPTION.getFailReason());
         }
 
@@ -284,12 +284,14 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
      * 构建用户群组信息
      *
      * @param memberOperationDTO
+     * @param name
      * @return
      */
-    public UserChatGroup bulidUserChatGroup(MemberOperationDTO memberOperationDTO) {
+    public UserChatGroup bulidUserChatGroup(MemberOperationDTO memberOperationDTO, String name) {
         UserChatGroup userChatGroup = new UserChatGroup();
-        userChatGroup.setUserId(memberOperationDTO.getUId());
+        userChatGroup.setUserId(memberOperationDTO.getUid());
         userChatGroup.setChatGroupId(memberOperationDTO.getGroupId());
+        userChatGroup.setNickname(name);
         userChatGroup.setTop(CommonConstant.YES);
         userChatGroup.setType(GroupRoleEnum.USER.value());
         userChatGroup.setCanSpeak(CommonConstant.YES);

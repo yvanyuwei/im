@@ -1,7 +1,6 @@
 package com.vm.im.netty;
 
 import com.alibaba.fastjson.JSONObject;
-import com.oracle.tools.packager.Log;
 import com.vm.im.common.util.ResponseJson;
 import com.vm.im.service.chat.ChatService;
 import com.vm.im.service.user.UserChatGroupService;
@@ -103,7 +102,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
         try {
             param = JSONObject.parseObject(request);
         } catch (Exception e) {
-            Log.info("JSON字符串转换出错！");
+            LOG.info("JSON字符串转换出错！");
             sendErrorMessage(ctx, "参数错误！");
             return;
         }
@@ -112,9 +111,15 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
             return;
         }
         String type = (String) param.get("type");
-        switch (type){
+        switch (type) {
             case "REGISTER":
-                chatService.register(param, ctx);
+                ChannelHandlerContext userIdCtx = Constant.onlineUserMap.get(String.valueOf(param.get("userId")));
+                if(userIdCtx == null){
+                    chatService.register(param,ctx);
+                }else {
+                    chatService.remove(userIdCtx);
+                    chatService.register(param, ctx);
+                }
                 break;
             case "SINGLE_SENDING":
                 chatService.singleSend(param, ctx);
@@ -126,13 +131,13 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
                 userFriendService.selectUserFriend(param, ctx);
                 break;
             case "USER_GROUP_LIST":
-                userChatGroupService.userGroupList(param,ctx);
+                userChatGroupService.userGroupList(param, ctx);
                 break;
             case "LOAD_GROUP_USER":
-                userChatGroupService.loadGroupUser(param,ctx);
+                userChatGroupService.loadGroupUser(param, ctx);
                 break;
             case "USER_CURRENT_CHAT":
-                userCurrentChatService.listByUid(param,ctx);
+                userCurrentChatService.listByUid(param, ctx);
                 break;
             default:
                 chatService.typeError(ctx);

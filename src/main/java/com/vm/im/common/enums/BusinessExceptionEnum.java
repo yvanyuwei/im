@@ -10,8 +10,10 @@ public enum BusinessExceptionEnum {
      */
     //用户认证异常
     USER_AUTH_EXCEPTION("1000", "User authentication exception"),
-
-    USER_EXIST_EXCEPTION("1001", "User exist exception"),
+    //用户不存在
+    USER_NOT_EXIST_EXCEPTION("1001", "The user does not exist"),
+    //用户存在
+    USER_EXIST_EXCEPTION("1002", "User exist exception"),
 
 
     /**

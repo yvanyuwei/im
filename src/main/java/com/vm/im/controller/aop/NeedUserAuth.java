@@ -26,8 +26,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.Arrays;
 
 import static com.vm.im.common.constant.CommonConstant.*;
@@ -135,8 +133,42 @@ public class NeedUserAuth {
         return userInfo;
     }
 
-    public String checkTokenTow(String uid) {
+    /**
+     * 校验用户token 是否有效
+     *
+     * @param uid   uid
+     * @param token token
+     * @return 用户信息
+     * @throws BusinessException
+     */
+    public String checkToken(String uid, String token) throws BusinessException {
+        LOG.info("开始用户身份认证");
+        if (StringUtil.isBlank(token) || StringUtil.isBlank(uid)) {
+            LOG.info("该操作需要认证用户身份, uid, token 不能为空");
+            throw new BusinessException(BusinessExceptionEnum.USER_AUTH_EXCEPTION.getFailCode(), BusinessExceptionEnum.USER_AUTH_EXCEPTION.getFailReason());
+        }
+        LOG.info("uid:{}, token:{}", uid, token);
+
         String userInfo = (String) redisUtil.get(REDIS_TOKEN_PREFIX + uid);
+        if (StringUtil.isEmpty(userInfo)) {
+            LOG.info("用户token 已过期, uid:{}", uid);
+            throw new BusinessException(BusinessExceptionEnum.USER_AUTH_EXCEPTION.getFailCode(), BusinessExceptionEnum.USER_AUTH_EXCEPTION.getFailReason());
+        }
+
+        LOG.info("userInfo:{}", userInfo);
+        JsonNode ret = null;
+        String redisToken = null;
+        try {
+            ret = objectMapper.readTree(userInfo);
+            redisToken = ret.get(REDIS_TOKEN).asText();
+        } catch (IOException e) {
+            LOG.info("用户信息转换异常");
+        }
+        if (!redisToken.equals(token)) {
+            LOG.info("用户token 认证失败, uid:{}", uid);
+            throw new BusinessException(BusinessExceptionEnum.USER_AUTH_EXCEPTION.getFailCode(), BusinessExceptionEnum.USER_AUTH_EXCEPTION.getFailReason());
+        }
         return userInfo;
     }
+
 }

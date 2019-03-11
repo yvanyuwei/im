@@ -79,14 +79,14 @@
 
     <select id="findUser" resultMap="FindUserResultMap" parameterType="java.lang.String" >
         select
-        iu.`id` id , iu.`avatar` avatar, gn.`nickname` name, iu.`sign`
+        iu.`id` id , iu.`avatar` avatar, gn.`nickname` name, iu.`sign` sign
         from (SELECT
               iucg.`user_id` user_id, iucg.`nickname` nickname
               FROM im_user_chat_group iucg
               where iucg.chat_group_id = #{groupId,jdbcType=VARCHAR}
               and iucg.del_flag = 0
-              and iucg.user_id like #{condition,jdbcType=VARCHAR}
-              or iucg.nickname like #{condition,jdbcType=VARCHAR}) gn
+              and (iucg.user_id like #{condition,jdbcType=VARCHAR}
+              or iucg.nickname like #{condition,jdbcType=VARCHAR})) gn
         LEFT JOIN `im_user` iu
         ON gn.`user_id` = iu.`id`
         where iu.del_flag = 0
@@ -171,13 +171,13 @@
     </select>
 
     <update id="updateUserMessage" parameterType="java.lang.String">
-        update im_user_chat_group
-        <set>
-            <if test="nickname != null">
-                nickname = #{name,jdbcType=VARCHAR},
+        update im_user_chat_group set nickname = #{name,jdbcType=VARCHAR}
+        <!--&lt;!&ndash;<set>
+            <if test="nickname != null">&ndash;&gt;
+
             </if>
-        </set>
-        where friend_id = #{friendId,jdbcType=VARCHAR}
+        </set>-->
+        where chat_group_id = #{groupId,jdbcType=VARCHAR}
         and (nickname = #{nickname,jdbcType=VARCHAR} or nickname is null )
     </update>
 

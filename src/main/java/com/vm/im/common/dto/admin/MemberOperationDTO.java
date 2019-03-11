@@ -17,7 +17,7 @@ import javax.validation.constraints.NotEmpty;
 public class MemberOperationDTO {
 
     @NotEmpty(message = "uid不能为空")
-    private String uId;
+    private String uid;
 
     @NotEmpty(message = "groupId不能为空")
     private String groupId;

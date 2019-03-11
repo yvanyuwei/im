@@ -51,9 +51,7 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
 
     @Override
     public void register(JSONObject param, ChannelHandlerContext ctx) {
-        String userMsg = needUserAuth.checkTokenTow(String.valueOf(param.get("userId")));
-        log.info("======================="+ userMsg);
-        System.out.println(userMsg);
+        String userMsg = needUserAuth.checkToken(String.valueOf(param.get("userId")),String.valueOf(param.get("token")));
         userService.saveUserInfo(userMsg);
         String userId = (String)param.get("userId");
         Constant.onlineUserMap.put(userId, ctx);
