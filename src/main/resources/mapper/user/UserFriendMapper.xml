@@ -119,7 +119,7 @@
         update im_user_friend
           set nickname = #{nickname,jdbcType=VARCHAR}
           where friend_id = #{friendId,jdbcType=VARCHAR}
-          and nickname = #{nickname,jdbcType=VARCHAR}
+        and (nickname = #{nickname,jdbcType=VARCHAR} or nickname is null )
     </update>
 
     <select id="findUser" resultMap="FindUserResultMap" parameterType="java.lang.String">
@@ -129,8 +129,8 @@
               FROM im_user_friend iuf
               where iuf.user_id = #{uid,jdbcType=VARCHAR}
               and iuf.del_flag = 0
-              and iuf.friend_id like #{condition,jdbcType=VARCHAR}
-              or iuf.nickname like #{condition,jdbcType=VARCHAR}) fn
+              and (iuf.friend_id like #{condition,jdbcType=VARCHAR}
+              or iuf.nickname like #{condition,jdbcType=VARCHAR})) fn
         left join `im_user` iu
         ON iu.`id` = fn.`friend_id`
         where iu.del_flag = 0

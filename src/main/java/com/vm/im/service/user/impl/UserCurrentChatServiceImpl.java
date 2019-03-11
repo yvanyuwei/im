@@ -94,6 +94,16 @@ public class UserCurrentChatServiceImpl extends ServiceImpl<UserCurrentChatMappe
         }
     }
 
+    @Override
+    public List<UserCurrentChat> selectByFriendId(String friendId) {
+        return userCurrentChatMapper.selectByFriendId(friendId);
+    }
+
+    @Override
+    public void updateUserMessage(String name, String friendId, String nickname) {
+        userCurrentChatMapper.updateUserMessage(name,friendId,nickname);
+    }
+
     /**
      * 模糊查找用户
      *

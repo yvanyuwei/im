@@ -83,7 +83,7 @@ public interface UserChatGroupMapper extends BaseMapper<UserChatGroup> {
      * @param groupId   好友id
      * @param nickname  给好友备注的名称/好友昵称
      */
-    void updateUserMessage(@Param("nickname") String name, @Param("groupId") String groupId,
+    void updateUserMessage(@Param("name") String name, @Param("groupId") String groupId,
                       @Param("nickname") String nickname);
 
 

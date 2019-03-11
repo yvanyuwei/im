@@ -111,9 +111,15 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
             return;
         }
         String type = (String) param.get("type");
-        switch (type){
+        switch (type) {
             case "REGISTER":
-                chatService.register(param, ctx);
+                ChannelHandlerContext userIdCtx = Constant.onlineUserMap.get(String.valueOf(param.get("userId")));
+                if(userIdCtx == null){
+                    chatService.register(param,ctx);
+                }else {
+                    chatService.remove(userIdCtx);
+                    chatService.register(param, ctx);
+                }
                 break;
             case "SINGLE_SENDING":
                 chatService.singleSend(param, ctx);
@@ -125,13 +131,13 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
                 userFriendService.selectUserFriend(param, ctx);
                 break;
             case "USER_GROUP_LIST":
-                userChatGroupService.userGroupList(param,ctx);
+                userChatGroupService.userGroupList(param, ctx);
                 break;
             case "LOAD_GROUP_USER":
-                userChatGroupService.loadGroupUser(param,ctx);
+                userChatGroupService.loadGroupUser(param, ctx);
                 break;
             case "USER_CURRENT_CHAT":
-                userCurrentChatService.listByUid(param,ctx);
+                userCurrentChatService.listByUid(param, ctx);
                 break;
             default:
                 chatService.typeError(ctx);

@@ -43,7 +43,7 @@ public interface UserFriendService extends IService<UserFriend> {
      * @param friend_id 好友id
      * @param nickname  给好友备注的名称/好友昵称
      */
-    void updateUserMessage(String name, String friend_id, String nickname);
+    void updateUserMessage(String name, String friendId, String nickname);
 
     /**
      *                  根据好友ID查询好友列表信息
