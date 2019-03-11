@@ -11,6 +11,7 @@ import com.vm.im.common.exception.BusinessException;
 import com.vm.im.common.util.ResponseJson;
 import com.vm.im.common.vo.user.UserChatVO;
 import com.vm.im.controller.aop.NeedUserAuth;
+import com.vm.im.entity.user.User;
 import com.vm.im.entity.user.UserChatGroup;
 import com.vm.im.kafka.KafkaManager;
 import com.vm.im.netty.BaseWebSocketServerHandler;
@@ -105,12 +106,14 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
         ChannelHandlerContext toUserCtx = Constant.onlineUserMap.get(toUserId);
         messageService.saveMessage(param,createTime);
         userCurrentChatService.flushCurrentMsgListForUser(fromUserId,toUserId,500,param);
+        User user = userService.getRedisUserById(fromUserId);
         String responseJson = new ResponseJson().success()
                 .setData("fromUserId", fromUserId)
                 .setData("toUserId",toUserId)
                 .setData("content", content)
                 .setData("type", ChatTypeEnum.SINGLE_SENDING)
                 .setData("createTime",createTime)
+                .setData("nickName",user.getName())
                 .setData("fromUserIdAvatar",fromUserIdAvatar)
                 .toString();
         log.info("==============================发送的消息为：" + responseJson);
@@ -135,12 +138,14 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
             String responseJson = new ResponseJson().error("该群id不存在").toString();
             sendMessage(ctx, responseJson);
         } else {
+            User user = userService.getRedisUserById(fromUserId);
             String responseJson = new ResponseJson().success()
                     .setData("fromUserId", fromUserId)
                     .setData("content", content)
                     .setData("toGroupId", toGroupId)
                     .setData("type", ChatTypeEnum.GROUP_SENDING)
                     .setData("createTime",createTime)
+                    .setData("nickName",user.getName())
                     .setData("fromUserIdAvatar",fromUserIdAvatar)
                     .toString();
             kafkaManager.sendMeessage(responseJson,toGroupId + CommonConstant.GROUP_TOPIC);

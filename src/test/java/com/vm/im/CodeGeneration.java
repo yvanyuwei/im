@@ -1,3 +1,4 @@
+/*
 package com.vm.im;
 
 import com.baomidou.mybatisplus.annotation.DbType;
@@ -78,3 +79,4 @@ public class CodeGeneration {
     }
 
 }
+*/

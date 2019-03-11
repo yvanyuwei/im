@@ -175,6 +175,11 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
      */
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        try {
+            chatService.remove(ctx);
+        }catch (Exception e){
+            LOG.info("移除握手错误："+e.getMessage());
+        }
         cause.printStackTrace();
         ctx.close();
     }

@@ -1,3 +1,4 @@
+/*
 package com.vm.im;
 
 import com.alibaba.fastjson.JSON;
@@ -76,14 +77,18 @@ public class VmImApplicationTests {
 
     @Test
     public void test111(){
-        /*List<UserFriend> userFriend = userFriendMapper.selectByFriendId("1",0);
-        System.out.println(userFriend);*/
+        */
+/*List<UserFriend> userFriend = userFriendMapper.selectByFriendId("1",0);
+        System.out.println(userFriend);*//*
+
         //serFriendMapper.updateUserMessage("test","2","123");
-        /*List<UserChatVO> userChatVOS = userChatGroupMapper.selectByPrimaryKey("180160");
+        */
+/*List<UserChatVO> userChatVOS = userChatGroupMapper.selectByPrimaryKey("180160");
 
         List<UserChatGroupVO> userChatGroupVOS = userChatGroupMapper.selectByUidAndGid("180160", "1");
 
-        List<UserMsgVO> userMsgVOS = userFriendMapper.selectByPrimaryKey("1", "1");*/
+        List<UserMsgVO> userMsgVOS = userFriendMapper.selectByPrimaryKey("1", "1");*//*
+
 
         //userFriendService.updateUserMessage("nihao1","100083","nidao");
         //System.out.println(userMsgVOS);
@@ -96,3 +101,4 @@ public class VmImApplicationTests {
     }
 }
 
+*/
