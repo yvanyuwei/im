@@ -71,6 +71,7 @@ public class KafkaManager {
      */
     @Async
     public void consumerSubscribe(String group, List<String> topicIds) {
+        LOG.info("================Kafka================用户:{}, 订阅了主题", group);
         KafkaConsumer kafkaConsumer = new KafkaConsumer(group, topicIds, consumerFactory);
         kafkaConsumerMap.put(group, kafkaConsumer);
 
@@ -84,6 +85,7 @@ public class KafkaManager {
      * @param group 一般使用用户id
      */
     public void consumerUnsubscribe(String group) {
+        LOG.info("================Kafka================用户:{}, 取消订阅", group);
         KafkaConsumer kafkaConsumer = kafkaConsumerMap.get(group);
         kafkaConsumer.close();
         kafkaConsumerMap.remove(group);

@@ -14,6 +14,8 @@ public enum BusinessExceptionEnum {
     USER_NOT_EXIST_EXCEPTION("1001", "The user does not exist"),
     //用户存在
     USER_EXIST_EXCEPTION("1002", "User exist exception"),
+    //redis用户信息解析异常
+    USER_INFO_PARSING_EXCEPTION("1003", "User information parsing exception"),
 
 
     /**

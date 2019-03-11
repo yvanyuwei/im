@@ -6,6 +6,7 @@ import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.enums.ChatTypeEnum;
 import com.vm.im.common.util.ResponseJson;
 import com.vm.im.controller.aop.NeedUserAuth;
+import com.vm.im.entity.user.User;
 import com.vm.im.entity.user.UserChatGroup;
 import com.vm.im.kafka.KafkaManager;
 import com.vm.im.netty.BaseWebSocketServerHandler;
@@ -103,12 +104,14 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
             String responseJson = new ResponseJson().error("该群id不存在").toString();
             sendMessage(ctx, responseJson);
         } else {
+            User user = userService.getRedisUserById(fromUserId);
             String responseJson = new ResponseJson().success()
                     .setData("fromUserId", fromUserId)
                     .setData("content", content)
                     .setData("toGroupId", toGroupId)
                     .setData("type", ChatTypeEnum.GROUP_SENDING)
                     .setData("createTime",createTime)
+                    .setData("nickName",user.getName())
                     .setData("fromUserIdAvatar",fromUserIdAvatar)
                     .toString();
             kafkaManager.sendMeessage(responseJson,toGroupId + CommonConstant.GROUP_TOPIC);
