@@ -111,15 +111,16 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
             return;
         }
         String type = (String) param.get("type");
+        chatService.remove(ctx);
         switch (type) {
             case "REGISTER":
                 ChannelHandlerContext userIdCtx = Constant.onlineUserMap.get(String.valueOf(param.get("userId")));
-                if(userIdCtx == null){
+                //if(userIdCtx == null){
                     chatService.register(param,ctx);
-                }else {
+                /*}else {
                     chatService.remove(userIdCtx);
                     chatService.register(param, ctx);
-                }
+                }*/
                 break;
             case "SINGLE_SENDING":
                 chatService.singleSend(param, ctx);
@@ -174,6 +175,11 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
      */
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        try {
+            chatService.remove(ctx);
+        }catch (Exception e){
+            LOG.info("移除握手错误："+e.getMessage());
+        }
         cause.printStackTrace();
         ctx.close();
     }

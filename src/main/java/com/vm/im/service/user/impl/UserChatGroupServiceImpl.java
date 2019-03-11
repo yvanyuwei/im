@@ -12,6 +12,7 @@ import com.vm.im.common.util.ResponseJson;
 import com.vm.im.common.vo.user.UserChatGroupVO;
 import com.vm.im.common.vo.user.UserChatVO;
 import com.vm.im.entity.group.ChatGroup;
+import com.vm.im.entity.user.User;
 import com.vm.im.entity.user.UserChatGroup;
 import com.vm.im.dao.user.UserChatGroupMapper;
 import com.vm.im.kafka.KafkaManager;
@@ -66,11 +67,12 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
      * 添加群主加入指定群组
      *
      * @param chatGroup
+     * @param user
      */
     @Override
-    public void addMasterToGroup(ChatGroup chatGroup) {
+    public void addMasterToGroup(ChatGroup chatGroup, User user) {
         LOG.info("开始添加群主到群组");
-        UserChatGroup userChatGroup = buildMasterChatGroup(chatGroup);
+        UserChatGroup userChatGroup = buildMasterChatGroup(chatGroup, user);
 
         saveOrUpdate(userChatGroup);
     }
@@ -188,16 +190,16 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
     public void userGroupList(JSONObject param, ChannelHandlerContext ctx) {
         String userId = String.valueOf(param.get("userId"));
         if(Constant.onlineUserMap.get(userId) != null) {
-            List<String> groupList = userChatGroupMapper.selectGroupIdByUid(String.valueOf(param.get("userId")));
+            List<String> groupList = selectGroupIdByUid(userId);
             for (String str : groupList) {
-                List<UserChatVO> userChatGroup = userChatGroupMapper.selectByPrimaryKey(str);
-                List<String> list = new ArrayList<>();
+                List<UserChatVO> userChatGroup = selectByPrimaryKey(str);
+                /*List<String> list = new ArrayList<>();
                 list.add(userId+ CommonConstant.USER_TOPIC);
-                for (UserChatVO userChatVO : userChatGroup) {
-                    list.add(userChatVO.getId()+CommonConstant.GROUP_TOPIC);
-                }
-                list.add(userId);
-                kafkaManager.consumerSubscribe(userId,list);
+                for (UserChatVO userChatVO : userChatGroup) {*/
+                    //list.add(userChatVO.getId()+CommonConstant.GROUP_TOPIC);
+               // }
+                //list.add(userId);
+                //kafkaManager.consumerSubscribe(userId,list);
                 String responseJson = new ResponseJson().success()
                         .setData("type", ChatTypeEnum.USER_GROUP_LIST)
                         .setData("content", userChatGroup)
@@ -214,8 +216,7 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
     public void flushGroupMsg(String groupId){
         List<UserChatGroup> userChatGroup = chatGroupService.getByGroupId(groupId);
         for (UserChatGroup chatGroup : userChatGroup) {
-            Map<String, ChannelHandlerContext> onlineUserMap = Constant.onlineUserMap;
-            ChannelHandlerContext ctx = onlineUserMap.get(chatGroup.getUserId());
+            ChannelHandlerContext ctx = Constant.onlineUserMap.get(chatGroup.getUserId());
             if (ctx != null){
                 JSONObject param = new JSONObject();
                 param.put("userId",chatGroup.getUserId());
@@ -232,6 +233,16 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
     }
 
     @Override
+    public List<UserChatVO> selectByPrimaryKey(String groupId) {
+        return userChatGroupMapper.selectByPrimaryKey(groupId);
+    }
+
+    @Override
+    public List<String> selectGroupIdByUid(String userId) {
+        return userChatGroupMapper.selectGroupIdByUid(userId);
+    }
+
+    @Override
     public void updateUserMessage(String name, String groupId, String nickname) {
         userChatGroupMapper.updateUserMessage(name ,groupId,nickname);
     }
@@ -239,16 +250,19 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
     /**
      * 构建群主群组信息
      * @param chatGroup
+     * @param user
      * @return
      */
-    private UserChatGroup buildMasterChatGroup(ChatGroup chatGroup) {
+    private UserChatGroup buildMasterChatGroup(ChatGroup chatGroup, User user) {
         UserChatGroup userChatGroup = new UserChatGroup();
         userChatGroup.setUserId(chatGroup.getMaster());
         userChatGroup.setChatGroupId(chatGroup.getId());
         userChatGroup.setTop(CommonConstant.YES);
         userChatGroup.setType(GroupRoleEnum.MASTER.value());
         userChatGroup.setDelFlag(CommonConstant.NO);
+        userChatGroup.setCanSpeak(CommonConstant.YES);
         userChatGroup.setCreateTime(new Date());
+        userChatGroup.setNickname(user.getName());
         LOG.info("构建用户群组信息, userChatGroup:{}", JSON.toJSONString(userChatGroup));
 
         return userChatGroup;

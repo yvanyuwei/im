@@ -60,6 +60,13 @@ public class CommonConstant {
      */
     public final static String PLACEHOLDER = "%";
 
+    /**
+     *  redis 用户信息
+     */
+    public final static String REDIS_USER_INFO = "UserInfo";
+
+
+
 
 
 

@@ -77,9 +77,15 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
             throw new BusinessException(BusinessExceptionEnum.GROUP_EXIST_EXCEPTION.getFailCode(), BusinessExceptionEnum.GROUP_EXIST_EXCEPTION.getFailReason());
         }
 
+        User user = userService.getById(unionOperationDTO.getUid());
+        if (user == null || CommonConstant.YES == user.getDelFlag()){
+            LOG.info("用户不存在, groupId:{}, uId:{}", unionOperationDTO.getGroupId(), unionOperationDTO.getUid());
+            throw new BusinessException(BusinessExceptionEnum.USER_NOT_EXIST_EXCEPTION.getFailCode(), BusinessExceptionEnum.USER_NOT_EXIST_EXCEPTION.getFailReason());
+        }
+
         ChatGroup group = buildChatGroup(unionOperationDTO);
 
-        createGroup(group);
+        createGroup(group, user);
 
     }
 
@@ -104,7 +110,7 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
      */
     @Override
     @Transactional
-    public void createGroup(ChatGroup chatGroup) {
+    public void createGroup(ChatGroup chatGroup, User user) {
         //创建群
         saveOrUpdate(chatGroup);
 
@@ -112,7 +118,7 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
         chatGroupFlowService.addGroupMaster(chatGroup);
 
         //添加用户群组数据
-        userChatGroupService.addMasterToGroup(chatGroup);
+        userChatGroupService.addMasterToGroup(chatGroup, user);
 
     }
 

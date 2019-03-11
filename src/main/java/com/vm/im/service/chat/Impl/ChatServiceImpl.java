@@ -3,9 +3,15 @@ package com.vm.im.service.chat.Impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.vm.im.common.constant.CommonConstant;
+import com.vm.im.common.dto.ResultBean;
+import com.vm.im.common.enums.BusinessExceptionEnum;
 import com.vm.im.common.enums.ChatTypeEnum;
+import com.vm.im.common.enums.ResultCodeEnum;
+import com.vm.im.common.exception.BusinessException;
 import com.vm.im.common.util.ResponseJson;
+import com.vm.im.common.vo.user.UserChatVO;
 import com.vm.im.controller.aop.NeedUserAuth;
+import com.vm.im.entity.user.User;
 import com.vm.im.entity.user.UserChatGroup;
 import com.vm.im.kafka.KafkaManager;
 import com.vm.im.netty.BaseWebSocketServerHandler;
@@ -13,16 +19,19 @@ import com.vm.im.netty.Constant;
 import com.vm.im.service.chat.ChatService;
 import com.vm.im.service.common.MessageService;
 import com.vm.im.service.group.ChatGroupService;
+import com.vm.im.service.user.UserChatGroupService;
 import com.vm.im.service.user.UserCurrentChatService;
 import com.vm.im.service.user.UserService;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -49,11 +58,35 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private UserChatGroupService userChatGroupService;
+
     @Override
     public void register(JSONObject param, ChannelHandlerContext ctx) {
-        String userMsg = needUserAuth.checkToken(String.valueOf(param.get("userId")),String.valueOf(param.get("token")));
+        String userMsg = null;
+        try {
+            userMsg =needUserAuth.checkToken(String.valueOf(param.get("userId")),String.valueOf(param.get("token")));
+        }catch (BusinessException busExp){
+            String str = JSON.toJSONString(new ResultBean(Integer.parseInt(busExp.getFailCode()),
+                    busExp.getFailReason(),"用户token验证失败"));
+            sendMessage(ctx,str);
+            return;
+        }
+        //String userMsg = needUserAuth.checkToken(String.valueOf(param.get("userId")),String.valueOf(param.get
+        // ("token")));
         userService.saveUserInfo(userMsg);
         String userId = (String)param.get("userId");
+        List<String> groupList = userChatGroupService.selectGroupIdByUid(userId);
+        for (String str : groupList) {
+            List<UserChatVO> userChatGroup = userChatGroupService.selectByPrimaryKey(str);
+            List<String> list = new ArrayList<>();
+            list.add(userId + CommonConstant.USER_TOPIC);
+            for (UserChatVO userChatVO : userChatGroup) {
+                list.add(userChatVO.getId() + CommonConstant.GROUP_TOPIC);
+            }
+            list.add(userId);
+            kafkaManager.consumerSubscribe(userId,list);
+        }
         Constant.onlineUserMap.put(userId, ctx);
         String responseJson = new ResponseJson().success()
                 .setData("type", ChatTypeEnum.REGISTER).toString();
@@ -72,13 +105,15 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
         String fromUserIdAvatar = String.valueOf(param.get("fromUserIdAvatar"));
         ChannelHandlerContext toUserCtx = Constant.onlineUserMap.get(toUserId);
         messageService.saveMessage(param,createTime);
-        userCurrentChatService.flushCurrentMsgList(fromUserId,toUserId,500,param);
+        userCurrentChatService.flushCurrentMsgListForUser(fromUserId,toUserId,500,param);
+        User user = userService.getRedisUserById(fromUserId);
         String responseJson = new ResponseJson().success()
                 .setData("fromUserId", fromUserId)
                 .setData("toUserId",toUserId)
                 .setData("content", content)
                 .setData("type", ChatTypeEnum.SINGLE_SENDING)
                 .setData("createTime",createTime)
+                .setData("nickName",user.getName())
                 .setData("fromUserIdAvatar",fromUserIdAvatar)
                 .toString();
         log.info("==============================发送的消息为：" + responseJson);
@@ -103,12 +138,14 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
             String responseJson = new ResponseJson().error("该群id不存在").toString();
             sendMessage(ctx, responseJson);
         } else {
+            User user = userService.getRedisUserById(fromUserId);
             String responseJson = new ResponseJson().success()
                     .setData("fromUserId", fromUserId)
                     .setData("content", content)
                     .setData("toGroupId", toGroupId)
                     .setData("type", ChatTypeEnum.GROUP_SENDING)
                     .setData("createTime",createTime)
+                    .setData("nickName",user.getName())
                     .setData("fromUserIdAvatar",fromUserIdAvatar)
                     .toString();
             kafkaManager.sendMeessage(responseJson,toGroupId + CommonConstant.GROUP_TOPIC);

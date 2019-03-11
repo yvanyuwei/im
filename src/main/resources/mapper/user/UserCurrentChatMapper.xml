@@ -87,7 +87,7 @@
         where iu.del_flag = 0
     </select>
 
-    <select id="fingFriendByUid" resultType="java.lang.String" parameterType="java.lang.String">
+    <select id="findFriendByUid" resultType="java.lang.String" parameterType="java.lang.String">
         select friend_id from im_user_current_chat where user_id = #{userId,jdbcType=VARCHAR}
     </select>
 
@@ -134,4 +134,56 @@
               </if>
           </trim>-->
     </update>
+
+    <insert id="saveOrUpdate" parameterType="com.vm.im.entity.user.UserCurrentChat">
+      INSERT into
+        im_user_current_chat
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="friendId != null">
+                friend_id,
+            </if>
+            <if test="lastMessage != null">
+                last_message,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="delFlag != null">
+                del_flag,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                #{userId,jdbcType=VARCHAR},
+            </if>
+            <if test="friendId != null">
+                #{friendId,jdbcType=VARCHAR},
+            </if>
+            <if test="lastMessage != null">
+                #{lastMessage,jdbcType=INTEGER},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=VARCHAR},
+            </if>
+            <if test="delFlag != null">
+                #{delFlag,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=VARCHAR},
+            </if>
+        </trim>
+        ON DUPLICATE KEY UPDATE
+        user_id = #{userId,jdbcType=VARCHAR},
+        friend_id = #{friendId,jdbcType=VARCHAR},
+        last_message = #{lastMessage,jdbcType=INTEGER},
+        type =  #{type,jdbcType=VARCHAR},
+        del_flag = #{delFlag,jdbcType=TIMESTAMP},
+        create_time = #{createTime,jdbcType=VARCHAR}
+    </insert>
 </mapper>

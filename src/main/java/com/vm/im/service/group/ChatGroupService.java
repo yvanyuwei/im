@@ -6,6 +6,7 @@ import com.vm.im.common.dto.admin.UnionOperationDTO;
 import com.vm.im.common.enums.GroupRoleEnum;
 import com.vm.im.entity.group.ChatGroup;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.vm.im.entity.user.User;
 import com.vm.im.entity.user.UserChatGroup;
 
 import java.util.List;
@@ -39,7 +40,7 @@ public interface ChatGroupService extends IService<ChatGroup> {
      *
      * @param chatGroup
      */
-    void createGroup(ChatGroup chatGroup);
+    void createGroup(ChatGroup chatGroup, User user);
 
     /**
      * 删除群

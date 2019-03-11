@@ -56,7 +56,7 @@ public class NeedAdminAuth {
             if (contains) {
                 String message = JSON.toJSONString(joinPoint.getArgs()[0]);
                 String sha256hmac = HMACSHA256Util.sha256_HMAC(message, secret);
-                if (!authorization.equals(sha256hmac)){
+                if (!authorization.equals(sha256hmac)) {
                     LOG.info("请求认证不通过, 非法的请求, args:{}, authorization:{},sha256hmac:{}", message, authorization, sha256hmac);
 
                     throw new BusinessException(BusinessExceptionEnum.ADMIN_AUTH_EXCEPTION.getFailCode(), BusinessExceptionEnum.ADMIN_AUTH_EXCEPTION.getFailReason());

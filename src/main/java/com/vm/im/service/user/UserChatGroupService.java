@@ -4,10 +4,10 @@ import com.vm.im.common.vo.user.FindUserVO;
 import com.alibaba.fastjson.JSONObject;
 import com.vm.im.common.vo.user.UserChatVO;
 import com.vm.im.entity.group.ChatGroup;
+import com.vm.im.entity.user.User;
 import com.vm.im.entity.user.UserChatGroup;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.netty.channel.ChannelHandlerContext;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -26,8 +26,9 @@ public interface UserChatGroupService extends IService<UserChatGroup> {
      * 添加群主加入指定群组
      *
      * @param chatGroup
+     * @param user
      */
-    void addMasterToGroup(ChatGroup chatGroup);
+    void addMasterToGroup(ChatGroup chatGroup, User user);
 
     /**
      * 用户群组信息删除指定群(逻辑删除)
@@ -110,4 +111,8 @@ public interface UserChatGroupService extends IService<UserChatGroup> {
      * @param groupId
      */
     void flushGroupMsg(String groupId);
+
+    List<String> selectGroupIdByUid(String userId);
+
+    List<UserChatVO> selectByPrimaryKey(String groupId);
 }

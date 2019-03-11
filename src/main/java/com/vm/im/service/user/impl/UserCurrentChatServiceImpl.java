@@ -47,8 +47,9 @@ public class UserCurrentChatServiceImpl extends ServiceImpl<UserCurrentChatMappe
     public void listByUid(JSONObject param, ChannelHandlerContext ctx) {
         String uid = String.valueOf(param.get("userId"));
         int count = Integer.parseInt(String.valueOf(param.get("count")));
+
         if(Constant.onlineUserMap.get(uid) != null) {
-            List<FindCurrentVO> userCurrentChats = userCurrentChatMapper.listByUid(uid, count);
+            List<FindCurrentVO> userCurrentChats = userCurrentChatMapper.listByUid(uid,count);
             String responseJson = new ResponseJson().success()
                     .setData("type", ChatTypeEnum.USER_CURRENT_CHAT)
                     .setData("content", userCurrentChats)
@@ -62,35 +63,34 @@ public class UserCurrentChatServiceImpl extends ServiceImpl<UserCurrentChatMappe
      * @param userId
      */
     @Override
-    public void flushCurrentMsgList(String userId, String friendId, int count,JSONObject param) {
-        Map<String, ChannelHandlerContext> onlineUserMap = Constant.onlineUserMap;
-        ChannelHandlerContext ctx = onlineUserMap.get(userId);
-        ChannelHandlerContext toCtx = onlineUserMap.get(friendId);
-        List<String> userIdList = userCurrentChatMapper.fingFriendByUid(userId);
-        List<String> friendIdlist = userCurrentChatMapper.fingFriendByUid(friendId);
-        if (ctx != null && !userIdList.contains(friendId)){
-            UserCurrentDTO userCurrentDTO = new UserCurrentDTO();
-            userCurrentDTO.setUid(userId);
-            userCurrentDTO.setFriendId(friendId);
-            userCurrentDTO.setLastMessage(String.valueOf(param.get("content")));
-            UserCurrentChat userCurrentChat = buildUserCurrentChat(userCurrentDTO);
-            save(userCurrentChat);
+    public void flushCurrentMsgListForUser(String userId, String friendId, int count,JSONObject param) {
+        ChannelHandlerContext ctx = Constant.onlineUserMap.get(userId);
+        ChannelHandlerContext toCtx = Constant.onlineUserMap.get(friendId);
+        /*List<String> userIdList = userCurrentChatMapper.findFriendByUid(userId);
+        List<String> friendIdlist = userCurrentChatMapper.findFriendByUid(friendId);*/
+        UserCurrentDTO userCurrentUid = new UserCurrentDTO();
+        userCurrentUid.setUid(userId);
+        userCurrentUid.setFriendId(friendId);
+        userCurrentUid.setLastMessage(String.valueOf(param.get("content")));
+        UserCurrentChat userChatUid = buildUserCurrentChat(userCurrentUid);
+        userCurrentChatMapper.saveOrUpdate(userChatUid);
+        if (ctx != null) {
             JSONObject params = new JSONObject();
-            params.put("userId",userId);
-            params.put("count",count);
-            listByUid(params,ctx);
+            params.put("userId", userId);
+            params.put("count", count);
+            listByUid(params, ctx);
         }
-        if (toCtx != null && !friendIdlist.contains(userId)){
-            UserCurrentDTO userCurrentDTO = new UserCurrentDTO();
-            userCurrentDTO.setUid(friendId);
-            userCurrentDTO.setFriendId(userId);
-            userCurrentDTO.setLastMessage(String.valueOf(param.get("content")));
-            UserCurrentChat userCurrentChat = buildUserCurrentChat(userCurrentDTO);
-            save(userCurrentChat);
+        UserCurrentDTO userCurrentFid = new UserCurrentDTO();
+        userCurrentFid.setUid(friendId);
+        userCurrentFid.setFriendId(userId);
+        userCurrentFid.setLastMessage(String.valueOf(param.get("content")));
+        UserCurrentChat userChatFid = buildUserCurrentChat(userCurrentFid);
+        userCurrentChatMapper.saveOrUpdate(userChatFid);
+        if (toCtx != null) {
             JSONObject params = new JSONObject();
-            params.put("userId",friendId);
-            params.put("count",count);
-            listByUid(params,toCtx);
+            params.put("userId", friendId);
+            params.put("count", count);
+            listByUid(params, toCtx);
         }
     }
 

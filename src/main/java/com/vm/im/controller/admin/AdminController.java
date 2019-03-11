@@ -119,7 +119,6 @@ public class AdminController {
     @PostMapping("createUser")
     @ApiOperation(value = "创建用户", notes = "创建用户使用接口")
     public String createUser(@RequestBody @Valid CreateUserDTO createUserDTO) {
-// TODO 暂时不急 接口先定好
         User userMsg = userService.getById(createUserDTO.getId());
         if (userMsg == null){
             userService.createUser(createUserDTO);

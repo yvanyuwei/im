@@ -39,7 +39,7 @@ public interface UserCurrentChatService extends IService<UserCurrentChat> {
      * 刷新用户数据
      * @param userId
      */
-    void flushCurrentMsgList(String userId,String friendId ,int count,JSONObject param);
+    void flushCurrentMsgListForUser(String userId,String friendId ,int count,JSONObject param);
 
     List<UserCurrentChat> selectByFriendId(String friendId);
 

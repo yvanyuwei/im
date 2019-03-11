@@ -27,7 +27,8 @@ public interface UserCurrentChatMapper extends BaseMapper<UserCurrentChat> {
      * @param count list size
      * @return
      */
-    List<FindCurrentVO> listByUid(@Param("uid") String uid, @Param("count") int count);
+    List<FindCurrentVO> listByUid(@Param("uid") String uid,/*@Param("friendId")String friendId,*/
+                                  @Param("count") int count);
 
     /**
      * 模糊查找用户
@@ -39,10 +40,12 @@ public interface UserCurrentChatMapper extends BaseMapper<UserCurrentChat> {
     List<FindUserVO> findUser(@Param("uid") String uid, @Param("condition") String condition);
 
 
-    List<String> fingFriendByUid(@Param("userId") String userId);
+    List<String> findFriendByUid(@Param("userId") String userId);
 
     List<UserCurrentChat> selectByFriendId(String friendId);
 
     void updateUserMessage(@Param("name") String name , @Param("friendId") String friendId ,
                            @Param("nickname") String nickname);
+
+    void saveOrUpdate(UserCurrentChat userCurrentChat);
 }
