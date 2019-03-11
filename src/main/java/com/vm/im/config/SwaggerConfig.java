@@ -46,7 +46,7 @@ public class SwaggerConfig {
         ParameterBuilder uidPar = new ParameterBuilder();
         List<Parameter> pars = new ArrayList<Parameter>();
         tokenPar.name("Authorization").description("用户服务生成").defaultValue(TOKEN).modelRef(new ModelRef("string")).parameterType("header").required(true).build();
-        uidPar.name("userId").description("用户id").defaultValue(TOKEN).modelRef(new ModelRef("string")).parameterType("header").required(false).build();
+        uidPar.name("UserId").description("用户id").defaultValue(TOKEN).modelRef(new ModelRef("string")).parameterType("header").required(false).build();
         pars.add(tokenPar.build());
         pars.add(uidPar.build());
         Docket docket = new Docket(DocumentationType.SWAGGER_2)
