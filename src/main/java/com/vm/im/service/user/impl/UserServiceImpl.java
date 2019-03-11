@@ -107,9 +107,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         saveOrUpdate(user);
         List<UserFriend> userFriends = userFriendService.selectByFriendId(user.getId(), CommonConstant.NO);
         for (UserFriend userFriend : userFriends) {
-            if (!user.getName().equals(userFriend.getNickname())){
-                userFriendService.updateUserMessage(user.getName(),userFriend.getFriendId(),userFriend.getNickname());
-            }
+                if (!user.getName().equals(userFriend.getNickname())){
+                    userFriendService.updateUserMessage(user.getName(),userFriend.getFriendId(),userFriend.getNickname());
+                }
         }
         List<UserChatGroup> userChatGroups = userChatGroupService.selectByUserId(user.getId());
         for (UserChatGroup userChatGroup : userChatGroups) {

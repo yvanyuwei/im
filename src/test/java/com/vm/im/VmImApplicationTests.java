@@ -90,7 +90,8 @@ public class VmImApplicationTests {
 
         //List<String> list = userCurrentChatMapper.fingFriendByUid("180160");
         List<UserChatVO> userChatVOS = userChatGroupMapper.selectByPrimaryKey("1");
-        System.out.println(userChatVOS);
+        //List<FindCurrentVO> userCurrentChats = userCurrentChatMapper.listByUid("180175","180175",500);
+       // System.out.println(userCurrentChats);
 
     }
 }

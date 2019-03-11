@@ -1,6 +1,7 @@
 package com.vm.im.service.chat;
 
 import com.alibaba.fastjson.JSONObject;
+import com.vm.im.common.exception.BusinessException;
 import io.netty.channel.ChannelHandlerContext;
 
 public interface ChatService {

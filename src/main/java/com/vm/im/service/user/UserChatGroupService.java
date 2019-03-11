@@ -110,4 +110,8 @@ public interface UserChatGroupService extends IService<UserChatGroup> {
      * @param groupId
      */
     void flushGroupMsg(String groupId);
+
+    List<String> selectGroupIdByUid(String userId);
+
+    List<UserChatVO> selectByPrimaryKey(String groupId);
 }

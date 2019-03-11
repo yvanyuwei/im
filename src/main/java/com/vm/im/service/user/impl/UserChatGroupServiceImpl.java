@@ -188,16 +188,16 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
     public void userGroupList(JSONObject param, ChannelHandlerContext ctx) {
         String userId = String.valueOf(param.get("userId"));
         if(Constant.onlineUserMap.get(userId) != null) {
-            List<String> groupList = userChatGroupMapper.selectGroupIdByUid(String.valueOf(param.get("userId")));
+            List<String> groupList = selectGroupIdByUid(userId);
             for (String str : groupList) {
-                List<UserChatVO> userChatGroup = userChatGroupMapper.selectByPrimaryKey(str);
-                List<String> list = new ArrayList<>();
+                List<UserChatVO> userChatGroup = selectByPrimaryKey(str);
+                /*List<String> list = new ArrayList<>();
                 list.add(userId+ CommonConstant.USER_TOPIC);
-                for (UserChatVO userChatVO : userChatGroup) {
-                    list.add(userChatVO.getId()+CommonConstant.GROUP_TOPIC);
-                }
-                list.add(userId);
-                kafkaManager.consumerSubscribe(userId,list);
+                for (UserChatVO userChatVO : userChatGroup) {*/
+                    //list.add(userChatVO.getId()+CommonConstant.GROUP_TOPIC);
+               // }
+                //list.add(userId);
+                //kafkaManager.consumerSubscribe(userId,list);
                 String responseJson = new ResponseJson().success()
                         .setData("type", ChatTypeEnum.USER_GROUP_LIST)
                         .setData("content", userChatGroup)
@@ -214,8 +214,7 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
     public void flushGroupMsg(String groupId){
         List<UserChatGroup> userChatGroup = chatGroupService.getByGroupId(groupId);
         for (UserChatGroup chatGroup : userChatGroup) {
-            Map<String, ChannelHandlerContext> onlineUserMap = Constant.onlineUserMap;
-            ChannelHandlerContext ctx = onlineUserMap.get(chatGroup.getUserId());
+            ChannelHandlerContext ctx = Constant.onlineUserMap.get(chatGroup.getUserId());
             if (ctx != null){
                 JSONObject param = new JSONObject();
                 param.put("userId",chatGroup.getUserId());
@@ -229,6 +228,16 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
     @Override
     public List<UserChatGroup> selectByUserId(String userId) {
         return userChatGroupMapper.selectByUserId(userId);
+    }
+
+    @Override
+    public List<UserChatVO> selectByPrimaryKey(String groupId) {
+        return userChatGroupMapper.selectByPrimaryKey(groupId);
+    }
+
+    @Override
+    public List<String> selectGroupIdByUid(String userId) {
+        return userChatGroupMapper.selectGroupIdByUid(userId);
     }
 
     @Override
