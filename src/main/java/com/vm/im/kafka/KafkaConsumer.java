@@ -32,19 +32,18 @@ public class KafkaConsumer {
 
     private boolean active = true;
 
-    private ConsumerFactory consumerFactory;
+    private Consumer<String, String> consumer;
 
     public KafkaConsumer(String groupId, List<String> topicIds, ConsumerFactory consumerFactory) {
         this.groupId = groupId;
         this.topicIds = topicIds;
-        this.consumerFactory = consumerFactory;
+        this.consumer = consumerFactory.createConsumer(groupId, groupId);
     }
 
     /**
      * 订阅
      */
     public void subscribe() {
-        Consumer<String, String> consumer = consumerFactory.createConsumer(groupId, groupId);
         List<TopicPartition> topicPartitions = new ArrayList<>();
         for (String topicId : topicIds) {
             TopicPartition topicPartition = new TopicPartition(topicId, CommonConstant.NO);
@@ -52,11 +51,15 @@ public class KafkaConsumer {
         }
 //        consumer.subscribe(Arrays.asList(topicId));
         consumer.assign(topicPartitions);
-        ChannelHandlerContext channelHandlerContext = Constant.onlineUserMap.get(groupId);
         String threadName = Thread.currentThread().getName();
         while (active) {
 
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
+            if (records.isEmpty()){
+                continue;
+            }
+
+            ChannelHandlerContext channelHandlerContext = Constant.onlineUserMap.get(groupId);
             if (channelHandlerContext == null) {
                 LOG.info("找不到用户连接, 取消用户订阅, uid:{}", groupId);
                 close();
@@ -78,6 +81,7 @@ public class KafkaConsumer {
      * 用户下线取消订阅
      */
     public void close() {
+        consumer.close();
         active = false;
     }
 }
