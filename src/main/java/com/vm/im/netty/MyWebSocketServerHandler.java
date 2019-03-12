@@ -1,7 +1,12 @@
 package com.vm.im.netty;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.vm.im.common.dto.ResultBean;
+import com.vm.im.common.enums.ChatTypeEnum;
+import com.vm.im.common.exception.BusinessException;
 import com.vm.im.common.util.ResponseJson;
+import com.vm.im.entity.user.User;
 import com.vm.im.service.chat.ChatService;
 import com.vm.im.service.user.UserChatGroupService;
 import com.vm.im.service.user.UserCurrentChatService;
@@ -23,7 +28,6 @@ import org.springframework.stereotype.Controller;
  */
 @Controller
 @ChannelHandler.Sharable
-//@ServerEndpoint(value="/websocket/{userId}",configurator = SpringConfigurator.class)
 public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
     private static final Logger LOG = LoggerFactory.getLogger(MyWebSocketServerHandler.class);
 
@@ -82,6 +86,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
             if (handshaker == null){
                 sendErrorMessage(ctx,"不存在此客户端连接");
             }else {
+                chatService.remove(ctx);
                 handshaker.close(ctx.channel(), (CloseWebSocketFrame) frame.retain());
             }
             return;
@@ -98,6 +103,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
         //客服端发送过来的消息
         String request = ((TextWebSocketFrame) frame).text();
         System.out.println("服务端收到：" + request);
+        LOG.info("socket 服务端收到：{}", request);
         JSONObject param = null;
         try {
             param = JSONObject.parseObject(request);
@@ -111,22 +117,46 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
             return;
         }
         String type = (String) param.get("type");
-        chatService.remove(ctx);
+        User user = null;
+        if (type.equals(ChatTypeEnum.SINGLE_SENDING.name()) || type.equals(ChatTypeEnum.GROUP_SENDING.name())){
+            //user = userService.getRedisUserById(String.valueOf(param.get("fromUserId")));
+            try {
+                user =userService.getRedisUserById(String.valueOf(param.get("fromUserId")));
+            }catch (BusinessException busExp){
+                String str = JSON.toJSONString(new ResultBean(Integer.parseInt(busExp.getFailCode()),
+                        busExp.getFailReason(),"用户数据信息异常"));
+                sendMessage(ctx,str);
+                return;
+            }catch (Exception e){
+                LOG.error("========获取用户信息出现异常==========="+ type + e.getMessage());
+            }
+        }else{
+            try {
+                user =userService.getRedisUserById(String.valueOf(param.get("userId")));
+            }catch (BusinessException busExp){
+                String str = JSON.toJSONString(new ResultBean(Integer.parseInt(busExp.getFailCode()),
+                        busExp.getFailReason(),"用户数据信息异常"));
+                sendMessage(ctx,str);
+                return;
+            }catch (Exception e){
+                LOG.error("========获取用户信息出现异常===========：" + type + e.getMessage());
+            }
+        }
         switch (type) {
             case "REGISTER":
                 ChannelHandlerContext userIdCtx = Constant.onlineUserMap.get(String.valueOf(param.get("userId")));
-                //if(userIdCtx == null){
+                if(userIdCtx == null){
                     chatService.register(param,ctx);
-                /*}else {
+                }else {
                     chatService.remove(userIdCtx);
                     chatService.register(param, ctx);
-                }*/
+                }
                 break;
             case "SINGLE_SENDING":
-                chatService.singleSend(param, ctx);
+                chatService.singleSend(param, ctx,user);
                 break;
             case "GROUP_SENDING":
-                chatService.groupSend(param, ctx);
+                chatService.groupSend(param, ctx,user);
                 break;
             case "USER_FRIEND_LIST":
                 userFriendService.selectUserFriend(param, ctx);
@@ -174,7 +204,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
      * 一些相应的处理，比如打印日志、关闭链接
      */
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         try {
             chatService.remove(ctx);
         }catch (Exception e){
@@ -189,6 +219,10 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
                 .error(errorMsg)
                 .toString();
         ctx.channel().writeAndFlush(new TextWebSocketFrame(responseJson));
+    }
+
+    private void sendMessage(ChannelHandlerContext ctx, String message) {
+        ctx.channel().writeAndFlush(new TextWebSocketFrame(message));
     }
 
 }

@@ -28,6 +28,7 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -106,16 +107,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      * 更新保存用户信息
      */
     //@Scheduled(cron = "0/10 * *  * * ? ")
-    public void saveUserInfo(String userMsg) {
+    @Async
+    public void saveUserInfo(User user) {
         /*String userId = String.valueOf(param.get("userId"));
         if(Constant.onlineUserMap.get(userId) != null) {*/
-        UserToken userToken = JSON.parseObject(userMsg, UserToken.class);
-        User user = buildUserMessage(userToken);
-        saveOrUpdate(user);
+        //saveOrUpdate(user);
         List<UserFriend> userFriends = userFriendService.selectByFriendId(user.getId(), CommonConstant.NO);
         for (UserFriend userFriend : userFriends) {
-            if (!user.getName().equals(userFriend.getNickname())){
-                userFriendService.updateUserMessage(user.getName(),userFriend.getFriendId(),userFriend.getNickname());
+            if (!user.getName().equals(userFriend.getNickname())) {
+                userFriendService.updateUserMessage(user.getName(), userFriend.getFriendId(), userFriend.getNickname());
             }
         }
         List<UserChatGroup> userChatGroups = userChatGroupService.selectByUserId(user.getId());
@@ -151,11 +151,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      * @throws BusinessException
      */
     @Override
-    public User getRedisUserById(String userId) throws BusinessException{
-        String userInfo = String.valueOf(redisUtil.hget(CommonConstant.REDIS_USER_INFO, userId));
+    public User getRedisUserById(String userId) throws BusinessException {
+        Object userInfo = redisUtil.hget(CommonConstant.REDIS_USER_INFO, userId);
         User user = null;
 
-        if (StringUtil.isEmpty(userInfo)) {
+        if (null == userInfo) {
             user = getById(userId);
             if (user == null || CommonConstant.YES == user.getDelFlag()) {
                 LOG.info("用户不存在, uid:{}", userId);
@@ -166,35 +166,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         } else {
             try {
-                user = JSON.parseObject(userInfo, User.class);
+                user = JSON.parseObject((String) userInfo, User.class);
             } catch (Exception e) {
                 LOG.info("redis 用户数据解析异常, userInfo:{}", userInfo);
                 throw new BusinessException(BusinessExceptionEnum.USER_INFO_PARSING_EXCEPTION.getFailCode(), BusinessExceptionEnum.USER_INFO_PARSING_EXCEPTION.getFailReason());
             }
         }
 
+        LOG.info("redis userInfo: {}", JSON.toJSONString(user));
         return user;
     }
 
-    /**
-     * 构建用户信息
-     *
-     * @param userToken
-     * @return
-     */
-    private User buildUserMessage(UserToken userToken) {
-        User user = new User();
-        user.setId(String.valueOf(userToken.getId()));
-        user.setAvatar(userToken.getImage());
-        user.setName(userToken.getUsername());
-        user.setMobile(userToken.getPhonenum());
-        user.setEmail(userToken.getMail());
-        user.setPassword(userToken.getPassword());
-        user.setDelFlag(CommonConstant.NO);
-        user.setCreateTime(new Date(userToken.getCreatetime()));
-        LOG.info("构建用户信息, userChatGroup:{}", JSON.toJSONString(user));
-        return user;
-    }
 
     private User buildUserMsg(CreateUserDTO createUserDTO) {
         User user = new User();

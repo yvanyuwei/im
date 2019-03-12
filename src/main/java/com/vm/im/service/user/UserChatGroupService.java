@@ -114,5 +114,7 @@ public interface UserChatGroupService extends IService<UserChatGroup> {
 
     List<String> selectGroupIdByUid(String userId);
 
+    List<String> selectUidByGroupId(String groupId);
+
     List<UserChatVO> selectByPrimaryKey(String groupId);
 }
