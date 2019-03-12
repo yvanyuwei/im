@@ -111,7 +111,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
             return;
         }
         String type = (String) param.get("type");
-        chatService.remove(ctx);
+        //chatService.remove(ctx);
         switch (type) {
             case "REGISTER":
                 ChannelHandlerContext userIdCtx = Constant.onlineUserMap.get(String.valueOf(param.get("userId")));

@@ -1,5 +1,6 @@
 package com.vm.im.service.user.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.dto.user.UserCurrentDTO;
@@ -7,11 +8,13 @@ import com.vm.im.common.enums.ChatTypeEnum;
 import com.vm.im.common.util.ResponseJson;
 import com.vm.im.common.vo.user.FindCurrentVO;
 import com.vm.im.common.vo.user.FindUserVO;
+import com.vm.im.entity.user.User;
 import com.vm.im.entity.user.UserCurrentChat;
 import com.vm.im.dao.user.UserCurrentChatMapper;
 import com.vm.im.netty.Constant;
 import com.vm.im.service.user.UserCurrentChatService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.vm.im.service.user.UserService;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.slf4j.Logger;
@@ -37,6 +40,9 @@ public class UserCurrentChatServiceImpl extends ServiceImpl<UserCurrentChatMappe
 
     @Autowired
     private UserCurrentChatMapper userCurrentChatMapper;
+
+    @Autowired
+    private UserService userService;
 
     /**
      * 根据用户id 查询当前会话列表
@@ -66,6 +72,7 @@ public class UserCurrentChatServiceImpl extends ServiceImpl<UserCurrentChatMappe
     public void flushCurrentMsgListForUser(String userId, String friendId, int count,JSONObject param) {
         ChannelHandlerContext ctx = Constant.onlineUserMap.get(userId);
         ChannelHandlerContext toCtx = Constant.onlineUserMap.get(friendId);
+        User user =userService.getRedisUserById(userId);
         /*List<String> userIdList = userCurrentChatMapper.findFriendByUid(userId);
         List<String> friendIdlist = userCurrentChatMapper.findFriendByUid(friendId);*/
         UserCurrentDTO userCurrentUid = new UserCurrentDTO();
@@ -74,6 +81,7 @@ public class UserCurrentChatServiceImpl extends ServiceImpl<UserCurrentChatMappe
         userCurrentUid.setLastMessage(String.valueOf(param.get("content")));
         UserCurrentChat userChatUid = buildUserCurrentChat(userCurrentUid);
         userCurrentChatMapper.saveOrUpdate(userChatUid);
+        LOG.info("插入数据为" + JSON.toJSONString(userChatUid));
         if (ctx != null) {
             JSONObject params = new JSONObject();
             params.put("userId", userId);
@@ -86,6 +94,7 @@ public class UserCurrentChatServiceImpl extends ServiceImpl<UserCurrentChatMappe
         userCurrentFid.setLastMessage(String.valueOf(param.get("content")));
         UserCurrentChat userChatFid = buildUserCurrentChat(userCurrentFid);
         userCurrentChatMapper.saveOrUpdate(userChatFid);
+        LOG.info("反插入数据为" + JSON.toJSONString(userChatFid));
         if (toCtx != null) {
             JSONObject params = new JSONObject();
             params.put("userId", friendId);

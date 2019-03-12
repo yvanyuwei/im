@@ -76,6 +76,7 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
         // ("token")));
         userService.saveUserInfo(userMsg);
         String userId = (String)param.get("userId");
+        Constant.onlineUserMap.put(userId, ctx);
         List<String> groupList = userChatGroupService.selectGroupIdByUid(userId);
         for (String str : groupList) {
             List<UserChatVO> userChatGroup = userChatGroupService.selectByPrimaryKey(str);
@@ -87,7 +88,6 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
             list.add(userId);
             kafkaManager.consumerSubscribe(userId,list);
         }
-        Constant.onlineUserMap.put(userId, ctx);
         String responseJson = new ResponseJson().success()
                 .setData("type", ChatTypeEnum.REGISTER).toString();
         sendMessage(ctx, responseJson);
@@ -106,7 +106,17 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
         ChannelHandlerContext toUserCtx = Constant.onlineUserMap.get(toUserId);
         messageService.saveMessage(param,createTime);
         userCurrentChatService.flushCurrentMsgListForUser(fromUserId,toUserId,500,param);
-        User user = userService.getRedisUserById(fromUserId);
+        User user = null;
+        try {
+            user =userService.getRedisUserById(fromUserId);
+        }catch (BusinessException busExp){
+            String str = JSON.toJSONString(new ResultBean(Integer.parseInt(busExp.getFailCode()),
+                    busExp.getFailReason(),"用户数据信息异常"));
+            sendMessage(ctx,str);
+            return;
+        }catch (Exception e){
+            log.error("========singleSend出现异常==========="+e.getMessage());
+        }
         String responseJson = new ResponseJson().success()
                 .setData("fromUserId", fromUserId)
                 .setData("toUserId",toUserId)
@@ -138,7 +148,17 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
             String responseJson = new ResponseJson().error("该群id不存在").toString();
             sendMessage(ctx, responseJson);
         } else {
-            User user = userService.getRedisUserById(fromUserId);
+            User user = null;
+            try {
+                user =userService.getRedisUserById(fromUserId);
+            }catch (BusinessException busExp){
+                String str = JSON.toJSONString(new ResultBean(Integer.parseInt(busExp.getFailCode()),
+                        busExp.getFailReason(),"用户数据信息异常"));
+                sendMessage(ctx,str);
+                return;
+            }catch (Exception e){
+                log.error("========groupSend出现异常==========="+e.getMessage());
+            }
             String responseJson = new ResponseJson().success()
                     .setData("fromUserId", fromUserId)
                     .setData("content", content)
@@ -163,6 +183,7 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
 
     @Override
     public void remove(ChannelHandlerContext ctx) {
+       // kafkaManager.consumerUnsubscribe();
         Iterator<Map.Entry<String, ChannelHandlerContext>> iterator =
                 Constant.onlineUserMap.entrySet().iterator();
         while(iterator.hasNext()) {
