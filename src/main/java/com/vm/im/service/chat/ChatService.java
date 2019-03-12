@@ -2,6 +2,7 @@ package com.vm.im.service.chat;
 
 import com.alibaba.fastjson.JSONObject;
 import com.vm.im.common.exception.BusinessException;
+import com.vm.im.entity.user.User;
 import io.netty.channel.ChannelHandlerContext;
 
 public interface ChatService {
@@ -18,18 +19,19 @@ public interface ChatService {
      * @param param
      * @param ctx
      */
-    void singleSend(JSONObject param, ChannelHandlerContext ctx);
+    void singleSend(JSONObject param, ChannelHandlerContext ctx,User user);
 
     /**
      * 群聊
      * @param param
      * @param ctx
      */
-    void groupSend(JSONObject param, ChannelHandlerContext ctx);
+    void groupSend(JSONObject param, ChannelHandlerContext ctx,User user);
 
     /**
      * 移除注册用户表用户
      * @param ctx
+     * @param user
      */
     void remove(ChannelHandlerContext ctx);
 

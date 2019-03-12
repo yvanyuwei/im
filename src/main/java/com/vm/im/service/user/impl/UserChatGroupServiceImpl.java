@@ -262,6 +262,11 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
     }
 
     @Override
+    public List<String> selectUidByGroupId(String groupId) {
+        return userChatGroupMapper.selectUidByGroupId(groupId);
+    }
+
+    @Override
     public List<String> selectGroupIdByUid(String userId) {
         return userChatGroupMapper.selectGroupIdByUid(userId);
     }

@@ -88,4 +88,8 @@ public interface UserChatGroupMapper extends BaseMapper<UserChatGroup> {
 
 
     List<String> selectGroupIdByUid(@Param("userId") String userId);
+
+    List<String> selectUidByGroupId(@Param("chatGroupId") String groupId);
+
+
 }

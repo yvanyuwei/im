@@ -30,7 +30,7 @@ public interface UserService extends IService<User> {
     /**
      * 保存或更新用户信息
      */
-    void saveUserInfo(String userMsg/*JSONObject param, ChannelHandlerContext ctx*/);
+    void saveUserInfo(User user/*JSONObject param, ChannelHandlerContext ctx*/);
 
     /**
      * 根据查找目标体查找用户

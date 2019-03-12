@@ -87,8 +87,8 @@
         where iu.del_flag = 0
     </select>
 
-    <select id="findFriendByUid" resultType="java.lang.String" parameterType="java.lang.String">
-        select friend_id from im_user_current_chat where user_id = #{userId,jdbcType=VARCHAR}
+    <select id="findUidByFriendId" resultType="java.lang.String" parameterType="java.lang.String">
+        select user_id from im_user_current_chat where friend_id = #{friendId,jdbcType=VARCHAR}
     </select>
 
     <select id="selectByFriendId" resultMap="BaseResultMap" parameterType="java.lang.String">
@@ -145,6 +145,9 @@
             <if test="friendId != null">
                 friend_id,
             </if>
+            <if test="nickname != null">
+                nickname,
+            </if>
             <if test="lastMessage != null">
                 last_message,
             </if>
@@ -165,6 +168,9 @@
             <if test="friendId != null">
                 #{friendId,jdbcType=VARCHAR},
             </if>
+            <if test="nickname != null">
+                #{nickname,jdbcType=VARCHAR},
+            </if>
             <if test="lastMessage != null">
                 #{lastMessage,jdbcType=INTEGER},
             </if>
@@ -181,6 +187,7 @@
         ON DUPLICATE KEY UPDATE
         user_id = #{userId,jdbcType=VARCHAR},
         friend_id = #{friendId,jdbcType=VARCHAR},
+        nickname = #{nickname,jdbcType =VARCHAR},
         last_message = #{lastMessage,jdbcType=INTEGER},
         type =  #{type,jdbcType=VARCHAR},
         del_flag = #{delFlag,jdbcType=TIMESTAMP},

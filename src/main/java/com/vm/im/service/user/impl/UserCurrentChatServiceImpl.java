@@ -12,6 +12,7 @@ import com.vm.im.entity.user.User;
 import com.vm.im.entity.user.UserCurrentChat;
 import com.vm.im.dao.user.UserCurrentChatMapper;
 import com.vm.im.netty.Constant;
+import com.vm.im.service.user.UserChatGroupService;
 import com.vm.im.service.user.UserCurrentChatService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.vm.im.service.user.UserService;
@@ -20,6 +21,7 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -43,6 +45,9 @@ public class UserCurrentChatServiceImpl extends ServiceImpl<UserCurrentChatMappe
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private UserChatGroupService userChatGroupService;
 
     /**
      * 根据用户id 查询当前会话列表
@@ -69,37 +74,68 @@ public class UserCurrentChatServiceImpl extends ServiceImpl<UserCurrentChatMappe
      * @param userId
      */
     @Override
-    public void flushCurrentMsgListForUser(String userId, String friendId, int count,JSONObject param) {
-        ChannelHandlerContext ctx = Constant.onlineUserMap.get(userId);
-        ChannelHandlerContext toCtx = Constant.onlineUserMap.get(friendId);
-        User user =userService.getRedisUserById(userId);
-        /*List<String> userIdList = userCurrentChatMapper.findFriendByUid(userId);
-        List<String> friendIdlist = userCurrentChatMapper.findFriendByUid(friendId);*/
-        UserCurrentDTO userCurrentUid = new UserCurrentDTO();
-        userCurrentUid.setUid(userId);
-        userCurrentUid.setFriendId(friendId);
-        userCurrentUid.setLastMessage(String.valueOf(param.get("content")));
-        UserCurrentChat userChatUid = buildUserCurrentChat(userCurrentUid);
-        userCurrentChatMapper.saveOrUpdate(userChatUid);
-        LOG.info("插入数据为" + JSON.toJSONString(userChatUid));
-        if (ctx != null) {
-            JSONObject params = new JSONObject();
-            params.put("userId", userId);
-            params.put("count", count);
-            listByUid(params, ctx);
-        }
-        UserCurrentDTO userCurrentFid = new UserCurrentDTO();
-        userCurrentFid.setUid(friendId);
-        userCurrentFid.setFriendId(userId);
-        userCurrentFid.setLastMessage(String.valueOf(param.get("content")));
-        UserCurrentChat userChatFid = buildUserCurrentChat(userCurrentFid);
-        userCurrentChatMapper.saveOrUpdate(userChatFid);
-        LOG.info("反插入数据为" + JSON.toJSONString(userChatFid));
-        if (toCtx != null) {
-            JSONObject params = new JSONObject();
-            params.put("userId", friendId);
-            params.put("count", count);
-            listByUid(params, toCtx);
+    public void flushCurrentMsgListForUser(String userId, String friendId, int count,JSONObject param,User user) {
+        //userService.saveUserInfo(user);
+        if (param.get("type").equals(ChatTypeEnum.SINGLE_SENDING.name())) {
+            ChannelHandlerContext ctx = Constant.onlineUserMap.get(userId);
+            ChannelHandlerContext toCtx = Constant.onlineUserMap.get(friendId);
+            /*List<String> userIdList = userCurrentChatMapper.findFriendByUid(userId);
+            List<String> friendIdlist = userCurrentChatMapper.findFriendByUid(friendId);*/
+            User friend = userService.getRedisUserById(friendId);
+            UserCurrentDTO userCurrentUid = new UserCurrentDTO();
+            userCurrentUid.setUid(userId);
+            userCurrentUid.setFriendId(friendId);
+            userCurrentUid.setNickName(friend.getName());
+            userCurrentUid.setType(1);
+            userCurrentUid.setLastMessage(String.valueOf(param.get("content")));
+            UserCurrentChat userChatUid = buildUserCurrentChat(userCurrentUid);
+            userCurrentChatMapper.saveOrUpdate(userChatUid);
+            //userService.saveUserInfo(user);
+            LOG.info("插入数据为" + JSON.toJSONString(userChatUid));
+            if (ctx != null) {
+                JSONObject params = new JSONObject();
+                params.put("userId", userId);
+                params.put("count", count);
+                listByUid(params, ctx);
+            }
+            //User friend = userService.getRedisUserById(friendId);
+            UserCurrentDTO userCurrentFid = new UserCurrentDTO();
+            userCurrentFid.setUid(friendId);
+            userCurrentFid.setFriendId(userId);
+            userCurrentFid.setType(1);
+            userCurrentFid.setNickName(user.getName());
+            userCurrentFid.setLastMessage(String.valueOf(param.get("content")));
+            UserCurrentChat userChatFid = buildUserCurrentChat(userCurrentFid);
+            userCurrentChatMapper.saveOrUpdate(userChatFid);
+            //userService.saveUserInfo(user);
+            LOG.info("反插入数据为" + JSON.toJSONString(userChatFid));
+            if (toCtx != null) {
+                JSONObject params = new JSONObject();
+                params.put("userId", friendId);
+                params.put("count", count);
+                listByUid(params, toCtx);
+            }
+        }else if(param.get("type").equals(ChatTypeEnum.GROUP_SENDING.name())){
+            List<String> uids = userChatGroupService.selectUidByGroupId(friendId);
+            for (String uid : uids) {
+                ChannelHandlerContext ctx = Constant.onlineUserMap.get(uid);
+                UserCurrentDTO userCurrentGid = new UserCurrentDTO();
+                userCurrentGid.setUid(uid);
+                userCurrentGid.setFriendId(friendId);
+                userCurrentGid.setNickName(user.getName());
+                userCurrentGid.setType(3);
+                userCurrentGid.setLastMessage(String.valueOf(param.get("content")));
+                UserCurrentChat userChatGid = buildUserCurrentChat(userCurrentGid);
+                userCurrentChatMapper.saveOrUpdate(userChatGid);
+                userService.saveUserInfo(user);
+                LOG.info("工会消息插入数据为:" + JSON.toJSONString(userChatGid));
+                if (ctx != null) {
+                    JSONObject params = new JSONObject();
+                    params.put("userId", userId);
+                    params.put("count", count);
+                    listByUid(params, ctx);
+                }
+            }
         }
     }
 
@@ -111,6 +147,11 @@ public class UserCurrentChatServiceImpl extends ServiceImpl<UserCurrentChatMappe
     @Override
     public void updateUserMessage(String name, String friendId, String nickname) {
         userCurrentChatMapper.updateUserMessage(name,friendId,nickname);
+    }
+
+    @Override
+    public List<String> findUidByFriendId(String friendId) {
+        return userCurrentChatMapper.findUidByFriendId(friendId);
     }
 
     /**
@@ -132,7 +173,8 @@ public class UserCurrentChatServiceImpl extends ServiceImpl<UserCurrentChatMappe
         UserCurrentChat userCurrentChat = new UserCurrentChat();
         userCurrentChat.setUserId(userCurrentDTO.getUid());
         userCurrentChat.setFriendId(userCurrentDTO.getFriendId());
-        userCurrentChat.setType(CommonConstant.YES);
+        userCurrentChat.setNickname(userCurrentDTO.getNickName());
+        userCurrentChat.setType(userCurrentDTO.getType());
         userCurrentChat.setLastMessage(userCurrentDTO.getLastMessage());
         userCurrentChat.setDelFlag(CommonConstant.NO);
         userCurrentChat.setCreateTime(new Date());
