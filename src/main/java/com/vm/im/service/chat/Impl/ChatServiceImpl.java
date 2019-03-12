@@ -167,11 +167,9 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
                 kafkaManager.consumerUnsubscribe(entry.getKey());
                 log.info("==============正在移除握手实例==========");
                 Constant.webSocketHandshakerMap.remove(ctx.channel().id().asLongText());
-                log.info(MessageFormat.format("已移除握手实例，当前握手实例总数为：{}"
-                        , Constant.webSocketHandshakerMap.size()));
+                log.info("已移除握手实例，当前握手实例总数为：{}", Constant.webSocketHandshakerMap.size());
                 iterator.remove();
-                log.info(MessageFormat.format("userId为 {0} 的用户已退出聊天，当前在线人数为：{}"
-                        , entry.getKey(), Constant.onlineUserMap.size()));
+                log.info("userId为 {}, 的用户已退出聊天，当前在线人数为：{}" , entry.getKey(), Constant.onlineUserMap.size());
                 break;
             }
         }

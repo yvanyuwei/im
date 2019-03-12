@@ -69,11 +69,14 @@ public class KafkaConsumer {
             for (ConsumerRecord<String, String> record : records) {
                 LOG.info("GroupId = {}, thread = {},topic={} read offset ={}, key={} , value= {}, partition={}",
                         groupId, threadName, record.topic(), record.offset(), record.key(), record.value(), record.partition());
+//                System.out.println("============================GroupId = "+groupId+", value = "+record.value());
 
                 //TODO 暂时直接调用消息推送 后期调用netty
                 channelHandlerContext.writeAndFlush(new TextWebSocketFrame( record.value()));
             }
         }
+
+        consumer.close();
     }
 
 
@@ -81,7 +84,6 @@ public class KafkaConsumer {
      * 用户下线取消订阅
      */
     public void close() {
-        consumer.close();
         active = false;
     }
 }
