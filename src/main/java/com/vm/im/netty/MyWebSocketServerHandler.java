@@ -23,7 +23,6 @@ import org.springframework.stereotype.Controller;
  */
 @Controller
 @ChannelHandler.Sharable
-//@ServerEndpoint(value="/websocket/{userId}",configurator = SpringConfigurator.class)
 public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
     private static final Logger LOG = LoggerFactory.getLogger(MyWebSocketServerHandler.class);
 
@@ -98,6 +97,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
         //客服端发送过来的消息
         String request = ((TextWebSocketFrame) frame).text();
         System.out.println("服务端收到：" + request);
+        LOG.info("socket 服务端收到：{}", request);
         JSONObject param = null;
         try {
             param = JSONObject.parseObject(request);
@@ -111,16 +111,16 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
             return;
         }
         String type = (String) param.get("type");
-        chatService.remove(ctx);
+//        chatService.remove(ctx);
         switch (type) {
             case "REGISTER":
                 ChannelHandlerContext userIdCtx = Constant.onlineUserMap.get(String.valueOf(param.get("userId")));
-                //if(userIdCtx == null){
+                if(userIdCtx == null){
                     chatService.register(param,ctx);
-                /*}else {
+                }else {
                     chatService.remove(userIdCtx);
                     chatService.register(param, ctx);
-                }*/
+                }
                 break;
             case "SINGLE_SENDING":
                 chatService.singleSend(param, ctx);

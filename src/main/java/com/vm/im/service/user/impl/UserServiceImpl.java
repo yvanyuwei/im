@@ -114,8 +114,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         saveOrUpdate(user);
         List<UserFriend> userFriends = userFriendService.selectByFriendId(user.getId(), CommonConstant.NO);
         for (UserFriend userFriend : userFriends) {
-            if (!user.getName().equals(userFriend.getNickname())){
-                userFriendService.updateUserMessage(user.getName(),userFriend.getFriendId(),userFriend.getNickname());
+            if (!user.getName().equals(userFriend.getNickname())) {
+                userFriendService.updateUserMessage(user.getName(), userFriend.getFriendId(), userFriend.getNickname());
             }
         }
         List<UserChatGroup> userChatGroups = userChatGroupService.selectByUserId(user.getId());
@@ -151,11 +151,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      * @throws BusinessException
      */
     @Override
-    public User getRedisUserById(String userId) throws BusinessException{
-        String userInfo = String.valueOf(redisUtil.hget(CommonConstant.REDIS_USER_INFO, userId));
+    public User getRedisUserById(String userId) throws BusinessException {
+        Object userInfo = redisUtil.hget(CommonConstant.REDIS_USER_INFO, userId);
         User user = null;
 
-        if (StringUtil.isEmpty(userInfo)) {
+        if (null == userInfo) {
             user = getById(userId);
             if (user == null || CommonConstant.YES == user.getDelFlag()) {
                 LOG.info("用户不存在, uid:{}", userId);
@@ -166,13 +166,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         } else {
             try {
-                user = JSON.parseObject(userInfo, User.class);
+                user = JSON.parseObject((String) userInfo, User.class);
             } catch (Exception e) {
                 LOG.info("redis 用户数据解析异常, userInfo:{}", userInfo);
                 throw new BusinessException(BusinessExceptionEnum.USER_INFO_PARSING_EXCEPTION.getFailCode(), BusinessExceptionEnum.USER_INFO_PARSING_EXCEPTION.getFailReason());
             }
         }
 
+        LOG.info("redis userInfo: {}", JSON.toJSONString(user));
         return user;
     }
 

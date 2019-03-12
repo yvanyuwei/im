@@ -65,28 +65,25 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
     public void register(JSONObject param, ChannelHandlerContext ctx) {
         String userMsg = null;
         try {
-            userMsg =needUserAuth.checkToken(String.valueOf(param.get("userId")),String.valueOf(param.get("token")));
-        }catch (BusinessException busExp){
+            userMsg = needUserAuth.checkToken(String.valueOf(param.get("userId")), String.valueOf(param.get("token")));
+        } catch (BusinessException busExp) {
             String str = JSON.toJSONString(new ResultBean(Integer.parseInt(busExp.getFailCode()),
-                    busExp.getFailReason(),"用户token验证失败"));
-            sendMessage(ctx,str);
+                    busExp.getFailReason(), "用户token验证失败"));
+            sendMessage(ctx, str);
             return;
         }
         //String userMsg = needUserAuth.checkToken(String.valueOf(param.get("userId")),String.valueOf(param.get
         // ("token")));
         userService.saveUserInfo(userMsg);
-        String userId = (String)param.get("userId");
+        String userId = (String) param.get("userId");
         List<String> groupList = userChatGroupService.selectGroupIdByUid(userId);
+        List<String> list = new ArrayList<>();
+        list.add(userId + CommonConstant.USER_TOPIC);
         for (String str : groupList) {
-            List<UserChatVO> userChatGroup = userChatGroupService.selectByPrimaryKey(str);
-            List<String> list = new ArrayList<>();
-            list.add(userId + CommonConstant.USER_TOPIC);
-            for (UserChatVO userChatVO : userChatGroup) {
-                list.add(userChatVO.getId() + CommonConstant.GROUP_TOPIC);
-            }
-            list.add(userId);
-            kafkaManager.consumerSubscribe(userId,list);
+            list.add(str + CommonConstant.GROUP_TOPIC);
         }
+        kafkaManager.consumerSubscribe(userId, list);
+
         Constant.onlineUserMap.put(userId, ctx);
         String responseJson = new ResponseJson().success()
                 .setData("type", ChatTypeEnum.REGISTER).toString();
@@ -98,23 +95,23 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
 
     @Override
     public void singleSend(JSONObject param, ChannelHandlerContext ctx) {
-        String fromUserId = (String)param.get("fromUserId");
-        String toUserId = (String)param.get("toUserId");
-        String content = (String)param.get("content");
+        String fromUserId = (String) param.get("fromUserId");
+        String toUserId = (String) param.get("toUserId");
+        String content = (String) param.get("content");
         Long createTime = System.currentTimeMillis();
         String fromUserIdAvatar = String.valueOf(param.get("fromUserIdAvatar"));
         ChannelHandlerContext toUserCtx = Constant.onlineUserMap.get(toUserId);
-        messageService.saveMessage(param,createTime);
-        userCurrentChatService.flushCurrentMsgListForUser(fromUserId,toUserId,500,param);
+        messageService.saveMessage(param, createTime);
+        userCurrentChatService.flushCurrentMsgListForUser(fromUserId, toUserId, 500, param);
         User user = userService.getRedisUserById(fromUserId);
         String responseJson = new ResponseJson().success()
                 .setData("fromUserId", fromUserId)
-                .setData("toUserId",toUserId)
+                .setData("toUserId", toUserId)
                 .setData("content", content)
                 .setData("type", ChatTypeEnum.SINGLE_SENDING)
-                .setData("createTime",createTime)
-                .setData("nickName",user.getName())
-                .setData("fromUserIdAvatar",fromUserIdAvatar)
+                .setData("createTime", createTime)
+                .setData("nickName", user.getName())
+                .setData("fromUserIdAvatar", fromUserIdAvatar)
                 .toString();
         log.info("==============================发送的消息为：" + responseJson);
         kafkaManager.sendMeessage(responseJson, toUserId + CommonConstant.USER_TOPIC);
@@ -127,12 +124,12 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
 
     @Override
     public void groupSend(JSONObject param, ChannelHandlerContext ctx) {
-        String fromUserId = (String)param.get("fromUserId");
-        String toGroupId = (String)param.get("toGroupId");
-        String content = (String)param.get("content");
+        String fromUserId = (String) param.get("fromUserId");
+        String toGroupId = (String) param.get("toGroupId");
+        String content = (String) param.get("content");
         Long createTime = System.currentTimeMillis();
         String fromUserIdAvatar = String.valueOf(param.get("fromUserIdAvatar"));
-        messageService.saveMessage(param,createTime);
+        messageService.saveMessage(param, createTime);
         List<UserChatGroup> groupInfo = chatGroupService.getByGroupId(toGroupId);
         if (groupInfo == null) {
             String responseJson = new ResponseJson().error("该群id不存在").toString();
@@ -144,11 +141,11 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
                     .setData("content", content)
                     .setData("toGroupId", toGroupId)
                     .setData("type", ChatTypeEnum.GROUP_SENDING)
-                    .setData("createTime",createTime)
-                    .setData("nickName",user.getName())
-                    .setData("fromUserIdAvatar",fromUserIdAvatar)
+                    .setData("createTime", createTime)
+                    .setData("nickName", user.getName())
+                    .setData("fromUserIdAvatar", fromUserIdAvatar)
                     .toString();
-            kafkaManager.sendMeessage(responseJson,toGroupId + CommonConstant.GROUP_TOPIC);
+            kafkaManager.sendMeessage(responseJson, toGroupId + CommonConstant.GROUP_TOPIC);
             //给群里每个成员发信息
             /*groupInfo.stream()
                     .forEach(item -> {
@@ -165,7 +162,7 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
     public void remove(ChannelHandlerContext ctx) {
         Iterator<Map.Entry<String, ChannelHandlerContext>> iterator =
                 Constant.onlineUserMap.entrySet().iterator();
-        while(iterator.hasNext()) {
+        while (iterator.hasNext()) {
             Map.Entry<String, ChannelHandlerContext> entry = iterator.next();
             if (entry.getValue() == ctx) {
                 log.info("==============正在移除握手实例==========");
