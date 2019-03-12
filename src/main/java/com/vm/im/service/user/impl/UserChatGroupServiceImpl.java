@@ -3,6 +3,7 @@ package com.vm.im.service.user.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.vm.im.common.constant.CommonConstant;
+import com.vm.im.common.dto.user.UserCurrentDTO;
 import com.vm.im.common.enums.BusinessExceptionEnum;
 import com.vm.im.common.enums.ChatTypeEnum;
 import com.vm.im.common.enums.GroupRoleEnum;
@@ -15,6 +16,7 @@ import com.vm.im.entity.group.ChatGroup;
 import com.vm.im.entity.user.User;
 import com.vm.im.entity.user.UserChatGroup;
 import com.vm.im.dao.user.UserChatGroupMapper;
+import com.vm.im.entity.user.UserCurrentChat;
 import com.vm.im.kafka.KafkaManager;
 import com.vm.im.netty.Constant;
 import com.vm.im.service.group.ChatGroupFlowService;
@@ -22,6 +24,7 @@ import com.vm.im.service.group.ChatGroupOperationFlowService;
 import com.vm.im.service.group.ChatGroupService;
 import com.vm.im.service.user.UserChatGroupService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.vm.im.service.user.UserCurrentChatService;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.slf4j.Logger;
@@ -61,7 +64,7 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
     private ChatGroupService chatGroupService;
 
     @Autowired
-    private KafkaManager kafkaManager;
+    private UserCurrentChatService userCurrentChatService;
 
     /**
      * 添加群主加入指定群组
@@ -227,6 +230,27 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
         }
     }
 
+    /*public void flushCurrentMsgListForGroup(String userId, String groupId, int count,JSONObject param) {
+        ChannelHandlerContext ctx = Constant.onlineUserMap.get(userId);
+        //ChannelHandlerContext toCtx = Constant.onlineUserMap.get(friendId);
+        *//*List<String> userIdList = userCurrentChatMapper.findFriendByUid(userId);
+        List<String> friendIdlist = userCurrentChatMapper.findFriendByUid(friendId);*//*
+        UserCurrentDTO userCurrentUid = new UserCurrentDTO();
+        userCurrentUid.setUid(userId);
+        userCurrentUid.setFriendId(groupId);
+        userCurrentUid.setLastMessage(String.valueOf(param.get("content")));
+        UserCurrentChat userChatUid = buildUserCurrentChat(userCurrentUid);
+        List<UserCurrentChat> userCurrentChats = userCurrentChatService.selectByFriendId(userChatUid.getFriendId());
+
+        //userCurrentChatMapper.saveOrUpdate(userChatUid);
+        if (ctx != null) {
+            JSONObject params = new JSONObject();
+            params.put("userId", userId);
+            params.put("count", count);
+            listByUid(params, ctx);
+        }
+    }*/
+
     @Override
     public List<UserChatGroup> selectByUserId(String userId) {
         return userChatGroupMapper.selectByUserId(userId);
@@ -235,6 +259,11 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
     @Override
     public List<UserChatVO> selectByPrimaryKey(String groupId) {
         return userChatGroupMapper.selectByPrimaryKey(groupId);
+    }
+
+    @Override
+    public List<String> selectUidByGroupId(String groupId) {
+        return userChatGroupMapper.selectUidByGroupId(groupId);
     }
 
     @Override
@@ -266,5 +295,19 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
         LOG.info("构建用户群组信息, userChatGroup:{}", JSON.toJSONString(userChatGroup));
 
         return userChatGroup;
+    }
+
+    /**
+     * 构建一个userCurrentChat
+     */
+    public UserCurrentChat buildUserCurrentChat(UserCurrentDTO userCurrentDTO){
+        UserCurrentChat userCurrentChat = new UserCurrentChat();
+        userCurrentChat.setUserId(userCurrentDTO.getUid());
+        userCurrentChat.setFriendId(userCurrentDTO.getFriendId());
+        userCurrentChat.setType(CommonConstant.YES);
+        userCurrentChat.setLastMessage(userCurrentDTO.getLastMessage());
+        userCurrentChat.setDelFlag(CommonConstant.NO);
+        userCurrentChat.setCreateTime(new Date());
+        return userCurrentChat;
     }
 }

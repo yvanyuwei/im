@@ -2,6 +2,7 @@ package com.vm.im.service.user;
 
 import com.alibaba.fastjson.JSONObject;
 import com.vm.im.common.vo.user.FindUserVO;
+import com.vm.im.entity.user.User;
 import com.vm.im.entity.user.UserCurrentChat;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.netty.channel.ChannelHandlerContext;
@@ -39,9 +40,22 @@ public interface UserCurrentChatService extends IService<UserCurrentChat> {
      * 刷新用户数据
      * @param userId
      */
-    void flushCurrentMsgListForUser(String userId,String friendId ,int count,JSONObject param);
+    void flushCurrentMsgListForUser(String userId, String friendId , int count, JSONObject param, User user);
 
+    /**
+     * 通过好友Id查询用户当前会话列表
+     * @param friendId
+     * @return
+     */
     List<UserCurrentChat> selectByFriendId(String friendId);
 
+    /**
+     * 更新用户数据
+     * @param name
+     * @param friendId
+     * @param nickname
+     */
     void updateUserMessage(String name, String friendId, String nickname);
+
+    List<String> findUidByFriendId(String friendId);
 }

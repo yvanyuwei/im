@@ -16,5 +16,10 @@ public class UserCurrentDTO {
     @NotEmpty(message = "message不能为空")
     private String lastMessage;
 
+    @NotEmpty(message = "message不能为空")
+    private Integer type;
+
+    private String nickName;
+
 
 }
