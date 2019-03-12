@@ -63,9 +63,6 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
     @Autowired
     private ChatGroupService chatGroupService;
 
-    @Autowired
-    private UserCurrentChatService userCurrentChatService;
-
     /**
      * 添加群主加入指定群组
      *

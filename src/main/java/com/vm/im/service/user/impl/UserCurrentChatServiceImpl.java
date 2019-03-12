@@ -21,12 +21,11 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -43,6 +42,7 @@ public class UserCurrentChatServiceImpl extends ServiceImpl<UserCurrentChatMappe
     @Autowired
     private UserCurrentChatMapper userCurrentChatMapper;
 
+    @Lazy
     @Autowired
     private UserService userService;
 
@@ -127,7 +127,7 @@ public class UserCurrentChatServiceImpl extends ServiceImpl<UserCurrentChatMappe
                 userCurrentGid.setLastMessage(String.valueOf(param.get("content")));
                 UserCurrentChat userChatGid = buildUserCurrentChat(userCurrentGid);
                 userCurrentChatMapper.saveOrUpdate(userChatGid);
-                userService.saveUserInfo(user);
+//                userService.saveUserInfo(user);
                 LOG.info("工会消息插入数据为:" + JSON.toJSONString(userChatGid));
                 if (ctx != null) {
                     JSONObject params = new JSONObject();
