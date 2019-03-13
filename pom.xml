@@ -141,6 +141,12 @@
                 <activatedProperties>pro</activatedProperties>
             </properties>
         </profile>
+        <profile>
+            <id>myTest</id>
+            <properties>
+                <activatedProperties>myTest</activatedProperties>
+            </properties>
+        </profile>
 
     </profiles>
 
