@@ -1,0 +1,174 @@
+package com.vm.im.entity.common;
+
+import java.math.BigDecimal;
+
+import com.baomidou.mybatisplus.annotation.TableName;
+
+import java.util.Date;
+import java.io.Serializable;
+
+/**
+ * <p>
+ * 红包
+ * </p>
+ *
+ * @author zhangqi
+ * @since 2019-02-20
+ */
+@TableName("im_red_packet")
+public class RedPacket implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    private String id;
+
+    /**
+     * 发送人id
+     */
+    private String fromId;
+
+    /**
+     * 接收人id/接收群id
+     */
+    private String toId;
+
+    /**
+     * 类型 1: 个人红包, 3：群红包
+     */
+    private Integer type;
+
+    /**
+     * 币种
+     */
+    private String coinId;
+
+    /**
+     * 金额
+     */
+    private BigDecimal amount;
+
+    /**
+     * 个数
+     */
+    private Integer number;
+
+    /**
+     * 说明
+     */
+    private String remarks;
+
+    /**
+     * 状态 -1： 无效的, 0: 失败的, 1成功
+     */
+    private Integer status;
+
+    private Date createTime;
+
+    private Date updateTime;
+
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getFromId() {
+        return fromId;
+    }
+
+    public void setFromId(String fromId) {
+        this.fromId = fromId;
+    }
+
+    public String getToId() {
+        return toId;
+    }
+
+    public void setToId(String toId) {
+        this.toId = toId;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public String getCoinId() {
+        return coinId;
+    }
+
+    public void setCoinId(String coinId) {
+        this.coinId = coinId;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public Integer getNumber() {
+        return number;
+    }
+
+    public void setNumber(Integer number) {
+        this.number = number;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    @Override
+    public String toString() {
+        return "RedPacket{" +
+                "id=" + id +
+                ", fromId=" + fromId +
+                ", toId=" + toId +
+                ", type=" + type +
+                ", coinId=" + coinId +
+                ", amount=" + amount +
+                ", number=" + number +
+                ", remarks=" + remarks +
+                ", status=" + status +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                "}";
+    }
+}

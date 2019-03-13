@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vm.im.dao.user.UserCurrentChatMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.vm.im.entity.user.UserCurrentChat">
+        <id column="user_id" property="userId"/>
+        <result column="friend_id" property="friendId"/>
+        <result column="type" property="type"/>
+        <result column="nickname" property="nickname"/>
+        <result column="last_message" property="lastMessage"/>
+        <result column="del_flag" property="delFlag"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <!-- 查找好友映射结果 -->
+    <resultMap id="FindUserResultMap" type="com.vm.im.common.vo.user.FindUserVO">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="avatar" property="avatar" jdbcType="VARCHAR"/>
+        <result column="sign" property="sign" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+    </resultMap>
+    <!-- 查找当前会话映射结果-->
+    <resultMap id="FindCurrentResultMap" type="com.vm.im.common.vo.user.FindCurrentVO">
+        <id column="user_id" property="userId" jdbcType="VARCHAR" />
+        <result column="friend_id" property="friendId" jdbcType="VARCHAR" />
+        <result column="type" property="type" jdbcType="INTEGER" />
+        <result column="nickname" property="nickname" jdbcType="VARCHAR" />
+        <result column="last_message" property="lastMessage" jdbcType="VARCHAR" />
+        <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="avatar" property="avatar" jdbcType="VARCHAR" />
+        <result column="groupavatar" property="groupavatar" jdbcType="VARCHAR" />
+
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        user_id, friend_id, type, nickname, last_message, del_flag, create_time
+    </sql>
+
+    <select id="listByUid" resultMap="FindCurrentResultMap">
+        <!--select
+        <include refid="Base_Column_List" />
+        from im_user_current_chat
+        where user_id = #{uid,jdbcType=VARCHAR}
+        AND del_flag = 0
+        order by TYPE desc, create_time desc
+        limit #{count,jdbcType=INTEGER}-->
+        select
+          imt.*,
+          icg.avatar groupavatar
+        from
+          (select
+            iu.avatar,
+            temp.*
+          from
+            (select
+              imcc.*
+            from
+              im_user_current_chat imcc
+            where
+              user_id = #{uid,jdbcType=VARCHAR}
+            AND del_flag = 0
+            order by
+            TYPE desc, create_time desc limit #{count,jdbcType=INTEGER}) temp
+          LEFT JOIN
+            im_user iu
+          on temp.friend_id = iu.id) imt
+        LEFT JOIN
+          im_chat_group icg
+        on imt.friend_id = icg.id
+    </select>
+
+    <select id="findUsersss" resultMap="FindUserResultMap" parameterType="java.lang.String" >
+        select
+        <include refid="Base_Column_List" />
+        from im_user_current_chat
+        where user_id = #{uid,jdbcType=VARCHAR}
+        and friend_id like #{condition,jdbcType=VARCHAR}
+        or nickname like #{condition,jdbcType=VARCHAR}
+    </select>
+
+    <select id="findUser" resultMap="FindUserResultMap" parameterType="java.lang.String">
+        SELECT
+        iu.`id` id , iu.`avatar` avatar, cn.`nickname` name, iu.`sign` sign
+        FROM (SELECT iucc.friend_id friend_id, iucc.nickname nickname, iucc.type type
+              FROM im_user_current_chat iucc
+              where iucc.user_id = #{uid,jdbcType=VARCHAR}
+              and iucc.type = 1
+              and iucc.del_flag = 0
+              and (iucc.friend_id like #{condition,jdbcType=VARCHAR}
+              or iucc.nickname like #{condition,jdbcType=VARCHAR})) cn
+        LEFT JOIN `im_user` iu
+        ON iu.id = cn.friend_id
+        where iu.del_flag = 0
+    </select>
+
+    <select id="findUidByFriendId" resultType="java.lang.String" parameterType="java.lang.String">
+        select user_id from im_user_current_chat where friend_id = #{friendId,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectByFriendId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+          <include refid="Base_Column_List" />
+        from im_user_current_chat
+        where friend_id = #{friendId,jdbcType=VARCHAR}
+        and del_flag = 0
+    </select>
+
+    <update id="updateUserMessage" parameterType="java.lang.String">
+        update im_user_current_chat set
+
+                    nickname = #{name,jdbcType=VARCHAR}
+
+        where friend_id = #{friendId,jdbcType=VARCHAR}
+        and (nickname = #{nickname,jdbcType=VARCHAR} or nickname is null )
+
+        <!-- <where>
+            <if test="friend_id != null">
+                 friend_id = #{friendId,jdbcType=VARCHAR}
+            </if>
+            <if test="nickname != null">
+                 nickname = #{nickname,jdbcType=VARCHAR}
+            </if>
+        </where>-->
+        <!--<trim prefix="where" prefixOverrides="and|or">
+            <if test="friend_id != null">
+               and friend_id = #{friendId,jdbcType=VARCHAR}
+            </if>
+            <if test="nickname != null">
+              and nickname = #{nickname,jdbcType=VARCHAR}
+            </if>
+        </trim>-->
+
+      <!--  update im_user_current_chat
+          <trim prefix="set nickname = #{name,jdbcType=VARCHAR} "  suffix=" where ">
+            <if test="friend_id != null">
+               friend_id = #{friendId,jdbcType=VARCHAR}
+            </if>
+              <if test="nickname != null">
+                  and nickname = #{nickname,jdbcType=VARCHAR}
+              </if>
+          </trim>-->
+    </update>
+
+    <insert id="saveOrUpdate" parameterType="com.vm.im.entity.user.UserCurrentChat">
+      INSERT into
+        im_user_current_chat
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="friendId != null">
+                friend_id,
+            </if>
+            <if test="nickname != null">
+                nickname,
+            </if>
+            <if test="lastMessage != null">
+                last_message,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="delFlag != null">
+                del_flag,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                #{userId,jdbcType=VARCHAR},
+            </if>
+            <if test="friendId != null">
+                #{friendId,jdbcType=VARCHAR},
+            </if>
+            <if test="nickname != null">
+                #{nickname,jdbcType=VARCHAR},
+            </if>
+            <if test="lastMessage != null">
+                #{lastMessage,jdbcType=INTEGER},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=VARCHAR},
+            </if>
+            <if test="delFlag != null">
+                #{delFlag,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=VARCHAR},
+            </if>
+        </trim>
+        ON DUPLICATE KEY UPDATE
+        user_id = #{userId,jdbcType=VARCHAR},
+        friend_id = #{friendId,jdbcType=VARCHAR},
+        nickname = #{nickname,jdbcType =VARCHAR},
+        last_message = #{lastMessage,jdbcType=INTEGER},
+        type =  #{type,jdbcType=VARCHAR},
+        del_flag = #{delFlag,jdbcType=TIMESTAMP},
+        create_time = #{createTime,jdbcType=VARCHAR}
+    </insert>
+</mapper>
