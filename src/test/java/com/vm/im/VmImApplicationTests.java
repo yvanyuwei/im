@@ -1,3 +1,4 @@
+/*
 
 package com.vm.im;
 
@@ -67,8 +68,10 @@ public class VmImApplicationTests {
     @Test
     public void test111(){
 
+*/
 /*List<UserFriend> userFriend = userFriendMapper.selectByFriendId("1",0);
-        System.out.println(userFriend);*/
+        System.out.println(userFriend);*//*
+
 
         //serFriendMapper.updateUserMessage("test","2","123");
 
@@ -92,3 +95,4 @@ public class VmImApplicationTests {
     }
 }
 
+*/

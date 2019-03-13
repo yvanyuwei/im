@@ -73,9 +73,16 @@ public class KafkaManager {
     public void consumerSubscribe(String group, List<String> topicIds) {
         LOG.info("================Kafka================用户:{}, 订阅了主题", group);
         KafkaConsumer kafkaConsumer = new KafkaConsumer(group, topicIds, consumerFactory);
-        kafkaConsumerMap.put(group, kafkaConsumer);
+        KafkaConsumer consumer = kafkaConsumerMap.put(group, kafkaConsumer);
+        if (consumer != null) {
+            consumer.close();
+        }
 
-        kafkaConsumer.subscribe();
+        try {
+            kafkaConsumer.subscribe();
+        } finally {
+            consumerUnsubscribe(group);
+        }
     }
 
     /**
@@ -87,7 +94,10 @@ public class KafkaManager {
     public void consumerUnsubscribe(String group) {
         LOG.info("================Kafka================用户:{}, 取消订阅", group);
         KafkaConsumer kafkaConsumer = kafkaConsumerMap.get(group);
-        kafkaConsumer.close();
-        kafkaConsumerMap.remove(group);
+
+        if (kafkaConsumer != null) {
+            kafkaConsumer.close();
+            kafkaConsumerMap.remove(group);
+        }
     }
 }

@@ -127,5 +127,31 @@ public class AdminController {
         }
         return JSON.toJSONString(new ResultBean(ResultCodeEnum.SUCCESS.getCode(),ResultCodeEnum.SUCCESS.name(), null));
     }
+
+    @AdminAuth(roles = {AdminRoleEnum.ADMIN})
+    @PostMapping("giveRedPacket")
+    @ApiOperation(value = "发红包", notes = "用户发送红包接口")
+    public String giveRedPacket(@RequestBody @Valid CreateUserDTO createUserDTO) {
+        User userMsg = userService.getById(createUserDTO.getId());
+        if (userMsg == null){
+            userService.createUser(createUserDTO);
+        }else{
+            throw new BusinessException(BusinessExceptionEnum.USER_EXIST_EXCEPTION.getFailCode(), BusinessExceptionEnum.USER_EXIST_EXCEPTION.getFailReason());
+        }
+        return JSON.toJSONString(new ResultBean(ResultCodeEnum.SUCCESS.getCode(),ResultCodeEnum.SUCCESS.name(), null));
+    }
+
+    @AdminAuth(roles = {AdminRoleEnum.ADMIN})
+    @PostMapping("receiveRedPacket")
+    @ApiOperation(value = "收红包", notes = "用户接收红包接口")
+    public String receiveRedPacket(@RequestBody @Valid CreateUserDTO createUserDTO) {
+        User userMsg = userService.getById(createUserDTO.getId());
+        if (userMsg == null){
+            userService.createUser(createUserDTO);
+        }else{
+            throw new BusinessException(BusinessExceptionEnum.USER_EXIST_EXCEPTION.getFailCode(), BusinessExceptionEnum.USER_EXIST_EXCEPTION.getFailReason());
+        }
+        return JSON.toJSONString(new ResultBean(ResultCodeEnum.SUCCESS.getCode(),ResultCodeEnum.SUCCESS.name(), null));
+    }
 }
 
