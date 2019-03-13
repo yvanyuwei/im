@@ -15,4 +15,5 @@ public class FindCurrentVO {
     private Integer delFlag;
     private Date createTime;
     private String avatar;
+    private String groupavatar;
 }

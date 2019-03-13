@@ -3,6 +3,7 @@
 package com.vm.im;
 
 import com.vm.im.common.dto.admin.CreateUserDTO;
+import com.vm.im.common.vo.user.FindCurrentVO;
 import com.vm.im.dao.group.ChatGroupMapper;
 import com.vm.im.dao.user.UserChatGroupMapper;
 import com.vm.im.dao.user.UserCurrentChatMapper;
@@ -17,6 +18,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.List;
 
 
 @RunWith(SpringRunner.class)
@@ -68,9 +71,10 @@ public class VmImApplicationTests {
     @Test
     public void test111(){
 
-*/
+        */
 /*List<UserFriend> userFriend = userFriendMapper.selectByFriendId("1",0);
         System.out.println(userFriend);*//*
+
 
 
         //serFriendMapper.updateUserMessage("test","2","123");
@@ -89,8 +93,8 @@ public class VmImApplicationTests {
 
         //List<String> list = userCurrentChatMapper.fingFriendByUid("180160");
         //List<UserChatVO> userChatVOS = userChatGroupMapper.selectByPrimaryKey("1");
-        //List<FindCurrentVO> userCurrentChats = userCurrentChatMapper.listByUid("180175","180175",500);
-       // System.out.println(userCurrentChats);
+        List<FindCurrentVO> userCurrentChats = userCurrentChatMapper.listByUid("180179",500);
+        System.out.println(userCurrentChats);
 
     }
 }
