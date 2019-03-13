@@ -68,6 +68,7 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
             String str = JSON.toJSONString(new ResultBean(Integer.parseInt(busExp.getFailCode()),
                     busExp.getFailReason(), "用户token验证失败"));
             sendMessage(ctx, str);
+            ctx.close();
             return;
         }
         UserToken userToken = JSON.parseObject(userMsg, UserToken.class);
@@ -161,13 +162,13 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
     public void remove(ChannelHandlerContext ctx) {
         Iterator<Map.Entry<String, ChannelHandlerContext>> iterator =
                 Constant.onlineUserMap.entrySet().iterator();
+        Constant.webSocketHandshakerMap.remove(ctx.channel().id().asLongText());
+        log.info("已移除握手实例，当前握手实例总数为：{}", Constant.webSocketHandshakerMap.size());
         while (iterator.hasNext()) {
             Map.Entry<String, ChannelHandlerContext> entry = iterator.next();
             if (entry.getValue() == ctx) {
                 kafkaManager.consumerUnsubscribe(entry.getKey());
                 log.info("==============正在移除握手实例==========");
-                Constant.webSocketHandshakerMap.remove(ctx.channel().id().asLongText());
-                log.info("已移除握手实例，当前握手实例总数为：{}", Constant.webSocketHandshakerMap.size());
                 iterator.remove();
                 log.info("userId为 {}, 的用户已退出聊天，当前在线人数为：{}" , entry.getKey(), Constant.onlineUserMap.size());
                 break;

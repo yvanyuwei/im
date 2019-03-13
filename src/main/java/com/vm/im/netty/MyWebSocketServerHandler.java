@@ -85,6 +85,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
             WebSocketServerHandshaker handshaker = Constant.webSocketHandshakerMap.get(ctx.channel().id().asLongText());
             if (handshaker == null){
                 sendErrorMessage(ctx,"不存在此客户端连接");
+                ctx.close();
             }else {
 //                chatService.remove(ctx);
                 handshaker.close(ctx.channel(), (CloseWebSocketFrame) frame.retain());
