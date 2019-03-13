@@ -131,11 +131,15 @@ public class AdminController {
     @PostMapping("receiveRedPacket")
     @ApiOperation(value = "收红包", notes = "用户接收红包接口")
     public String receiveRedPacket(@RequestBody @Valid @ApiParam(name="收红包对象",value="传入json格式")ReceiveRedPacketDTO receiveRedPacketDTO) {
-        User userMsg = userService.getById(receiveRedPacketDTO.getFromId());
-        if (userMsg == null){
-        }else{
-            throw new BusinessException(BusinessExceptionEnum.USER_EXIST_EXCEPTION.getFailCode(), BusinessExceptionEnum.USER_EXIST_EXCEPTION.getFailReason());
-        }
+
+        return JSON.toJSONString(new ResultBean(ResultCodeEnum.SUCCESS.getCode(),ResultCodeEnum.SUCCESS.name(), null));
+    }
+
+    @AdminAuth(roles = {AdminRoleEnum.ADMIN})
+    @PostMapping("redPacketComplete")
+    @ApiOperation(value = "红包已抢完", notes = "修改红包状态为已完成接口")
+    public String redPacketComplete(@RequestBody @Valid @ApiParam(name="红包id",value="传入json格式")RedPacketCompleteDTO redPacketCompleteDTO) {
+
         return JSON.toJSONString(new ResultBean(ResultCodeEnum.SUCCESS.getCode(),ResultCodeEnum.SUCCESS.name(), null));
     }
 }

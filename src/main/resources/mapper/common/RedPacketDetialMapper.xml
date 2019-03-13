@@ -10,6 +10,7 @@
         <result column="to_id" property="toId" />
         <result column="type" property="type" />
         <result column="coin_id" property="coinId" />
+        <result column="coin_name" property="coinName" />
         <result column="amount" property="amount" />
         <result column="status" property="status" />
         <result column="create_time" property="createTime" />

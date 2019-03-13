@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
 
@@ -43,7 +45,8 @@ public class GiveRedPacketDTO {
      * 类型 1: 个人红包, 3：群红包 5: 工会红包
      */
     @ApiModelProperty(required = true, value = "类型")
-    @NotEmpty(message = "type不能为空")
+    @Min(value = 1)
+    @Max(value = 5)
     private Integer type;
 
     /**
@@ -70,18 +73,13 @@ public class GiveRedPacketDTO {
      * 个数
      */
     @ApiModelProperty(required = true, value = "个数")
-    @NotEmpty(message = "number不能为空")
+    @Min(value = 1)
     private Integer number;
 
     /**
      * 说明
      */
     private String remarks;
-
-    /**
-     * 状态 -1： 无效的, 0: 失败的, 1成功
-     */
-    private Integer status;
 
     @ApiModelProperty(required = true, value = "时间")
     @NotEmpty(message = "createTime不能为空")

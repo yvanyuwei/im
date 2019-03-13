@@ -9,6 +9,7 @@
         <result column="to_id" property="toId" />
         <result column="type" property="type" />
         <result column="coin_id" property="coinId" />
+        <result column="coin_name" property="coinName" />
         <result column="amount" property="amount" />
         <result column="number" property="number" />
         <result column="remarks" property="remarks" />

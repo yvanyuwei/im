@@ -13,7 +13,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author zhangqi
- * @since 2019-02-20
+ * @since 2019-03-13
  */
 @TableName("im_red_packet")
 public class RedPacket implements Serializable {
@@ -41,6 +41,11 @@ public class RedPacket implements Serializable {
      * 币种
      */
     private String coinId;
+
+    /**
+     * 币种名称
+     */
+    private String coinName;
 
     /**
      * 金额
@@ -107,6 +112,14 @@ public class RedPacket implements Serializable {
         this.coinId = coinId;
     }
 
+    public String getCoinName() {
+        return coinName;
+    }
+
+    public void setCoinName(String coinName) {
+        this.coinName = coinName;
+    }
+
     public BigDecimal getAmount() {
         return amount;
     }
@@ -163,6 +176,7 @@ public class RedPacket implements Serializable {
                 ", toId=" + toId +
                 ", type=" + type +
                 ", coinId=" + coinId +
+                ", coinName=" + coinName +
                 ", amount=" + amount +
                 ", number=" + number +
                 ", remarks=" + remarks +
