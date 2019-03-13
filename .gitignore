@@ -29,3 +29,6 @@ pom.xml
 static
 .DS_Store
 log.base_IS_UNDEFINED
+/src/test/
+mvnw
+mvnw.cmd

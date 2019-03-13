@@ -85,8 +85,9 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
             WebSocketServerHandshaker handshaker = Constant.webSocketHandshakerMap.get(ctx.channel().id().asLongText());
             if (handshaker == null){
                 sendErrorMessage(ctx,"不存在此客户端连接");
+                ctx.close();
             }else {
-                chatService.remove(ctx);
+//                chatService.remove(ctx);
                 handshaker.close(ctx.channel(), (CloseWebSocketFrame) frame.retain());
             }
             return;
@@ -205,11 +206,11 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
      */
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        try {
-            chatService.remove(ctx);
-        }catch (Exception e){
-            LOG.info("移除握手错误："+e.getMessage());
-        }
+//        try {
+//            chatService.remove(ctx);
+//        }catch (Exception e){
+//            LOG.info("移除握手错误："+e.getMessage());
+//        }
         cause.printStackTrace();
         ctx.close();
     }

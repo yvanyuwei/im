@@ -342,5 +342,10 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
         }
     }
 
+    @Override
+    public String selectNameByGroupId(String groupId) {
+        return chatGroupMapper.selectNameByGroupId(groupId);
+    }
+
 
 }

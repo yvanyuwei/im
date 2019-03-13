@@ -30,4 +30,8 @@
         from im_chat_group
     </select>
 
+    <select id="selectNameByGroupId" resultType="java.lang.String" parameterType="java.lang.String">
+        select name from im_chat_group where id = #{groupId,jdbcType=VARCHAR}
+    </select>
+
 </mapper>

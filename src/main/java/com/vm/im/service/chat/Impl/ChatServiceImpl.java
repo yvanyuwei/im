@@ -4,12 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.dto.ResultBean;
-import com.vm.im.common.enums.BusinessExceptionEnum;
 import com.vm.im.common.enums.ChatTypeEnum;
-import com.vm.im.common.enums.ResultCodeEnum;
 import com.vm.im.common.exception.BusinessException;
 import com.vm.im.common.util.ResponseJson;
-import com.vm.im.common.vo.user.UserChatVO;
 import com.vm.im.common.vo.user.UserToken;
 import com.vm.im.controller.aop.NeedUserAuth;
 import com.vm.im.entity.user.User;
@@ -25,7 +22,6 @@ import com.vm.im.service.user.UserCurrentChatService;
 import com.vm.im.service.user.UserService;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
-import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,6 +64,7 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
             String str = JSON.toJSONString(new ResultBean(Integer.parseInt(busExp.getFailCode()),
                     busExp.getFailReason(), "用户token验证失败"));
             sendMessage(ctx, str);
+            ctx.close();
             return;
         }
         UserToken userToken = JSON.parseObject(userMsg, UserToken.class);
@@ -161,17 +158,15 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
     public void remove(ChannelHandlerContext ctx) {
         Iterator<Map.Entry<String, ChannelHandlerContext>> iterator =
                 Constant.onlineUserMap.entrySet().iterator();
+        Constant.webSocketHandshakerMap.remove(ctx.channel().id().asLongText());
+        log.info("已移除握手实例，当前握手实例总数为：{}", Constant.webSocketHandshakerMap.size());
         while (iterator.hasNext()) {
             Map.Entry<String, ChannelHandlerContext> entry = iterator.next();
             if (entry.getValue() == ctx) {
                 kafkaManager.consumerUnsubscribe(entry.getKey());
                 log.info("==============正在移除握手实例==========");
-                Constant.webSocketHandshakerMap.remove(ctx.channel().id().asLongText());
-                log.info(MessageFormat.format("已移除握手实例，当前握手实例总数为：{}"
-                        , Constant.webSocketHandshakerMap.size()));
                 iterator.remove();
-                log.info(MessageFormat.format("userId为 {0} 的用户已退出聊天，当前在线人数为：{}"
-                        , entry.getKey(), Constant.onlineUserMap.size()));
+                log.info("userId为 {}, 的用户已退出聊天，当前在线人数为：{}" , entry.getKey(), Constant.onlineUserMap.size());
                 break;
             }
         }
