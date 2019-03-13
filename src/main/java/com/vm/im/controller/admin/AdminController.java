@@ -2,27 +2,21 @@ package com.vm.im.controller.admin;
 
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.vm.im.common.annot.AdminAuth;
 import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.dto.ResultBean;
-import com.vm.im.common.dto.admin.AuthOperationDTO;
-import com.vm.im.common.dto.admin.CreateUserDTO;
-import com.vm.im.common.dto.admin.MemberOperationDTO;
-import com.vm.im.common.dto.admin.UnionOperationDTO;
+import com.vm.im.common.dto.admin.*;
 import com.vm.im.common.enums.AdminRoleEnum;
 import com.vm.im.common.enums.BusinessExceptionEnum;
 import com.vm.im.common.enums.ResultCodeEnum;
 import com.vm.im.common.exception.BusinessException;
 import com.vm.im.entity.user.User;
-import com.vm.im.entity.user.UserChatGroup;
-import com.vm.im.netty.Constant;
 import com.vm.im.service.group.ChatGroupService;
 import com.vm.im.service.user.UserChatGroupService;
 import com.vm.im.service.user.UserService;
-import io.netty.channel.ChannelHandlerContext;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +26,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -131,23 +122,17 @@ public class AdminController {
     @AdminAuth(roles = {AdminRoleEnum.ADMIN})
     @PostMapping("giveRedPacket")
     @ApiOperation(value = "发红包", notes = "用户发送红包接口")
-    public String giveRedPacket(@RequestBody @Valid CreateUserDTO createUserDTO) {
-        User userMsg = userService.getById(createUserDTO.getId());
-        if (userMsg == null){
-            userService.createUser(createUserDTO);
-        }else{
-            throw new BusinessException(BusinessExceptionEnum.USER_EXIST_EXCEPTION.getFailCode(), BusinessExceptionEnum.USER_EXIST_EXCEPTION.getFailReason());
-        }
+    public String giveRedPacket(@RequestBody @Valid @ApiParam(name="红包对象",value="传入json格式")GiveRedPacketDTO giveRedPacketDTO) {
+
         return JSON.toJSONString(new ResultBean(ResultCodeEnum.SUCCESS.getCode(),ResultCodeEnum.SUCCESS.name(), null));
     }
 
     @AdminAuth(roles = {AdminRoleEnum.ADMIN})
     @PostMapping("receiveRedPacket")
     @ApiOperation(value = "收红包", notes = "用户接收红包接口")
-    public String receiveRedPacket(@RequestBody @Valid CreateUserDTO createUserDTO) {
-        User userMsg = userService.getById(createUserDTO.getId());
+    public String receiveRedPacket(@RequestBody @Valid @ApiParam(name="收红包对象",value="传入json格式")ReceiveRedPacketDTO receiveRedPacketDTO) {
+        User userMsg = userService.getById(receiveRedPacketDTO.getFromId());
         if (userMsg == null){
-            userService.createUser(createUserDTO);
         }else{
             throw new BusinessException(BusinessExceptionEnum.USER_EXIST_EXCEPTION.getFailCode(), BusinessExceptionEnum.USER_EXIST_EXCEPTION.getFailReason());
         }
