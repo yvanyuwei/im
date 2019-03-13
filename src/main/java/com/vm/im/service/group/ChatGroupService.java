@@ -99,4 +99,6 @@ public interface ChatGroupService extends IService<ChatGroup> {
      */
     void loadGroupInfo();
 
+    String selectNameByGroupId(String groupId);
+
 }

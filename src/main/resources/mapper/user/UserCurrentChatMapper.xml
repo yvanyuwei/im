@@ -22,14 +22,16 @@
     </resultMap>
     <!-- 查找当前会话映射结果-->
     <resultMap id="FindCurrentResultMap" type="com.vm.im.common.vo.user.FindCurrentVO">
-        <id column="user_id" property="userId"/>
-        <result column="friend_id" property="friendId"/>
-        <result column="type" property="type"/>
-        <result column="nickname" property="nickname"/>
-        <result column="last_message" property="lastMessage"/>
-        <result column="del_flag" property="delFlag"/>
-        <result column="create_time" property="createTime"/>
-        <result column="avatar" property="avatar"/>
+        <id column="user_id" property="userId" jdbcType="VARCHAR" />
+        <result column="friend_id" property="friendId" jdbcType="VARCHAR" />
+        <result column="type" property="type" jdbcType="INTEGER" />
+        <result column="nickname" property="nickname" jdbcType="VARCHAR" />
+        <result column="last_message" property="lastMessage" jdbcType="VARCHAR" />
+        <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="avatar" property="avatar" jdbcType="VARCHAR" />
+        <result column="groupavatar" property="groupavatar" jdbcType="VARCHAR" />
+
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -45,22 +47,28 @@
         order by TYPE desc, create_time desc
         limit #{count,jdbcType=INTEGER}-->
         select
-          iu.avatar,
-          temp.*
+          imt.*,
+          icg.avatar groupavatar
         from
           (select
-          imcc.*
-        from
-          im_user_current_chat imcc
-        where
-          user_id = #{uid,jdbcType=VARCHAR}
-        AND del_flag = 0
-        order by
-        TYPE desc,
-          create_time desc limit #{count,jdbcType=INTEGER}) temp
+            iu.avatar,
+            temp.*
+          from
+            (select
+              imcc.*
+            from
+              im_user_current_chat imcc
+            where
+              user_id = #{uid,jdbcType=VARCHAR}
+            AND del_flag = 0
+            order by
+            TYPE desc, create_time desc limit #{count,jdbcType=INTEGER}) temp
+          LEFT JOIN
+            im_user iu
+          on temp.friend_id = iu.id) imt
         LEFT JOIN
-          im_user iu
-        on temp.friend_id = iu.id
+          im_chat_group icg
+        on imt.friend_id = icg.id
     </select>
 
     <select id="findUsersss" resultMap="FindUserResultMap" parameterType="java.lang.String" >

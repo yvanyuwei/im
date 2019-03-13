@@ -12,6 +12,7 @@ import com.vm.im.entity.user.User;
 import com.vm.im.entity.user.UserCurrentChat;
 import com.vm.im.dao.user.UserCurrentChatMapper;
 import com.vm.im.netty.Constant;
+import com.vm.im.service.group.ChatGroupService;
 import com.vm.im.service.user.UserChatGroupService;
 import com.vm.im.service.user.UserCurrentChatService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -48,6 +49,9 @@ public class UserCurrentChatServiceImpl extends ServiceImpl<UserCurrentChatMappe
 
     @Autowired
     private UserChatGroupService userChatGroupService;
+
+    @Autowired
+    private ChatGroupService chatGroupService;
 
     /**
      * 根据用户id 查询当前会话列表
@@ -117,17 +121,18 @@ public class UserCurrentChatServiceImpl extends ServiceImpl<UserCurrentChatMappe
             }
         }else if(param.get("type").equals(ChatTypeEnum.GROUP_SENDING.name())){
             List<String> uids = userChatGroupService.selectUidByGroupId(friendId);
+            String groupName = chatGroupService.selectNameByGroupId(friendId);
             for (String uid : uids) {
                 ChannelHandlerContext ctx = Constant.onlineUserMap.get(uid);
                 UserCurrentDTO userCurrentGid = new UserCurrentDTO();
                 userCurrentGid.setUid(uid);
                 userCurrentGid.setFriendId(friendId);
-                userCurrentGid.setNickName(user.getName());
+                userCurrentGid.setNickName(groupName);
                 userCurrentGid.setType(3);
                 userCurrentGid.setLastMessage(String.valueOf(param.get("content")));
                 UserCurrentChat userChatGid = buildUserCurrentChat(userCurrentGid);
                 userCurrentChatMapper.saveOrUpdate(userChatGid);
-//                userService.saveUserInfo(user);
+                //userService.saveUserInfo(user);
                 LOG.info("工会消息插入数据为:" + JSON.toJSONString(userChatGid));
                 if (ctx != null) {
                     JSONObject params = new JSONObject();
