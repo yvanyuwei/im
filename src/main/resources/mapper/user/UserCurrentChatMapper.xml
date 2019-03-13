@@ -22,14 +22,14 @@
     </resultMap>
     <!-- 查找当前会话映射结果-->
     <resultMap id="FindCurrentResultMap" type="com.vm.im.common.vo.user.FindCurrentVO">
-        <id column="user_id" property="userId"/>
-        <result column="friend_id" property="friendId"/>
-        <result column="type" property="type"/>
-        <result column="nickname" property="nickname"/>
-        <result column="last_message" property="lastMessage"/>
-        <result column="del_flag" property="delFlag"/>
-        <result column="create_time" property="createTime"/>
-        <result column="avatar" property="avatar"/>
+        <id column="user_id" property="userId" jdbcType="VARCHAR" />
+        <result column="friend_id" property="friendId" jdbcType="VARCHAR" />
+        <result column="type" property="type" jdbcType="INTEGER" />
+        <result column="nickname" property="nickname" jdbcType="VARCHAR" />
+        <result column="last_message" property="lastMessage" jdbcType="VARCHAR" />
+        <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="avatar" property="avatar" jdbcType="VARCHAR" />
     </resultMap>
 
     <sql id="Base_Column_List">
