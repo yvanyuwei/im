@@ -6,12 +6,10 @@ import com.vm.im.common.annot.AdminAuth;
 import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.dto.ResultBean;
 import com.vm.im.common.dto.admin.*;
-import com.vm.im.common.enums.AdminRoleEnum;
-import com.vm.im.common.enums.BusinessExceptionEnum;
-import com.vm.im.common.enums.RedPacketTypeEnum;
-import com.vm.im.common.enums.ResultCodeEnum;
+import com.vm.im.common.enums.*;
 import com.vm.im.common.exception.BusinessException;
 import com.vm.im.entity.common.RedPacket;
+import com.vm.im.entity.common.RedPacketDetial;
 import com.vm.im.entity.group.ChatGroup;
 import com.vm.im.entity.user.User;
 import com.vm.im.service.admin.AdminService;
@@ -168,16 +166,23 @@ public class AdminController {
         }
 
         RedPacket redPacket = adminService.checkRedPacket(receiveRedPacketDTO.getRedPacketId());
-        if (redPacket == null){
-            LOG.info("红包不存在,  redPacketId:{}", receiveRedPacketDTO.getId());
+        if (redPacket == null || redPacket.getStatus() != RedPacketStatusEnum.SUCCESS.value()){
+            LOG.info("红包不存在, 或状态为不可用,  redPacketId:{}", receiveRedPacketDTO.getRedPacketId());
             throw new BusinessException(BusinessExceptionEnum.RED_PACKET_NOT_FOUND_EXCEPTION.getFailCode(), BusinessExceptionEnum.RED_PACKET_NOT_FOUND_EXCEPTION.getFailReason());
+        }
+
+        RedPacketDetial redPacketDetial = adminService.checkRedPacketDetial(receiveRedPacketDTO.getBusinessId());
+        if (redPacketDetial != null){
+            LOG.info("该条收红包消息已存在, BusinessId:{}", receiveRedPacketDTO.getBusinessId());
+            throw new BusinessException(BusinessExceptionEnum.RED_PACKET_STATUS_EXCEPTION.getFailCode(), BusinessExceptionEnum.RED_PACKET_STATUS_EXCEPTION.getFailReason());
         }
 
         if (receiveRedPacketDTO.getType() == RedPacketTypeEnum.USER.value()) {
             LOG.info("收到接收个人红包请求, param:{}", JSON.toJSONString(receiveRedPacketDTO));
-
+            adminService.receiveUserRedPacket(fromUser, receiveRedPacketDTO);
         } else {
             LOG.info("收到接收群红包请求, param:{}", JSON.toJSONString(receiveRedPacketDTO));
+            adminService.receiveGroupRedPacket(fromUser, receiveRedPacketDTO);
         }
 
         return JSON.toJSONString(new ResultBean(ResultCodeEnum.SUCCESS.getCode(), ResultCodeEnum.SUCCESS.name(), null));
@@ -185,10 +190,37 @@ public class AdminController {
 
     @AdminAuth(roles = {AdminRoleEnum.ADMIN})
     @PostMapping("redPacketComplete")
-    @ApiOperation(value = "红包已抢完", notes = "修改红包状态为已完成接口")
+    @ApiOperation(value = "红包抢完", notes = "修改红包状态为已完成接口")
     public String redPacketComplete(@RequestBody @Valid @ApiParam(name = "红包id", value = "传入json格式") RedPacketCompleteDTO redPacketCompleteDTO) {
         LOG.info("收到修改红包状态请求, param:{}", JSON.toJSONString(redPacketCompleteDTO));
+        RedPacket redPacket = adminService.checkRedPacket(redPacketCompleteDTO.getRedPacketId());
+        if (redPacket == null || redPacket.getStatus() != RedPacketStatusEnum.SUCCESS.value()){
+            LOG.info("红包不存在, 或状态为终态,  redPacketId:{}", redPacketCompleteDTO.getRedPacketId());
+            throw new BusinessException(BusinessExceptionEnum.RED_PACKET_NOT_FOUND_EXCEPTION.getFailCode(), BusinessExceptionEnum.RED_PACKET_NOT_FOUND_EXCEPTION.getFailReason());
+        }
+        if (redPacketCompleteDTO.getStatus() != RedPacketStatusEnum.COMOKETE.value()){
+            LOG.info("修改状态不支持, redPacketCompleteDTO", JSON.toJSONString(redPacketCompleteDTO));
+            throw new BusinessException(BusinessExceptionEnum.RED_PACKET_STATUS_EXCEPTION.getFailCode(), BusinessExceptionEnum.RED_PACKET_STATUS_EXCEPTION.getFailReason());
+        }
 
+        redPacket.setStatus(RedPacketStatusEnum.COMOKETE.value());
+        adminService.updateRedPacket(redPacket);
+
+        return JSON.toJSONString(new ResultBean(ResultCodeEnum.SUCCESS.getCode(), ResultCodeEnum.SUCCESS.name(), null));
+    }
+
+    @AdminAuth(roles = {AdminRoleEnum.ADMIN})
+    @PostMapping("updateUserInfo")
+    @ApiOperation(value = "更新用户信息", notes = "更新用户信息接口")
+    public String updateUserInfo(@RequestBody @Valid @ApiParam(name = "用户信息", value = "传入json格式") UserInfoDTO userInfoDTO) {
+
+        return JSON.toJSONString(new ResultBean(ResultCodeEnum.SUCCESS.getCode(), ResultCodeEnum.SUCCESS.name(), null));
+    }
+
+    @AdminAuth(roles = {AdminRoleEnum.ADMIN})
+    @PostMapping("updateGroupInfo")
+    @ApiOperation(value = "更新群组信息", notes = "更新群组信息接口")
+    public String updateGroupInfo(@RequestBody @Valid @ApiParam(name = "群组信息", value = "传入json格式") GroupInfoDTO groupInfoDTO) {
 
         return JSON.toJSONString(new ResultBean(ResultCodeEnum.SUCCESS.getCode(), ResultCodeEnum.SUCCESS.name(), null));
     }

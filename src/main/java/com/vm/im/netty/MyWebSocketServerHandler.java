@@ -2,6 +2,7 @@ package com.vm.im.netty;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.dto.ResultBean;
 import com.vm.im.common.enums.ChatTypeEnum;
 import com.vm.im.common.exception.BusinessException;
@@ -118,6 +119,11 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
             return;
         }
         String type = (String) param.get("type");
+        if (type.equals(ChatTypeEnum.PING.name())){
+            pong(param, ctx);
+            return;
+        }
+
         User user = null;
         if (type.equals(ChatTypeEnum.SINGLE_SENDING.name()) || type.equals(ChatTypeEnum.GROUP_SENDING.name())){
             //user = userService.getRedisUserById(String.valueOf(param.get("fromUserId")));
@@ -224,6 +230,19 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
 
     private void sendMessage(ChannelHandlerContext ctx, String message) {
         ctx.channel().writeAndFlush(new TextWebSocketFrame(message));
+    }
+
+    /**
+     * 心跳响应
+     *
+     * @param param
+     * @param ctx
+     */
+    private void pong(JSONObject param, ChannelHandlerContext ctx) {
+        String responseJson = new ResponseJson()
+                .pong()
+                .toString();
+        ctx.channel().writeAndFlush(new TextWebSocketFrame(responseJson));
     }
 
 }

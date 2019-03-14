@@ -24,8 +24,8 @@ public class ReceiveRedPacketDTO {
      * 红包业务id
      */
     @ApiModelProperty(required = true, value = "红包业务id")
-    @NotEmpty(message = "id不能为空")
-    private String id;
+    @NotEmpty(message = "businessId不能为空")
+    private String businessId;
 
     /**
      * 红包id

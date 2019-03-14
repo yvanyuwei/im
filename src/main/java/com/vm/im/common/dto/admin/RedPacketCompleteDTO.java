@@ -23,14 +23,14 @@ public class RedPacketCompleteDTO {
      * 红包id
      */
     @ApiModelProperty(required = true, value = "红包id")
-    @NotEmpty(message = "id不能为空")
-    private String id;
+    @NotEmpty(message = "redPacketId不能为空")
+    private String redPacketId;
 
     /**
      * 状态
      */
     @ApiModelProperty(value = "状态")
     @Min(value = 1)
-    @Max(value = 5)
+    @Max(value = 9)
     private Integer status;
 }

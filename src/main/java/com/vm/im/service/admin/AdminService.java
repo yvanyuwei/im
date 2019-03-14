@@ -2,7 +2,9 @@ package com.vm.im.service.admin;
 
 
 import com.vm.im.common.dto.admin.GiveRedPacketDTO;
+import com.vm.im.common.dto.admin.ReceiveRedPacketDTO;
 import com.vm.im.entity.common.RedPacket;
+import com.vm.im.entity.common.RedPacketDetial;
 import com.vm.im.entity.user.User;
 
 public interface AdminService {
@@ -32,4 +34,36 @@ public interface AdminService {
      * @return
      */
     RedPacket checkRedPacket(String id);
+
+
+    /**
+     * 更新红包状态
+     *
+     * @param redPacket
+     */
+    void updateRedPacket(RedPacket redPacket);
+
+    /**
+     * 收到个人红包
+     *
+     * @param fromUser
+     * @param receiveRedPacketDTO
+     */
+    void receiveUserRedPacket(User fromUser, ReceiveRedPacketDTO receiveRedPacketDTO);
+
+    /**
+     * 收到群组红包
+     *
+     * @param fromUser
+     * @param receiveRedPacketDTO
+     */
+    void receiveGroupRedPacket(User fromUser, ReceiveRedPacketDTO receiveRedPacketDTO);
+
+    /**
+     * 校验红包明细是否存在
+     *
+     * @param businessId
+     * @return
+     */
+    RedPacketDetial checkRedPacketDetial(String businessId);
 }

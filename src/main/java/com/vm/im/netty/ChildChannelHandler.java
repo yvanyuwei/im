@@ -20,6 +20,10 @@ public class ChildChannelHandler extends ChannelInitializer<SocketChannel> {
     @Override
     protected void initChannel(SocketChannel e){
         // 设置30秒没有读到数据，则触发一个READER_IDLE事件。
+        //第一个参数 60  表示读操作空闲时间
+        //第二个参数 30  表示写操作空闲时间
+        //第三个参数 60*10 表示读写操作空闲时间
+        //第四个参数 单位
         e.pipeline().addLast("ping", new IdleStateHandler(60, 30, 60 * 10, TimeUnit.SECONDS));
         // pipeline.addLast(new IdleStateHandler(30, 0, 0));
         // HttpServerCodec：将请求和应答消息解码为HTTP消息

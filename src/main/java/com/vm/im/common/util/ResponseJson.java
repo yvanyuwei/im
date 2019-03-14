@@ -1,6 +1,7 @@
 package com.vm.im.common.util;
 
 import com.alibaba.fastjson.JSONObject;
+import com.vm.im.common.constant.CommonConstant;
 import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
@@ -66,6 +67,11 @@ public class ResponseJson extends HashMap<String, Object> {
         return this;
     }
 
+    public ResponseJson pong() {
+        put("status", SUCCESS_STATUS);
+        put("type", CommonConstant.YES);
+        return this;
+    }
     public ResponseJson setValue(String key, Object val) {
         put(key, val);
         return this;
