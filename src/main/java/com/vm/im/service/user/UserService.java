@@ -55,11 +55,4 @@ public interface UserService extends IService<User> {
      */
     void createUser(CreateUserDTO createUserDTO);
 
-    /**
-     * 到redis 查询用户信息 如果找不到到数据库查询 并存入redis
-     *
-     * @param userId
-     * @return
-     */
-    User getRedisUserById(String userId);
 }

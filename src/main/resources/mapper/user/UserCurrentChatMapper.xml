@@ -201,4 +201,28 @@
         del_flag = #{delFlag,jdbcType=TIMESTAMP},
         create_time = #{createTime,jdbcType=VARCHAR}
     </insert>
+
+    <insert id="saveOrUpdateBatch" parameterType="com.vm.im.entity.user.UserCurrentChat">
+        INSERT into
+          im_user_current_chat
+          (user_id,friend_id,nickname,last_message,type, del_flag,create_time)
+          values
+        <foreach collection="list" item="info" separator="," >
+          (#{info.userId,jdbcType=VARCHAR},
+          #{info.friendId,jdbcType=VARCHAR},
+          #{info.nickname,jdbcType=VARCHAR},
+          #{info.lastMessage,jdbcType=INTEGER},
+          #{info.type,jdbcType=VARCHAR},
+          #{info.delFlag,jdbcType=TIMESTAMP},
+          #{info.createTime,jdbcType=VARCHAR})
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        user_id = VALUES (user_id),
+        friend_id = VALUES (friend_id),
+        nickname = VALUES (nickname),
+        last_message = VALUES (last_message),
+        type =  VALUES (type),
+        del_flag = VALUES (del_flag),
+        create_time = VALUES (create_time)
+    </insert>
 </mapper>

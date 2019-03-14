@@ -16,7 +16,8 @@ public enum BusinessExceptionEnum {
     USER_EXIST_EXCEPTION("1002", "User exist exception"),
     //redis用户信息解析异常
     USER_INFO_PARSING_EXCEPTION("1003", "User information parsing exception"),
-
+    //访问过于频繁
+    USER_SEND_TOO_FREQUENTLY("1004","User send information too frequently"),
 
     /**
      * 群组相关异常
@@ -31,6 +32,8 @@ public enum BusinessExceptionEnum {
     GROUP_MEMBER_EXIST_EXCEPTION("2003", "Group member already exists"),
     //群组成员不存在
     GROUP_MEMBER_NOT_EXIST_EXCEPTION("2004", "Group members do not exist"),
+    //redis用户信息解析异常
+    GROUP_INFO_PARSING_EXCEPTION("2005", "Group information parsing exception"),
 
 
     /**

@@ -19,19 +19,18 @@ public interface ChatService {
      * @param param
      * @param ctx
      */
-    void singleSend(JSONObject param, ChannelHandlerContext ctx,User user);
+    void singleSend(JSONObject param, ChannelHandlerContext ctx,User fromUser,User toUser);
 
     /**
      * 群聊
      * @param param
      * @param ctx
      */
-    void groupSend(JSONObject param, ChannelHandlerContext ctx,User user);
+    void groupSend(JSONObject param, ChannelHandlerContext ctx,User fromUser);
 
     /**
      * 移除注册用户表用户
      * @param ctx
-     * @param user
      */
     void remove(ChannelHandlerContext ctx);
 

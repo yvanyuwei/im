@@ -4,8 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.dto.ResultBean;
+import com.vm.im.common.enums.BusinessExceptionEnum;
 import com.vm.im.common.enums.ChatTypeEnum;
 import com.vm.im.common.exception.BusinessException;
+import com.vm.im.common.util.RedisUtil;
 import com.vm.im.common.util.ResponseJson;
 import com.vm.im.common.vo.user.UserToken;
 import com.vm.im.controller.aop.NeedUserAuth;
@@ -55,6 +57,9 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
     @Autowired
     private UserChatGroupService userChatGroupService;
 
+    @Autowired
+    private RedisUtil redisUtil;
+
     @Override
     public void register(JSONObject param, ChannelHandlerContext ctx) {
         String userMsg = null;
@@ -90,45 +95,74 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
     }
 
     @Override
-    public void singleSend(JSONObject param, ChannelHandlerContext ctx,User user) {
+    public void singleSend(JSONObject param, ChannelHandlerContext ctx,User fromUser,User toUser) {
+        long begin = System.currentTimeMillis();
+        if (redisUtil.hasKey(fromUser.getId())){
+            redisUtil.incr(fromUser.getId(),1);
+        }else {
+            redisUtil.set(fromUser.getId(),String.valueOf(CommonConstant.YES),CommonConstant.REDIS_EXPIRE_TIME);
+        }
+        System.out.println(redisUtil.get(fromUser.getId()));
+        if (Integer.parseInt(String.valueOf(redisUtil.get(fromUser.getId()))) > CommonConstant.USER_SEND_NUMBER){
+            String str = JSON.toJSONString(new ResultBean(Integer.parseInt(BusinessExceptionEnum.USER_SEND_TOO_FREQUENTLY.getFailCode()),
+                    BusinessExceptionEnum.USER_SEND_TOO_FREQUENTLY.getFailReason(),"信息发送过于频繁"));
+            sendMessage(ctx,str);
+            return;
+        }
         String fromUserId = (String) param.get("fromUserId");
         String toUserId = (String) param.get("toUserId");
-        String content = (String) param.get("content");
+        String content = String.valueOf(param.get("content"));
+        if (content.length() > 1000){
+            content = content.substring(0,1000);
+        }
         Long createTime = System.currentTimeMillis();
         String fromUserIdAvatar = String.valueOf(param.get("fromUserIdAvatar"));
-        ChannelHandlerContext toUserCtx = Constant.onlineUserMap.get(toUserId);
+        //ChannelHandlerContext toUserCtx = Constant.onlineUserMap.get(toUserId);
 
         messageService.saveMessage(param,createTime);
-        userCurrentChatService.flushCurrentMsgListForUser(fromUserId,toUserId,500,param,user);
+        userCurrentChatService.flushCurrentMsgListForUser(fromUser,toUser,500,param);
         String responseJson = new ResponseJson().success()
                 .setData("fromUserId", fromUserId)
                 .setData("toUserId", toUserId)
                 .setData("content", content)
                 .setData("type", ChatTypeEnum.SINGLE_SENDING)
                 .setData("createTime", createTime)
-                .setData("nickName", user.getName())
+                .setData("nickName", fromUser.getName())
                 .setData("fromUserIdAvatar", fromUserIdAvatar)
                 .toString();
         log.info("==============================发送的消息为：" + responseJson);
         kafkaManager.sendMeessage(responseJson, toUserId + CommonConstant.USER_TOPIC);
-        /*if (toUserCtx != null) {
-            sendMessage(toUserCtx, responseJson);
-        }else{
-            //kafkaManager.sendMeessage(responseJson, fromUserId + CommonConstant.USER_TOPIC);
-        }*/
+        long end = System.currentTimeMillis();
+        System.out.println(end - begin);
     }
 
     @Override
-    public void groupSend(JSONObject param, ChannelHandlerContext ctx,User user) {
+    public void groupSend(JSONObject param, ChannelHandlerContext ctx,User fromUser) {
+        long begin = System.currentTimeMillis();
+        if (redisUtil.hasKey(fromUser.getId())){
+            redisUtil.incr(fromUser.getId(),1);
+        }else {
+            redisUtil.set(fromUser.getId(),String.valueOf(CommonConstant.YES),CommonConstant.REDIS_EXPIRE_TIME);
+        }
+        System.out.println(redisUtil.get(fromUser.getId()));
+        if (Integer.parseInt(String.valueOf(redisUtil.get(fromUser.getId()))) > CommonConstant.USER_SEND_NUMBER){
+            String str = JSON.toJSONString(new ResultBean(Integer.parseInt(BusinessExceptionEnum.USER_SEND_TOO_FREQUENTLY.getFailCode()),
+                    BusinessExceptionEnum.USER_SEND_TOO_FREQUENTLY.getFailReason(),"信息发送过于频繁"));
+            sendMessage(ctx,str);
+            return;
+        }
         String fromUserId = (String) param.get("fromUserId");
         String toGroupId = (String) param.get("toGroupId");
-        String content = (String) param.get("content");
+        String content = String.valueOf(param.get("content"));
+        if (content.length() > 1000){
+            content = content.substring(0,1000);
+        }
         Long createTime = System.currentTimeMillis();
         String fromUserIdAvatar = String.valueOf(param.get("fromUserIdAvatar"));
         messageService.saveMessage(param, createTime);
-        userCurrentChatService.flushCurrentMsgListForUser(fromUserId,toGroupId,500,param,user);
+        userCurrentChatService.flushCurrentMsgListForUser(fromUser,null,500,param);
         List<UserChatGroup> groupInfo = chatGroupService.getByGroupId(toGroupId);
-        if (groupInfo == null) {
+        if (null == groupInfo) {
             String responseJson = new ResponseJson().error("该群id不存在").toString();
             sendMessage(ctx, responseJson);
         } else {
@@ -138,19 +172,13 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
                     .setData("toGroupId", toGroupId)
                     .setData("type", ChatTypeEnum.GROUP_SENDING)
                     .setData("createTime", createTime)
-                    .setData("nickName", user.getName())
+                    .setData("nickName", fromUser.getName())
                     .setData("fromUserIdAvatar", fromUserIdAvatar)
                     .toString();
             kafkaManager.sendMeessage(responseJson, toGroupId + CommonConstant.GROUP_TOPIC);
-            //给群里每个成员发信息
-            /*groupInfo.stream()
-                    .forEach(item -> {
-                        ChannelHandlerContext toCtx = Constant.onlineUserMap.get(item.getUserId());
-                        if (toCtx != null && !item.getUserId().equals(fromUserId)) {
-                            sendMessage(toCtx, responseJson);
-                        }
-                    });*/
         }
+        long end = System.currentTimeMillis();
+        System.out.println(end - begin);
 
     }
 
