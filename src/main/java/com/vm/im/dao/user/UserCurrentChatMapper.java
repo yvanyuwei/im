@@ -63,4 +63,10 @@ public interface UserCurrentChatMapper extends BaseMapper<UserCurrentChat> {
      * @param userCurrentChat
      */
     void saveOrUpdate(UserCurrentChat userCurrentChat);
+
+    /**
+     * 批量插入
+     * @param info
+     */
+    void saveOrUpdateBatch(List<UserCurrentChat> info);
 }

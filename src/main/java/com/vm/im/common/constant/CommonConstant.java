@@ -1,5 +1,7 @@
 package com.vm.im.common.constant;
 
+import io.swagger.models.auth.In;
+
 /**
  * @ClassName: CommonConstant
  * @Description: constant
@@ -65,12 +67,19 @@ public class CommonConstant {
      */
     public final static String REDIS_USER_INFO = "UserInfo";
 
+    /**
+     * redis 工会信息
+     */
+    public final static String REDIS_GROUP_INFO = "GroupInfo";
 
+    /**
+     * redis key 过期时间
+     */
+    public final static Integer REDIS_EXPIRE_TIME = 5;
 
-
-
-
-
-
+    /**
+     * 设置用户发送条数
+     */
+    public final static Integer USER_SEND_NUMBER = 3;
 
 }

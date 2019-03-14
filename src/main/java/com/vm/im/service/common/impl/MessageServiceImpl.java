@@ -42,7 +42,11 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
             msg.setToId(toGroupId);
             msg.setType(3);
         }
-        msg.setContent(String.valueOf(param.get("content")));
+        String content = String.valueOf(param.get("content"));
+        if (content.length() > 1000){
+            content = content.substring(0,1000);
+        }
+        msg.setContent(content);
         //msg.setCreateTime(new Date(Long.valueOf(String.valueOf(param.get("createTime")))));
         save(msg);
         //messageMapper.(msg);

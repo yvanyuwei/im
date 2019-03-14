@@ -16,7 +16,8 @@ public enum BusinessExceptionEnum {
     USER_EXIST_EXCEPTION("1002", "User exist exception"),
     //redis用户信息解析异常
     USER_INFO_PARSING_EXCEPTION("1003", "User information parsing exception"),
-
+    //访问过于频繁
+    USER_SEND_TOO_FREQUENTLY("1004","User send information too frequently"),
 
     /**
      * 群组相关异常
@@ -31,13 +32,32 @@ public enum BusinessExceptionEnum {
     GROUP_MEMBER_EXIST_EXCEPTION("2003", "Group member already exists"),
     //群组成员不存在
     GROUP_MEMBER_NOT_EXIST_EXCEPTION("2004", "Group members do not exist"),
+    //redis用户信息解析异常
+    GROUP_INFO_PARSING_EXCEPTION("2005", "Group information parsing exception"),
 
 
     /**
      * admin相关异常
      */
     //admin认证异常
-    ADMIN_AUTH_EXCEPTION("3000", "Admin authentication exception")
+    ADMIN_AUTH_EXCEPTION("3000", "Admin authentication exception"),
+
+
+    /**
+     * 红包相关异常
+     */
+    //红包异常
+    RED_PACKET_EXCEPTION("4000", "Abnormal red envelopes"),
+    //红包已存在
+    RED_PACKET_EXIST_EXCEPTION("4001", "RedPacket of existing exception"),
+    //红包不存在
+    RED_PACKET_NOT_FOUND_EXCEPTION("4002", "RedPacket does not have exception"),
+    //红包状态异常
+    RED_PACKET_STATUS_EXCEPTION("4003", "Abnormal red packet status"),
+
+
+
+
 
 
     ;

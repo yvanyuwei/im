@@ -40,7 +40,7 @@ public interface UserCurrentChatService extends IService<UserCurrentChat> {
      * 刷新用户数据
      * @param userId
      */
-    void flushCurrentMsgListForUser(String userId, String friendId , int count, JSONObject param, User user);
+    void flushCurrentMsgListForUser(User fromuser,User toUser,int count, JSONObject param);
 
     /**
      * 通过好友Id查询用户当前会话列表

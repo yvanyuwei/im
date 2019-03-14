@@ -155,7 +155,7 @@ public class NeedUserAuth {
             throw new BusinessException(BusinessExceptionEnum.USER_AUTH_EXCEPTION.getFailCode(), BusinessExceptionEnum.USER_AUTH_EXCEPTION.getFailReason());
         }
 
-        LOG.info("userInfo:{}", userInfo);
+        LOG.info("redisToken-userInfo:{}", userInfo);
         JsonNode ret = null;
         String redisToken = null;
         try {

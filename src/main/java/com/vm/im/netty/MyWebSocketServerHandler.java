@@ -2,11 +2,16 @@ package com.vm.im.netty;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.dto.ResultBean;
+import com.vm.im.common.enums.BusinessExceptionEnum;
 import com.vm.im.common.enums.ChatTypeEnum;
 import com.vm.im.common.exception.BusinessException;
+import com.vm.im.common.util.RedisUtil;
 import com.vm.im.common.util.ResponseJson;
+import com.vm.im.entity.group.ChatGroup;
 import com.vm.im.entity.user.User;
+import com.vm.im.service.Redis.RedisService;
 import com.vm.im.service.chat.ChatService;
 import com.vm.im.service.user.UserChatGroupService;
 import com.vm.im.service.user.UserCurrentChatService;
@@ -35,22 +40,25 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
 
     @Autowired
     public void setChatService(ChatService chatService,UserFriendService userFriendService,
-                               UserChatGroupService userChatGroupService,UserService userService,
-                               UserCurrentChatService userCurrentChatService) {
+                               UserChatGroupService userChatGroupService,RedisService redisService,
+                               UserCurrentChatService userCurrentChatService,RedisUtil redisUtil) {
         MyWebSocketServerHandler.chatService = chatService;
         MyWebSocketServerHandler.userChatGroupService = userChatGroupService;
         MyWebSocketServerHandler.userFriendService = userFriendService;
-        MyWebSocketServerHandler.userService = userService;
+        MyWebSocketServerHandler.redisService = redisService;
         MyWebSocketServerHandler.userCurrentChatService = userCurrentChatService;
+        MyWebSocketServerHandler.redisUtil = redisUtil;
     }
 
     private static UserFriendService userFriendService;
 
     private static UserChatGroupService userChatGroupService;
 
-    private static UserService userService;
+    private static RedisService redisService;
 
     private static UserCurrentChatService userCurrentChatService;
+
+    private static RedisUtil redisUtil;
 
     /**
      * channel 通道 action 活跃的 当客户端主动链接服务端的链接后，
@@ -81,6 +89,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
      */
     private void handlerWebSocketFrame(ChannelHandlerContext ctx, WebSocketFrame frame) {
         // 判断是否关闭链路的指令
+        long begin = System.currentTimeMillis();
         if (frame instanceof CloseWebSocketFrame) {
             WebSocketServerHandshaker handshaker = Constant.webSocketHandshakerMap.get(ctx.channel().id().asLongText());
             if (handshaker == null){
@@ -118,22 +127,32 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
             return;
         }
         String type = (String) param.get("type");
-        User user = null;
+        if (type.equals(ChatTypeEnum.PING.name())){
+            pong(param, ctx);
+            return;
+        }
+        User fromUser = null;
+        User toUser = null;
+        ChatGroup chatGroup = null;
         if (type.equals(ChatTypeEnum.SINGLE_SENDING.name()) || type.equals(ChatTypeEnum.GROUP_SENDING.name())){
-            //user = userService.getRedisUserById(String.valueOf(param.get("fromUserId")));
             try {
-                user =userService.getRedisUserById(String.valueOf(param.get("fromUserId")));
+                fromUser = redisService.getRedisUserById(String.valueOf(param.get("fromUserId")));
+                if (type.equals(ChatTypeEnum.SINGLE_SENDING.name())){
+                    toUser = redisService.getRedisUserById(String.valueOf(param.get("toUserId")));
+                }else if(type.equals(ChatTypeEnum.GROUP_SENDING.name())){
+                    //chatGroup = redisService.getRedisGroupMsgByGId(String.valueOf(param.get("toGroupId")));
+                }
             }catch (BusinessException busExp){
                 String str = JSON.toJSONString(new ResultBean(Integer.parseInt(busExp.getFailCode()),
                         busExp.getFailReason(),"用户数据信息异常"));
                 sendMessage(ctx,str);
                 return;
             }catch (Exception e){
-                LOG.error("========获取用户信息出现异常==========="+ type + e.getMessage());
+                LOG.error("========singleOrGroup获取用户信息出现异常==========="+ type + e.getMessage());
             }
         }else{
             try {
-                user =userService.getRedisUserById(String.valueOf(param.get("userId")));
+                fromUser =redisService.getRedisUserById(String.valueOf(param.get("userId")));
             }catch (BusinessException busExp){
                 String str = JSON.toJSONString(new ResultBean(Integer.parseInt(busExp.getFailCode()),
                         busExp.getFailReason(),"用户数据信息异常"));
@@ -154,10 +173,10 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
                 }
                 break;
             case "SINGLE_SENDING":
-                chatService.singleSend(param, ctx,user);
+                chatService.singleSend(param, ctx,fromUser,toUser);
                 break;
             case "GROUP_SENDING":
-                chatService.groupSend(param, ctx,user);
+                chatService.groupSend(param, ctx,fromUser);
                 break;
             case "USER_FRIEND_LIST":
                 userFriendService.selectUserFriend(param, ctx);
@@ -175,14 +194,8 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
                 chatService.typeError(ctx);
                 break;
         }
-        /*if (logger.isLoggable(Level.FINE)) {
-            logger.fine(String.format("%s received %s", ctx.channel(), request));
-        }
-        TextWebSocketFrame tws = new TextWebSocketFrame(new Date().toString() + ctx.channel().id() + "：" + request);
-        // 群发
-        Global.group.writeAndFlush(tws);
-        // 返回【谁发的发给谁】
-        // ctx.channel().writeAndFlush(tws);*/
+        long end = System.currentTimeMillis();
+        System.out.println("这里 " + (end - begin));
     }
 
     /**
@@ -206,11 +219,6 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
      */
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-//        try {
-//            chatService.remove(ctx);
-//        }catch (Exception e){
-//            LOG.info("移除握手错误："+e.getMessage());
-//        }
         cause.printStackTrace();
         ctx.close();
     }
@@ -224,6 +232,19 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
 
     private void sendMessage(ChannelHandlerContext ctx, String message) {
         ctx.channel().writeAndFlush(new TextWebSocketFrame(message));
+    }
+
+    /**
+     * 心跳响应
+     *
+     * @param param
+     * @param ctx
+     */
+    private void pong(JSONObject param, ChannelHandlerContext ctx) {
+        String responseJson = new ResponseJson()
+                .pong()
+                .toString();
+        ctx.channel().writeAndFlush(new TextWebSocketFrame(responseJson));
     }
 
 }

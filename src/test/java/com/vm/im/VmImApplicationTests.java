@@ -1,24 +1,31 @@
-/*
 
 package com.vm.im;
 
 import com.vm.im.common.dto.admin.CreateUserDTO;
+import com.vm.im.common.dto.user.UserCurrentDTO;
+import com.vm.im.common.util.RedisUtil;
 import com.vm.im.common.vo.user.FindCurrentVO;
 import com.vm.im.dao.group.ChatGroupMapper;
 import com.vm.im.dao.user.UserChatGroupMapper;
 import com.vm.im.dao.user.UserCurrentChatMapper;
 import com.vm.im.dao.user.UserFriendMapper;
+import com.vm.im.entity.group.ChatGroup;
+import com.vm.im.entity.user.UserCurrentChat;
 import com.vm.im.entity.user.UserFriend;
+import com.vm.im.service.Redis.RedisService;
 import com.vm.im.service.group.ChatGroupService;
 import com.vm.im.service.user.UserChatGroupService;
+import com.vm.im.service.user.UserCurrentChatService;
 import com.vm.im.service.user.UserFriendService;
 import com.vm.im.service.user.UserService;
+import com.vm.im.service.user.impl.UserCurrentChatServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -48,6 +55,14 @@ public class VmImApplicationTests {
     @Autowired
     private UserCurrentChatMapper userCurrentChatMapper;
 
+    @Autowired
+    private RedisService redisService;
+    @Autowired
+    private UserCurrentChatServiceImpl userCurrentChatService;
+
+    @Autowired
+    private RedisUtil redisUtil;
+
     @Test
     public void contextLoads() throws InterruptedException {
         CreateUserDTO createUserDTO = new CreateUserDTO();
@@ -70,33 +85,19 @@ public class VmImApplicationTests {
 
     @Test
     public void test111(){
-
-        */
-/*List<UserFriend> userFriend = userFriendMapper.selectByFriendId("1",0);
-        System.out.println(userFriend);*//*
-
-
-
-        //serFriendMapper.updateUserMessage("test","2","123");
-
-
-        //List<UserChatVO> userChatVOS = userChatGroupMapper.selectByPrimaryKey("180160");
-
-        //List<UserChatGroupVO> userChatGroupVOS = userChatGroupMapper.selectByUidAndGid("180160", "1");
-
-        //List<UserMsgVO> userMsgVOS = userFriendMapper.selectByPrimaryKey("1", "1");
-        //List<FindCurrentVO> findCurrentVOS = userCurrentChatMapper.listByUid("180179", 500);
-        //System.out.println(findCurrentVOS);
-
-        //userFriendService.updateUserMessage("nihao1","100083","nidao");
-        //System.out.println(userMsgVOS);
-
-        //List<String> list = userCurrentChatMapper.fingFriendByUid("180160");
-        //List<UserChatVO> userChatVOS = userChatGroupMapper.selectByPrimaryKey("1");
-        List<FindCurrentVO> userCurrentChats = userCurrentChatMapper.listByUid("180179",500);
-        System.out.println(userCurrentChats);
+        for (int i = 0; i < 10; i++) {
+            if (redisUtil.hasKey("1")){
+                redisUtil.incr("1",1);
+            }else {
+                redisUtil.set("1","1",10);
+            }
+            System.out.println(redisUtil.get("1"));
+            if (String.valueOf(redisUtil.get("1")).equals("3")) {
+                System.out.println("超过了");
+                return;
+            }
+        }
 
     }
 }
 
-*/
