@@ -40,7 +40,24 @@ public enum BusinessExceptionEnum {
      * admin相关异常
      */
     //admin认证异常
-    ADMIN_AUTH_EXCEPTION("3000", "Admin authentication exception")
+    ADMIN_AUTH_EXCEPTION("3000", "Admin authentication exception"),
+
+
+    /**
+     * 红包相关异常
+     */
+    //红包异常
+    RED_PACKET_EXCEPTION("4000", "Abnormal red envelopes"),
+    //红包已存在
+    RED_PACKET_EXIST_EXCEPTION("4001", "RedPacket of existing exception"),
+    //红包不存在
+    RED_PACKET_NOT_FOUND_EXCEPTION("4002", "RedPacket does not have exception"),
+    //红包状态异常
+    RED_PACKET_STATUS_EXCEPTION("4003", "Abnormal red packet status"),
+
+
+
+
 
 
     ;

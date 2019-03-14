@@ -127,6 +127,10 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
             return;
         }
         String type = (String) param.get("type");
+        if (type.equals(ChatTypeEnum.PING.name())){
+            pong(param, ctx);
+            return;
+        }
         User fromUser = null;
         User toUser = null;
         ChatGroup chatGroup = null;
@@ -228,6 +232,19 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
 
     private void sendMessage(ChannelHandlerContext ctx, String message) {
         ctx.channel().writeAndFlush(new TextWebSocketFrame(message));
+    }
+
+    /**
+     * 心跳响应
+     *
+     * @param param
+     * @param ctx
+     */
+    private void pong(JSONObject param, ChannelHandlerContext ctx) {
+        String responseJson = new ResponseJson()
+                .pong()
+                .toString();
+        ctx.channel().writeAndFlush(new TextWebSocketFrame(responseJson));
     }
 
 }

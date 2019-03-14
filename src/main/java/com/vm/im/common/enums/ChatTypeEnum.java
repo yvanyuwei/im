@@ -19,6 +19,8 @@ public enum ChatTypeEnum {
 
     USER_CURRENT_CHAT,
 
+    PING,
+
     LOAD_GROUP_USER;
 
     public static void main(String[] args) {
