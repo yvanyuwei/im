@@ -21,8 +21,8 @@ public class GroupInfoDTO {
      * 群id
      */
     @ApiModelProperty(required = true, value = "群id")
-    @NotEmpty(message = "GroupId不能为空")
-    private String GroupId;
+    @NotEmpty(message = "groupId不能为空")
+    private String groupId;
 
     /**
      * 旧名字
