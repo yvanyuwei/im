@@ -1,3 +1,4 @@
+/*
 
 package com.vm.im;
 
@@ -101,3 +102,4 @@ public class VmImApplicationTests {
     }
 }
 
+*/

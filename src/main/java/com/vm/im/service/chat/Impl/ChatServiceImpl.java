@@ -102,7 +102,6 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
         } else {
             redisUtil.set(fromUser.getId(), String.valueOf(CommonConstant.YES), CommonConstant.REDIS_EXPIRE_TIME);
         }
-        System.out.println(redisUtil.get(fromUser.getId()));
         if (Integer.parseInt(String.valueOf(redisUtil.get(fromUser.getId()))) > CommonConstant.USER_SEND_NUMBER) {
             String str = JSON.toJSONString(new ResultBean(Integer.parseInt(BusinessExceptionEnum.USER_SEND_TOO_FREQUENTLY.getFailCode()),
                     BusinessExceptionEnum.USER_SEND_TOO_FREQUENTLY.getFailReason(), "信息发送过于频繁"));
@@ -133,7 +132,6 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
         log.info("==============================发送的消息为：" + responseJson);
         kafkaManager.sendMeessage(responseJson, toUserId + CommonConstant.USER_TOPIC);
         long end = System.currentTimeMillis();
-        System.out.println(end - begin);
         log.info("发送单聊耗时:{}", end - begin);
     }
 
@@ -145,7 +143,6 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
         } else {
             redisUtil.set(fromUser.getId(), String.valueOf(CommonConstant.YES), CommonConstant.REDIS_EXPIRE_TIME);
         }
-        System.out.println(redisUtil.get(fromUser.getId()));
         if (Integer.parseInt(String.valueOf(redisUtil.get(fromUser.getId()))) > CommonConstant.USER_SEND_NUMBER) {
             String str = JSON.toJSONString(new ResultBean(Integer.parseInt(BusinessExceptionEnum.USER_SEND_TOO_FREQUENTLY.getFailCode()),
                     BusinessExceptionEnum.USER_SEND_TOO_FREQUENTLY.getFailReason(), "信息发送过于频繁"));
@@ -179,7 +176,6 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
             kafkaManager.sendMeessage(responseJson, toGroupId + CommonConstant.GROUP_TOPIC);
         }
         long end = System.currentTimeMillis();
-        System.out.println(end - begin);
         log.info("发送群聊耗时:{}", end - begin);
     }
 

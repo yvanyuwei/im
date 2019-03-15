@@ -109,7 +109,6 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
         }
         //客服端发送过来的消息
         String request = ((TextWebSocketFrame) frame).text();
-        System.out.println("服务端收到：" + request);
         LOG.info("socket 服务端收到：{}", request);
         JSONObject param = null;
         try {
@@ -192,7 +191,6 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
                 break;
         }
         long end = System.currentTimeMillis();
-        System.out.println("这里 " + (end - begin));
     }
 
     /**
