@@ -1,6 +1,5 @@
 package com.vm.im.common.constant;
 
-import io.swagger.models.auth.In;
 
 /**
  * @ClassName: CommonConstant
