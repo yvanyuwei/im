@@ -2,9 +2,7 @@ package com.vm.im.netty;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.dto.ResultBean;
-import com.vm.im.common.enums.BusinessExceptionEnum;
 import com.vm.im.common.enums.ChatTypeEnum;
 import com.vm.im.common.exception.BusinessException;
 import com.vm.im.common.util.RedisUtil;
@@ -16,7 +14,6 @@ import com.vm.im.service.chat.ChatService;
 import com.vm.im.service.user.UserChatGroupService;
 import com.vm.im.service.user.UserCurrentChatService;
 import com.vm.im.service.user.UserFriendService;
-import com.vm.im.service.user.UserService;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;

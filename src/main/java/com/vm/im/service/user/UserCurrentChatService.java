@@ -6,7 +6,6 @@ import com.vm.im.entity.user.User;
 import com.vm.im.entity.user.UserCurrentChat;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.netty.channel.ChannelHandlerContext;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -38,7 +37,11 @@ public interface UserCurrentChatService extends IService<UserCurrentChat> {
 
     /**
      * 刷新用户数据
-     * @param userId
+     *
+     * @param fromuser
+     * @param toUser
+     * @param count
+     * @param param
      */
     void flushCurrentMsgListForUser(User fromuser,User toUser,int count, JSONObject param);
 

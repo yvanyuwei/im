@@ -1,6 +1,5 @@
 package com.vm.im.service.user.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.dto.user.UserCurrentDTO;
@@ -20,16 +19,13 @@ import com.vm.im.service.group.ChatGroupService;
 import com.vm.im.service.user.UserChatGroupService;
 import com.vm.im.service.user.UserCurrentChatService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.vm.im.service.user.UserService;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import sun.rmi.runtime.Log;
 
 import java.util.ArrayList;
 import java.util.Date;

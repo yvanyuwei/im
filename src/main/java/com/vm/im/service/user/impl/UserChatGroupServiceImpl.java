@@ -17,14 +17,12 @@ import com.vm.im.entity.user.User;
 import com.vm.im.entity.user.UserChatGroup;
 import com.vm.im.dao.user.UserChatGroupMapper;
 import com.vm.im.entity.user.UserCurrentChat;
-import com.vm.im.kafka.KafkaManager;
 import com.vm.im.netty.Constant;
 import com.vm.im.service.group.ChatGroupFlowService;
 import com.vm.im.service.group.ChatGroupOperationFlowService;
 import com.vm.im.service.group.ChatGroupService;
 import com.vm.im.service.user.UserChatGroupService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.vm.im.service.user.UserCurrentChatService;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.slf4j.Logger;
@@ -33,11 +31,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>

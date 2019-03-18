@@ -6,7 +6,6 @@ import com.vm.im.common.annot.UserAuth;
 import com.vm.im.common.dto.ResultBean;
 import com.vm.im.common.dto.user.FindUserDTO;
 import com.vm.im.common.enums.ResultCodeEnum;
-import com.vm.im.common.util.ResponseJson;
 import com.vm.im.common.vo.user.FindUserVO;
 import com.vm.im.service.user.UserService;
 import io.swagger.annotations.Api;
@@ -16,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.List;
 

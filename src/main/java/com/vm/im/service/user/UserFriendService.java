@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.vm.im.entity.user.UserFriend;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.netty.channel.ChannelHandlerContext;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,7 +39,7 @@ public interface UserFriendService extends IService<UserFriend> {
     /**
      *                  更新用户信息
      * @param name      需要更新的昵称
-     * @param friend_id 好友id
+     * @param friendId 好友id
      * @param nickname  给好友备注的名称/好友昵称
      */
     void updateUserMessage(String name, String friendId, String nickname);
