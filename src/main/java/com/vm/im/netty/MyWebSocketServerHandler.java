@@ -109,7 +109,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
         }
         //客服端发送过来的消息
         String request = ((TextWebSocketFrame) frame).text();
-        System.out.println("服务端收到：" + request);
+        //System.out.println("服务端收到：" + request);
         LOG.info("socket 服务端收到：{}", request);
         JSONObject param = null;
         try {
@@ -140,7 +140,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
                     //chatGroup = redisService.getRedisGroupMsgByGId(String.valueOf(param.get("toGroupId")));
                 }
             }catch (BusinessException busExp){
-                LOG.info("接收请求 param：{}" + param);
+                LOG.info("接收请求 param：{}" ,param);
                 String str = JSON.toJSONString(new ResultBean(Integer.parseInt(busExp.getFailCode()),
                         busExp.getFailReason(),"获取用户数据信息异常"));
                 sendMessage(ctx,str);
@@ -193,7 +193,6 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
                 break;
         }
         long end = System.currentTimeMillis();
-        System.out.println("这里 " + (end - begin));
     }
 
     /**

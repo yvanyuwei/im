@@ -11,6 +11,7 @@ import com.vm.im.common.enums.MessageTypeEnum;
 import com.vm.im.common.exception.BusinessException;
 import com.vm.im.common.util.RedisUtil;
 import com.vm.im.common.util.ResponseJson;
+import com.vm.im.common.util.StringUtil;
 import com.vm.im.common.vo.user.UserToken;
 import com.vm.im.controller.aop.NeedUserAuth;
 import com.vm.im.entity.user.User;
@@ -26,6 +27,7 @@ import com.vm.im.service.user.UserCurrentChatService;
 import com.vm.im.service.user.UserService;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.swagger.models.auth.In;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,7 +105,6 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
         String content = String.valueOf(param.get("content"));
         String msgType = String.valueOf(param.get("msgType"));
         String role = String.valueOf(param.get("role"));
-        //String msgType = String.valueOf(param.get("msgType"));
         if (content.length() > 1000){
             content = content.substring(0,1000);
         }
@@ -117,10 +118,11 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
                 .setData("createTime", createTime)
                 .setData("nickName", fromUser.getName())
                 .setData("fromUserIdAvatar", fromUserIdAvatar);
-        if (role.equals(AdminRoleEnum.ADMIN.name())){
-            responseJson.setData("msgType", msgType);
+        if (role.equals(AdminRoleEnum.ADMIN.name()) && (msgType.equals(String.valueOf(MessageTypeEnum.RED_PACKET_MSG.type())) ||
+                msgType.equals(String.valueOf(MessageTypeEnum.SYSTEM_MSG.type())))){
+            responseJson.setData("msgType", Integer.parseInt(msgType));
         }else{
-            responseJson.setData("msgType", MessageTypeEnum.COMMON_MSG);
+            responseJson.setData("msgType", MessageTypeEnum.COMMON_MSG.type());
         }
         if (redisUtil.hasKey(fromUser.getId())){
             redisUtil.incr(fromUser.getId(),1);
@@ -131,20 +133,18 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
             String str = responseJson.setStatus(Integer.parseInt(BusinessExceptionEnum.USER_SEND_TOO_FREQUENTLY.getFailCode()))
                     .error(BusinessExceptionEnum.USER_SEND_TOO_FREQUENTLY.getFailReason())
                     .toString();
-            log.info("================================+++++++++++++++++===============" +responseJson);
             sendMessage(ctx,str);
             long end = System.currentTimeMillis();
-            System.out.println("频繁："+(end - begin));
+            log.info("单聊：{}" ,(end - begin));
             return;
         }
-        //ChannelHandlerContext toUserCtx = Constant.onlineUserMap.get(toUserId);
         messageService.saveMessage(param,createTime);
         userCurrentChatService.flushCurrentMsgListForUser(fromUser,toUser,500,param);
         String str = responseJson.success()
                 .toString();
-        //sendMessage(ctx,responseJson);
+        sendMessage(ctx,str);
         long end = System.currentTimeMillis();
-        log.info("==============================发送的消息为：" + responseJson +"单聊：" + (end - begin));
+        log.info("单聊：{}" ,(end - begin));
         kafkaManager.sendMeessage(str, toUserId + CommonConstant.USER_TOPIC);
     }
 
@@ -152,21 +152,6 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
     public void groupSend(JSONObject param, ChannelHandlerContext ctx,User fromUser) {
         long begin = System.currentTimeMillis();
         String role = String.valueOf(param.get("role"));
-        if (!role.equals(AdminRoleEnum.ADMIN.name())) {
-            if (redisUtil.hasKey(fromUser.getId())) {
-                redisUtil.incr(fromUser.getId(), 1);
-            } else {
-                redisUtil.set(fromUser.getId(), String.valueOf(CommonConstant.YES), CommonConstant.REDIS_EXPIRE_TIME);
-            }
-            if (Integer.parseInt(String.valueOf(redisUtil.get(fromUser.getId()))) > CommonConstant.USER_SEND_NUMBER) {
-                String str = JSON.toJSONString(new ResultBean(Integer.parseInt(BusinessExceptionEnum.USER_SEND_TOO_FREQUENTLY.getFailCode()),
-                        BusinessExceptionEnum.USER_SEND_TOO_FREQUENTLY.getFailReason(), "信息发送过于频繁"));
-                sendMessage(ctx, str);
-                long end = System.currentTimeMillis();
-                System.out.println("频繁：" + (end - begin));
-                return;
-            }
-        }
         String fromUserId = (String) param.get("fromUserId");
         String toGroupId = (String) param.get("toGroupId");
         String content = String.valueOf(param.get("content"));
@@ -176,28 +161,51 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
         }
         Long createTime = System.currentTimeMillis();
         String fromUserIdAvatar = String.valueOf(param.get("fromUserIdAvatar"));
+        ResponseJson responseJson = new ResponseJson()
+                .setData("fromUserId", fromUserId)
+                .setData("content", content)
+                .setData("toGroupId", toGroupId)
+                .setData("type", ChatTypeEnum.GROUP_SENDING)
+                .setData("createTime", createTime)
+                .setData("nickName", fromUser.getName())
+                .setData("fromUserIdAvatar", fromUserIdAvatar);
+        if (role.equals(AdminRoleEnum.ADMIN.name()) && (msgType.equals(String.valueOf(MessageTypeEnum.RED_PACKET_MSG.type())) ||
+                msgType.equals(String.valueOf(MessageTypeEnum.SYSTEM_MSG.type())))){
+            responseJson.setData("msgType", Integer.parseInt(msgType));
+        }else{
+            responseJson.setData("msgType", MessageTypeEnum.COMMON_MSG.type());
+        }
+        if (!role.equals(AdminRoleEnum.ADMIN.name()) || (!msgType.equals(String.valueOf(MessageTypeEnum.RED_PACKET_MSG.type())) &&
+                !msgType.equals(String.valueOf(MessageTypeEnum.SYSTEM_MSG.type())))) {
+            if (redisUtil.hasKey(fromUser.getId())) {
+                redisUtil.incr(fromUser.getId(), 1);
+            } else {
+                redisUtil.set(fromUser.getId(), String.valueOf(CommonConstant.YES), CommonConstant.REDIS_EXPIRE_TIME);
+            }
+            if (Integer.parseInt(String.valueOf(redisUtil.get(fromUser.getId()))) > CommonConstant.USER_SEND_NUMBER) {
+                String str = responseJson.setStatus(Integer.parseInt(BusinessExceptionEnum.USER_SEND_TOO_FREQUENTLY.getFailCode()))
+                        .error(BusinessExceptionEnum.USER_SEND_TOO_FREQUENTLY.getFailReason())
+                        .toString();
+                sendMessage(ctx, str);
+                long end = System.currentTimeMillis();
+                log.info("群聊：{}" ,(end - begin));
+                return;
+            }
+        }
         messageService.saveMessage(param, createTime);
         userCurrentChatService.flushCurrentMsgListForUser(fromUser,null,500,param);
         List<UserChatGroup> groupInfo = chatGroupService.getByGroupId(toGroupId);
         if (null == groupInfo) {
-            String responseJson = new ResponseJson().error("该群id不存在").toString();
-            sendMessage(ctx, responseJson);
+            String str = responseJson.error("该群id不存在").toString();
+            sendMessage(ctx, str);
         } else {
-            String responseJson = new ResponseJson().success()
-                    .setData("fromUserId", fromUserId)
-                    .setData("content", content)
-                    .setData("toGroupId", toGroupId)
-                    .setData("type", ChatTypeEnum.GROUP_SENDING)
-                    .setData("msgType",msgType)
-                    .setData("createTime", createTime)
-                    .setData("nickName", fromUser.getName())
-                    .setData("fromUserIdAvatar", fromUserIdAvatar)
+            String str = responseJson.success()
                     .toString();
-            //sendMessage(ctx,responseJson);
-            kafkaManager.sendMeessage(responseJson, toGroupId + CommonConstant.GROUP_TOPIC);
+            sendMessage(ctx,str);
+            kafkaManager.sendMeessage(str, toGroupId + CommonConstant.GROUP_TOPIC);
         }
         long end = System.currentTimeMillis();
-        log.info("群聊：" + (end - begin));
+        log.info("群聊：{}" , (end - begin));
 
     }
 
