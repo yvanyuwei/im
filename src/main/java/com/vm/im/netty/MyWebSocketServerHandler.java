@@ -143,8 +143,9 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
                     //chatGroup = redisService.getRedisGroupMsgByGId(String.valueOf(param.get("toGroupId")));
                 }
             }catch (BusinessException busExp){
+                LOG.info("接收请求 param：{}" + param);
                 String str = JSON.toJSONString(new ResultBean(Integer.parseInt(busExp.getFailCode()),
-                        busExp.getFailReason(),"用户数据信息异常"));
+                        busExp.getFailReason(),"获取用户数据信息异常"));
                 sendMessage(ctx,str);
                 return;
             }catch (Exception e){

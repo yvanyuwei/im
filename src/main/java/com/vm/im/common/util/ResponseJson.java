@@ -42,7 +42,7 @@ public class ResponseJson extends HashMap<String, Object> {
     
     public ResponseJson error(String msg) {
         put("msg", msg);
-        put("status", ERROR_STATUS);
+        //put("status", setStatus(status));
         return this;
     }
 
