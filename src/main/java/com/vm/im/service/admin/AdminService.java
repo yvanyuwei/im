@@ -45,19 +45,19 @@ public interface AdminService {
 
     /**
      * 收到个人红包
-     *
-     * @param fromUser
+     *  @param fromUser
+     * @param redPacket
      * @param receiveRedPacketDTO
      */
-    void receiveUserRedPacket(User fromUser, ReceiveRedPacketDTO receiveRedPacketDTO);
+    void receiveUserRedPacket(User fromUser, RedPacket redPacket, ReceiveRedPacketDTO receiveRedPacketDTO);
 
     /**
      * 收到群组红包
-     *
-     * @param fromUser
+     *  @param fromUser
+     * @param redPacket
      * @param receiveRedPacketDTO
      */
-    void receiveGroupRedPacket(User fromUser, ReceiveRedPacketDTO receiveRedPacketDTO);
+    void receiveGroupRedPacket(User fromUser, RedPacket redPacket, ReceiveRedPacketDTO receiveRedPacketDTO);
 
     /**
      * 校验红包明细是否存在

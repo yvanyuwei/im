@@ -109,7 +109,6 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
         }
         //客服端发送过来的消息
         String request = ((TextWebSocketFrame) frame).text();
-        //System.out.println("服务端收到：" + request);
         LOG.info("socket 服务端收到：{}", request);
         JSONObject param = null;
         try {
@@ -137,12 +136,12 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
                 if (type.equals(ChatTypeEnum.SINGLE_SENDING.name())){
                     toUser = redisService.getRedisUserById(String.valueOf(param.get("toUserId")));
                 }else if(type.equals(ChatTypeEnum.GROUP_SENDING.name())){
-                    //chatGroup = redisService.getRedisGroupMsgByGId(String.valueOf(param.get("toGroupId")));
+                    chatGroup = redisService.getRedisGroupMsgByGId(String.valueOf(param.get("toGroupId")));
                 }
             }catch (BusinessException busExp){
                 LOG.info("接收请求 param：{}" ,param);
                 String str = JSON.toJSONString(new ResultBean(Integer.parseInt(busExp.getFailCode()),
-                        busExp.getFailReason(),"获取用户数据信息异常"));
+                        busExp.getFailReason(),null));
                 sendMessage(ctx,str);
                 return;
             }catch (Exception e){
@@ -153,7 +152,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
                 fromUser =redisService.getRedisUserById(String.valueOf(param.get("userId")));
             }catch (BusinessException busExp){
                 String str = JSON.toJSONString(new ResultBean(Integer.parseInt(busExp.getFailCode()),
-                        busExp.getFailReason(),"用户数据信息异常"));
+                        busExp.getFailReason(),null));
                 sendMessage(ctx,str);
                 return;
             }catch (Exception e){

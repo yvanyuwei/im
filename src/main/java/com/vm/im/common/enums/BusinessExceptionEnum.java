@@ -54,7 +54,8 @@ public enum BusinessExceptionEnum {
     RED_PACKET_NOT_FOUND_EXCEPTION("4002", "RedPacket does not have exception"),
     //红包状态异常
     RED_PACKET_STATUS_EXCEPTION("4003", "Abnormal red packet status"),
-
+    //红包类型异常
+    RED_PACKET_TYPE_EXCEPTION("4004", "Abnormal red packet type"),
 
 
 

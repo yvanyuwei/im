@@ -27,13 +27,12 @@ import com.vm.im.service.user.UserCurrentChatService;
 import com.vm.im.service.user.UserService;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
-import io.swagger.models.auth.In;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.MessageFormat;
+import javax.validation.Valid;
 import java.util.*;
 
 @Service
@@ -81,7 +80,7 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
         //String userMsg = needUserAuth.checkToken(String.valueOf(param.get("userId")),String.valueOf(param.get
         // ("token")));
         userService.saveUserInfo(user);
-        String userId = (String)param.get("userId");
+        String userId = (String) param.get("userId");
         Constant.onlineUserMap.put(userId, ctx);
         List<String> groupList = userChatGroupService.selectGroupIdByUid(userId);
         List<String> list = new ArrayList<>();
@@ -98,8 +97,9 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
     }
 
     @Override
-    public void singleSend(JSONObject param, ChannelHandlerContext ctx,User fromUser,User toUser) {
+    public void singleSend(JSONObject param, ChannelHandlerContext ctx, User fromUser, User toUser) {
         long begin = System.currentTimeMillis();
+        param.put("type", ChatTypeEnum.SINGLE_SENDING.name());
         String fromUserId = (String) param.get("fromUserId");
         String toUserId = (String) param.get("toUserId");
         String content = String.valueOf(param.get("content"));
@@ -129,28 +129,31 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
         }else {
             redisUtil.set(fromUser.getId(),String.valueOf(CommonConstant.YES),CommonConstant.REDIS_EXPIRE_TIME);
         }
-        if (Integer.parseInt(String.valueOf(redisUtil.get(fromUser.getId()))) > CommonConstant.USER_SEND_NUMBER){
-            String str = responseJson.setStatus(Integer.parseInt(BusinessExceptionEnum.USER_SEND_TOO_FREQUENTLY.getFailCode()))
-                    .error(BusinessExceptionEnum.USER_SEND_TOO_FREQUENTLY.getFailReason())
-                    .toString();
-            sendMessage(ctx,str);
-            long end = System.currentTimeMillis();
-            log.info("单聊：{}" ,(end - begin));
-            return;
+        Object redisLimit = redisUtil.get(fromUser.getId());
+        if (null != redisLimit){
+            if (Integer.parseInt(String.valueOf(redisLimit)) > CommonConstant.USER_SEND_NUMBER){
+                String str = responseJson.setStatus(Integer.parseInt(BusinessExceptionEnum.USER_SEND_TOO_FREQUENTLY.getFailCode()))
+                        .error(BusinessExceptionEnum.USER_SEND_TOO_FREQUENTLY.getFailReason())
+                        .toString();
+                sendMessage(ctx, str);
+                long end = System.currentTimeMillis();
+                log.info("单聊：{}" ,(end - begin));
+                return;
+            }
         }
         messageService.saveMessage(param,createTime);
         userCurrentChatService.flushCurrentMsgListForUser(fromUser,toUser,500,param);
-        String str = responseJson.success()
-                .toString();
-        sendMessage(ctx,str);
+        String str = responseJson.success().toString();
+        sendMessage(ctx, str);
+        kafkaManager.sendMeessage(str, toUserId + CommonConstant.USER_TOPIC);
         long end = System.currentTimeMillis();
         log.info("单聊：{}" ,(end - begin));
-        kafkaManager.sendMeessage(str, toUserId + CommonConstant.USER_TOPIC);
     }
 
     @Override
     public void groupSend(JSONObject param, ChannelHandlerContext ctx,User fromUser) {
         long begin = System.currentTimeMillis();
+        param.put("type", ChatTypeEnum.GROUP_SENDING.name());
         String role = String.valueOf(param.get("role"));
         String fromUserId = (String) param.get("fromUserId");
         String toGroupId = (String) param.get("toGroupId");
@@ -182,14 +185,17 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
             } else {
                 redisUtil.set(fromUser.getId(), String.valueOf(CommonConstant.YES), CommonConstant.REDIS_EXPIRE_TIME);
             }
-            if (Integer.parseInt(String.valueOf(redisUtil.get(fromUser.getId()))) > CommonConstant.USER_SEND_NUMBER) {
-                String str = responseJson.setStatus(Integer.parseInt(BusinessExceptionEnum.USER_SEND_TOO_FREQUENTLY.getFailCode()))
-                        .error(BusinessExceptionEnum.USER_SEND_TOO_FREQUENTLY.getFailReason())
-                        .toString();
-                sendMessage(ctx, str);
-                long end = System.currentTimeMillis();
-                log.info("群聊：{}" ,(end - begin));
-                return;
+            Object redisLimit = redisUtil.get(fromUser.getId());
+            if (null != redisLimit) {
+                if (Integer.parseInt(String.valueOf(redisUtil.get(fromUser.getId()))) > CommonConstant.USER_SEND_NUMBER) {
+                    String str = responseJson.setStatus(Integer.parseInt(BusinessExceptionEnum.USER_SEND_TOO_FREQUENTLY.getFailCode()))
+                            .error(BusinessExceptionEnum.USER_SEND_TOO_FREQUENTLY.getFailReason())
+                            .toString();
+                    sendMessage(ctx, str);
+                    long end = System.currentTimeMillis();
+                    log.info("群聊：{}", (end - begin));
+                    return;
+                }
             }
         }
         messageService.saveMessage(param, createTime);
@@ -201,12 +207,11 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
         } else {
             String str = responseJson.success()
                     .toString();
-            sendMessage(ctx,str);
+            sendMessage(ctx, str);
             kafkaManager.sendMeessage(str, toGroupId + CommonConstant.GROUP_TOPIC);
         }
         long end = System.currentTimeMillis();
         log.info("群聊：{}" , (end - begin));
-
     }
 
     @Override
@@ -221,14 +226,18 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
                 kafkaManager.consumerUnsubscribe(entry.getKey());
                 log.info("==============正在移除握手实例==========");
                 iterator.remove();
-                log.info("userId为 {}, 的用户已退出聊天，当前在线人数为：{}" , entry.getKey(), Constant.onlineUserMap.size());
+                log.info("userId为 {}, 的用户已退出聊天，当前在线人数为：{}", entry.getKey(), Constant.onlineUserMap.size());
                 break;
             }
         }
     }
 
     private void sendMessage(ChannelHandlerContext ctx, String message) {
-        ctx.channel().writeAndFlush(new TextWebSocketFrame(message));
+        try {
+            ctx.channel().writeAndFlush(new TextWebSocketFrame(message));
+        }catch (Exception e){
+            log.info("发送信息失败:ctx:{},message:{}",ctx,message);
+        }
     }
 
     @Override

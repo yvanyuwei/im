@@ -59,8 +59,8 @@
         <appender-ref ref="stdout" />
     </logger>
 	<root level="${log.root.level}">
-		<appender-ref ref="stdout" />
 		<appender-ref ref="file.error" />
 		<appender-ref ref="file.info" />
+		<appender-ref ref="stdout" />
 	</root>
 </configuration>

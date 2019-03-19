@@ -1,9 +1,11 @@
 package com.vm.im.service.admin.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.dto.admin.GiveRedPacketDTO;
 import com.vm.im.common.dto.admin.ReceiveRedPacketDTO;
 import com.vm.im.common.enums.BusinessExceptionEnum;
+import com.vm.im.common.enums.RedPacketTypeEnum;
 import com.vm.im.common.exception.BusinessException;
 import com.vm.im.entity.common.RedPacket;
 import com.vm.im.entity.common.RedPacketDetial;
@@ -64,7 +66,7 @@ public class AdminServiceImpl implements AdminService {
             throw new BusinessException(BusinessExceptionEnum.USER_NOT_EXIST_EXCEPTION.getFailCode(), BusinessExceptionEnum.USER_NOT_EXIST_EXCEPTION.getFailReason());
         }
 
-        RedPacket redPacket = redPacketService.createRedPacket(giveRedPacketDTO);
+        RedPacket redPacket = redPacketService.createRedPacket(giveRedPacketDTO, fromUser);
     }
 
     /**
@@ -87,7 +89,7 @@ public class AdminServiceImpl implements AdminService {
             throw new BusinessException(BusinessExceptionEnum.GROUP_MEMBER_NOT_EXIST_EXCEPTION.getFailCode(), BusinessExceptionEnum.GROUP_MEMBER_NOT_EXIST_EXCEPTION.getFailReason());
         }
 
-        RedPacket redPacket = redPacketService.createRedPacket(giveRedPacketDTO);
+        RedPacket redPacket = redPacketService.createRedPacket(giveRedPacketDTO, fromUser);
     }
 
     /**
@@ -114,43 +116,54 @@ public class AdminServiceImpl implements AdminService {
 
     /**
      * 收到个人红包
-     *
-     * @param fromUser
+     *  @param fromUser
+     * @param redPacket
      * @param receiveRedPacketDTO
      */
     @Override
-    public void receiveUserRedPacket(User fromUser, ReceiveRedPacketDTO receiveRedPacketDTO) {
+    public void receiveUserRedPacket(User fromUser, RedPacket redPacket, ReceiveRedPacketDTO receiveRedPacketDTO) {
         User toUser = redisService.getRedisUserById(receiveRedPacketDTO.getToId());
         if (toUser == null || toUser.getDelFlag() == CommonConstant.YES){
             LOG.info("用户不存在,或者状态为不可用, toUserId:{}", receiveRedPacketDTO.getToId());
             throw new BusinessException(BusinessExceptionEnum.USER_NOT_EXIST_EXCEPTION.getFailCode(), BusinessExceptionEnum.USER_NOT_EXIST_EXCEPTION.getFailReason());
         }
 
-        //TODO 收红包明细
+        if (redPacket.getToId().equals(receiveRedPacketDTO.getToId())){
+            RedPacketDetial redPacketDetial = redPacketDetialService.createRedPacketDetial(receiveRedPacketDTO, fromUser);
+        }else {
+            LOG.info("红包toId 与 收红包的toId 不符");
+            throw new BusinessException(BusinessExceptionEnum.RED_PACKET_EXCEPTION.getFailCode(), BusinessExceptionEnum.RED_PACKET_EXCEPTION.getFailReason());
+        }
+
     }
 
     /**
      * 收到群组红包
-     *
-     * @param fromUser
+     *  @param fromUser
+     * @param redPacket
      * @param receiveRedPacketDTO
      */
     @Override
-    public void receiveGroupRedPacket(User fromUser, ReceiveRedPacketDTO receiveRedPacketDTO) {
+    public void receiveGroupRedPacket(User fromUser, RedPacket redPacket, ReceiveRedPacketDTO receiveRedPacketDTO) {
         ChatGroup chatGroup = chatGroupService.getById(receiveRedPacketDTO.getToId());
         if (chatGroup == null || chatGroup.getDelFlag() == CommonConstant.YES){
             LOG.info("群组不存在,或者状态为不可用, chatGroupId:{}", receiveRedPacketDTO.getToId());
             throw new BusinessException(BusinessExceptionEnum.GROUP_NOT_FOUND_EXCEPTION.getFailCode(), BusinessExceptionEnum.GROUP_NOT_FOUND_EXCEPTION.getFailReason());
         }
 
-        UserChatGroup userChatGroup = userChatGroupService.selectUserByGroupIdAndUid(receiveRedPacketDTO.getToId(), receiveRedPacketDTO.getFromId());
+        if (redPacket.getType() == RedPacketTypeEnum.USER.value()){
+            LOG.info("该红包不是群组类型红包, redPacketId:{}", JSON.toJSONString(redPacket));
+            throw new BusinessException(BusinessExceptionEnum.RED_PACKET_TYPE_EXCEPTION.getFailCode(), BusinessExceptionEnum.RED_PACKET_TYPE_EXCEPTION.getFailReason());
+        }
+
+        UserChatGroup userChatGroup = userChatGroupService.selectUserByGroupIdAndUid(redPacket.getToId(), receiveRedPacketDTO.getToId());
         if (userChatGroup == null || userChatGroup.getDelFlag() == CommonConstant.YES){
             LOG.info("用户未加入该群组, chatGroupId:{}", receiveRedPacketDTO.getToId());
             throw new BusinessException(BusinessExceptionEnum.GROUP_MEMBER_NOT_EXIST_EXCEPTION.getFailCode(), BusinessExceptionEnum.GROUP_MEMBER_NOT_EXIST_EXCEPTION.getFailReason());
         }
 
+        RedPacketDetial redPacketDetial = redPacketDetialService.createRedPacketDetial(receiveRedPacketDTO, fromUser);
 
-        //TODO 收红包明细
     }
 
     /**

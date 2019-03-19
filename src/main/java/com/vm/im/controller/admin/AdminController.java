@@ -130,7 +130,7 @@ public class AdminController {
         return JSON.toJSONString(new ResultBean(ResultCodeEnum.SUCCESS.getCode(), ResultCodeEnum.SUCCESS.name(), null));
     }
 
-    @AdminAuth(roles = {AdminRoleEnum.ADMIN})
+    //@AdminAuth(roles = {AdminRoleEnum.ADMIN})
     @PostMapping("giveRedPacket")
     @ApiOperation(value = "发红包", notes = "用户发送红包接口")
     public String giveRedPacket(@RequestBody @Valid @ApiParam(name = "红包对象", value = "传入json格式") GiveRedPacketDTO giveRedPacketDTO) {
@@ -181,10 +181,10 @@ public class AdminController {
 
         if (receiveRedPacketDTO.getType() == RedPacketTypeEnum.USER.value()) {
             LOG.info("收到接收个人红包请求, param:{}", JSON.toJSONString(receiveRedPacketDTO));
-            adminService.receiveUserRedPacket(fromUser, receiveRedPacketDTO);
+            adminService.receiveUserRedPacket(fromUser, redPacket, receiveRedPacketDTO);
         } else {
             LOG.info("收到接收群红包请求, param:{}", JSON.toJSONString(receiveRedPacketDTO));
-            adminService.receiveGroupRedPacket(fromUser, receiveRedPacketDTO);
+            adminService.receiveGroupRedPacket(fromUser, redPacket, receiveRedPacketDTO);
         }
 
         return JSON.toJSONString(new ResultBean(ResultCodeEnum.SUCCESS.getCode(), ResultCodeEnum.SUCCESS.name(), null));

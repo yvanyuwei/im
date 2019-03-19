@@ -1,7 +1,10 @@
 package com.vm.im.service.common.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.vm.im.common.enums.BusinessExceptionEnum;
 import com.vm.im.common.enums.ChatTypeEnum;
+import com.vm.im.common.exception.BusinessException;
 import com.vm.im.entity.common.Message;
 import com.vm.im.dao.common.MessageMapper;
 import com.vm.im.service.common.MessageService;
@@ -45,8 +48,6 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
             content = content.substring(0,1000);
         }
         msg.setContent(content);
-        //msg.setCreateTime(new Date(Long.valueOf(String.valueOf(param.get("createTime")))));
         save(msg);
-        //messageMapper.(msg);
     }
 }
