@@ -24,8 +24,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-
 /**
  * @ClassName: AdminServiceImpl
  * @Description: 管理账号内部通讯服务
@@ -68,7 +66,7 @@ public class AdminServiceImpl implements AdminService {
             throw new BusinessException(BusinessExceptionEnum.USER_NOT_EXIST_EXCEPTION.getFailCode(), BusinessExceptionEnum.USER_NOT_EXIST_EXCEPTION.getFailReason());
         }
 
-        RedPacket redPacket = redPacketService.createRedPacket(giveRedPacketDTO);
+        RedPacket redPacket = redPacketService.createRedPacket(giveRedPacketDTO, fromUser);
     }
 
     /**
@@ -91,7 +89,7 @@ public class AdminServiceImpl implements AdminService {
             throw new BusinessException(BusinessExceptionEnum.GROUP_MEMBER_NOT_EXIST_EXCEPTION.getFailCode(), BusinessExceptionEnum.GROUP_MEMBER_NOT_EXIST_EXCEPTION.getFailReason());
         }
 
-        RedPacket redPacket = redPacketService.createRedPacket(giveRedPacketDTO);
+        RedPacket redPacket = redPacketService.createRedPacket(giveRedPacketDTO, fromUser);
     }
 
     /**
@@ -118,19 +116,24 @@ public class AdminServiceImpl implements AdminService {
 
     /**
      * 收到个人红包
-     *
-     * @param fromUser
+     *  @param fromUser
+     * @param redPacket
      * @param receiveRedPacketDTO
      */
     @Override
-    public void receiveUserRedPacket(User fromUser, ReceiveRedPacketDTO receiveRedPacketDTO) {
+    public void receiveUserRedPacket(User fromUser, RedPacket redPacket, ReceiveRedPacketDTO receiveRedPacketDTO) {
         User toUser = redisService.getRedisUserById(receiveRedPacketDTO.getToId());
         if (toUser == null || toUser.getDelFlag() == CommonConstant.YES){
             LOG.info("用户不存在,或者状态为不可用, toUserId:{}", receiveRedPacketDTO.getToId());
             throw new BusinessException(BusinessExceptionEnum.USER_NOT_EXIST_EXCEPTION.getFailCode(), BusinessExceptionEnum.USER_NOT_EXIST_EXCEPTION.getFailReason());
         }
 
-        RedPacketDetial redPacketDetial = redPacketDetialService.createRedPacketDetial(receiveRedPacketDTO);
+        if (redPacket.getToId().equals(receiveRedPacketDTO.getToId())){
+            RedPacketDetial redPacketDetial = redPacketDetialService.createRedPacketDetial(receiveRedPacketDTO, fromUser);
+        }else {
+            LOG.info("红包toId 与 收红包的toId 不符");
+            throw new BusinessException(BusinessExceptionEnum.RED_PACKET_EXCEPTION.getFailCode(), BusinessExceptionEnum.RED_PACKET_EXCEPTION.getFailReason());
+        }
 
     }
 
@@ -159,7 +162,7 @@ public class AdminServiceImpl implements AdminService {
             throw new BusinessException(BusinessExceptionEnum.GROUP_MEMBER_NOT_EXIST_EXCEPTION.getFailCode(), BusinessExceptionEnum.GROUP_MEMBER_NOT_EXIST_EXCEPTION.getFailReason());
         }
 
-        RedPacketDetial redPacketDetial = redPacketDetialService.createRedPacketDetial(receiveRedPacketDTO);
+        RedPacketDetial redPacketDetial = redPacketDetialService.createRedPacketDetial(receiveRedPacketDTO, fromUser);
 
     }
 

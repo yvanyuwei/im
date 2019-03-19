@@ -3,6 +3,7 @@ package com.vm.im.service.common;
 import com.vm.im.common.dto.admin.ReceiveRedPacketDTO;
 import com.vm.im.entity.common.RedPacketDetial;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.vm.im.entity.user.User;
 
 /**
  * <p>
@@ -18,8 +19,9 @@ public interface RedPacketDetialService extends IService<RedPacketDetial> {
      * 创建红包明细
      *
      * @param receiveRedPacketDTO
+     * @param fromUser
      * @return
      */
-    RedPacketDetial createRedPacketDetial(ReceiveRedPacketDTO receiveRedPacketDTO);
+    RedPacketDetial createRedPacketDetial(ReceiveRedPacketDTO receiveRedPacketDTO, User fromUser);
 
 }

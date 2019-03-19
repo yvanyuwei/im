@@ -181,7 +181,7 @@ public class AdminController {
 
         if (receiveRedPacketDTO.getType() == RedPacketTypeEnum.USER.value()) {
             LOG.info("收到接收个人红包请求, param:{}", JSON.toJSONString(receiveRedPacketDTO));
-            adminService.receiveUserRedPacket(fromUser, receiveRedPacketDTO);
+            adminService.receiveUserRedPacket(fromUser, redPacket, receiveRedPacketDTO);
         } else {
             LOG.info("收到接收群红包请求, param:{}", JSON.toJSONString(receiveRedPacketDTO));
             adminService.receiveGroupRedPacket(fromUser, redPacket, receiveRedPacketDTO);
