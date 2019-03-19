@@ -131,7 +131,7 @@ public class AdminController {
         return JSON.toJSONString(new ResultBean(ResultCodeEnum.SUCCESS.getCode(), ResultCodeEnum.SUCCESS.name(), null));
     }
 
-    @AdminAuth(roles = {AdminRoleEnum.ADMIN})
+    //@AdminAuth(roles = {AdminRoleEnum.ADMIN})
     @PostMapping("giveRedPacket")
     @ApiOperation(value = "发红包", notes = "用户发送红包接口")
     public String giveRedPacket(@RequestBody @Valid @ApiParam(name = "红包对象", value = "传入json格式") GiveRedPacketDTO giveRedPacketDTO) {
