@@ -5,6 +5,8 @@ import com.vm.im.entity.common.RedPacketDetial;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.vm.im.entity.user.User;
 
+import java.math.BigDecimal;
+
 /**
  * <p>
  * 红包明细 服务类
@@ -24,4 +26,18 @@ public interface RedPacketDetialService extends IService<RedPacketDetial> {
      */
     RedPacketDetial createRedPacketDetial(ReceiveRedPacketDTO receiveRedPacketDTO, User fromUser);
 
+    /**
+     * 根据红包Id 查询红包明细
+     *
+     * @param id
+     */
+    RedPacketDetial selectByRedPacketId(String id);
+
+    /**
+     * 获取指定红包的总金额
+     *
+     * @param id
+     * @return
+     */
+    BigDecimal sumAmountByRedPacketId(String id);
 }

@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.math.BigDecimal;
 
 /**
  * <p>
@@ -177,6 +178,11 @@ public class AdminController {
         if (redPacketDetial != null){
             LOG.info("该条收红包消息已存在, BusinessId:{}", receiveRedPacketDTO.getBusinessId());
             throw new BusinessException(BusinessExceptionEnum.RED_PACKET_STATUS_EXCEPTION.getFailCode(), BusinessExceptionEnum.RED_PACKET_STATUS_EXCEPTION.getFailReason());
+        }
+
+        if (receiveRedPacketDTO.getAmount().compareTo(BigDecimal.ZERO) < CommonConstant.YES){
+            LOG.info("红包金额小于0, amount:{}", receiveRedPacketDTO.getAmount());
+            throw new BusinessException(BusinessExceptionEnum.RED_PACKET_EXCEPTION.getFailCode(), BusinessExceptionEnum.RED_PACKET_EXCEPTION.getFailReason());
         }
 
         if (receiveRedPacketDTO.getType() == RedPacketTypeEnum.USER.value()) {

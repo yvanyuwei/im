@@ -24,6 +24,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 /**
  * @ClassName: AdminServiceImpl
  * @Description: 管理账号内部通讯服务
@@ -128,10 +130,16 @@ public class AdminServiceImpl implements AdminService {
             throw new BusinessException(BusinessExceptionEnum.USER_NOT_EXIST_EXCEPTION.getFailCode(), BusinessExceptionEnum.USER_NOT_EXIST_EXCEPTION.getFailReason());
         }
 
-        if (redPacket.getToId().equals(receiveRedPacketDTO.getToId())){
+        if (redPacket.getToId().equals(receiveRedPacketDTO.getToId()) || redPacket.getAmount().compareTo(receiveRedPacketDTO.getAmount()) != CommonConstant.NO){
+            RedPacketDetial packetDetial = redPacketDetialService.selectByRedPacketId(redPacket.getId());
+            if (packetDetial != null){
+                LOG.info("个人红包明细已存在, redPacketId:{}", redPacket.getId());
+                throw new BusinessException(BusinessExceptionEnum.RED_PACKET_EXCEPTION.getFailCode(), BusinessExceptionEnum.RED_PACKET_EXCEPTION.getFailReason());
+            }
+
             RedPacketDetial redPacketDetial = redPacketDetialService.createRedPacketDetial(receiveRedPacketDTO, fromUser);
         }else {
-            LOG.info("红包toId 与 收红包的toId 不符");
+            LOG.info("红包toId 与 收红包的toId 不符, 或者金额不符");
             throw new BusinessException(BusinessExceptionEnum.RED_PACKET_EXCEPTION.getFailCode(), BusinessExceptionEnum.RED_PACKET_EXCEPTION.getFailReason());
         }
 
@@ -160,6 +168,12 @@ public class AdminServiceImpl implements AdminService {
         if (userChatGroup == null || userChatGroup.getDelFlag() == CommonConstant.YES){
             LOG.info("用户未加入该群组, chatGroupId:{}", receiveRedPacketDTO.getToId());
             throw new BusinessException(BusinessExceptionEnum.GROUP_MEMBER_NOT_EXIST_EXCEPTION.getFailCode(), BusinessExceptionEnum.GROUP_MEMBER_NOT_EXIST_EXCEPTION.getFailReason());
+        }
+
+        BigDecimal sum = redPacketDetialService.sumAmountByRedPacketId(redPacket.getId());
+        if (sum.add(receiveRedPacketDTO.getAmount()).compareTo(redPacket.getAmount()) > CommonConstant.NO){
+            LOG.info("该笔红包金额超过红包总金额, 历史总金额:{}, 该笔金额:{}, 红包总金额", sum, receiveRedPacketDTO.getAmount(), redPacket.getAmount());
+            throw new BusinessException(BusinessExceptionEnum.RED_PACKET_EXCEPTION.getFailCode(), BusinessExceptionEnum.RED_PACKET_EXCEPTION.getFailReason());
         }
 
         RedPacketDetial redPacketDetial = redPacketDetialService.createRedPacketDetial(receiveRedPacketDTO, fromUser);

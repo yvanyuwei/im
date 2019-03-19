@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -36,6 +37,9 @@ import java.util.Date;
 @Service
 public class RedPacketDetialServiceImpl extends ServiceImpl<RedPacketDetialMapper, RedPacketDetial> implements RedPacketDetialService {
     private static final Logger LOG = LoggerFactory.getLogger(RedPacketDetialServiceImpl.class);
+
+    @Autowired
+    private RedPacketDetialMapper redPacketDetialMapper;
 
     @Autowired
     private RedisService redisService;
@@ -53,10 +57,10 @@ public class RedPacketDetialServiceImpl extends ServiceImpl<RedPacketDetialMappe
             if (receiveRedPacketDTO.getType().equals(RedPacketTypeEnum.USER.value())) {
                 JSONObject param = bulidJsonObject(receiveRedPacketDTO);
                 User toUser = redisService.getRedisUserById(receiveRedPacketDTO.getToId());
-                chatService.singleSend(param,channelHandlerContext , fromUser, toUser);
+                chatService.singleSend(param, channelHandlerContext, fromUser, toUser);
             } else {
                 JSONObject param = bulidJsonObject(receiveRedPacketDTO);
-                chatService.groupSend(param,channelHandlerContext , fromUser);
+                chatService.groupSend(param, channelHandlerContext, fromUser);
             }
         } else {
             LOG.info("保存创建红包明细失败, receiveRedPacketDTO:{}", JSON.toJSONString(receiveRedPacketDTO));
@@ -64,6 +68,28 @@ public class RedPacketDetialServiceImpl extends ServiceImpl<RedPacketDetialMappe
         }
 
         return redPacketDetial;
+    }
+
+    /**
+     * 根据红包Id 查询红包明细
+     *
+     * @param id
+     */
+    @Override
+    public RedPacketDetial selectByRedPacketId(String id) {
+        return redPacketDetialMapper.selectByRedPacketId(id);
+    }
+
+    /**
+     * 获取指定红包的总金额
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public BigDecimal sumAmountByRedPacketId(String id) {
+        BigDecimal sum = redPacketDetialMapper.sumAmountByRedPacketId(id);
+        return sum == null ? BigDecimal.ZERO : sum;
     }
 
     /**
