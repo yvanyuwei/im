@@ -11,7 +11,6 @@ import com.vm.im.common.enums.MessageTypeEnum;
 import com.vm.im.common.exception.BusinessException;
 import com.vm.im.common.util.RedisUtil;
 import com.vm.im.common.util.ResponseJson;
-import com.vm.im.common.util.StringUtil;
 import com.vm.im.common.vo.user.UserToken;
 import com.vm.im.controller.aop.NeedUserAuth;
 import com.vm.im.entity.user.User;
@@ -27,13 +26,11 @@ import com.vm.im.service.user.UserCurrentChatService;
 import com.vm.im.service.user.UserService;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
-import io.swagger.models.auth.In;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.MessageFormat;
 import java.util.*;
 
 @Service
@@ -81,7 +78,7 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
         //String userMsg = needUserAuth.checkToken(String.valueOf(param.get("userId")),String.valueOf(param.get
         // ("token")));
         userService.saveUserInfo(user);
-        String userId = (String)param.get("userId");
+        String userId = (String) param.get("userId");
         Constant.onlineUserMap.put(userId, ctx);
         List<String> groupList = userChatGroupService.selectGroupIdByUid(userId);
         List<String> list = new ArrayList<>();
@@ -98,8 +95,9 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
     }
 
     @Override
-    public void singleSend(JSONObject param, ChannelHandlerContext ctx,User fromUser,User toUser) {
+    public void singleSend(JSONObject param, ChannelHandlerContext ctx, User fromUser, User toUser) {
         long begin = System.currentTimeMillis();
+        param.put("type", ChatTypeEnum.SINGLE_SENDING);
         String fromUserId = (String) param.get("fromUserId");
         String toUserId = (String) param.get("toUserId");
         String content = String.valueOf(param.get("content"));
@@ -229,7 +227,7 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
                 kafkaManager.consumerUnsubscribe(entry.getKey());
                 log.info("==============正在移除握手实例==========");
                 iterator.remove();
-                log.info("userId为 {}, 的用户已退出聊天，当前在线人数为：{}" , entry.getKey(), Constant.onlineUserMap.size());
+                log.info("userId为 {}, 的用户已退出聊天，当前在线人数为：{}", entry.getKey(), Constant.onlineUserMap.size());
                 break;
             }
         }

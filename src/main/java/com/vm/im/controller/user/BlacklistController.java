@@ -62,7 +62,6 @@ public class BlacklistController {
         Blacklist sdfsdssdfss = blacklistService.getById("sdfsdssdfss");
         boolean save = blacklistService.updateBatchById(list);
         LOG.error("异常测试");
-        System.out.println(save);
 //        System.out.println(sdfsdssdfss.toString());
 
         return JSON.toJSONString(blacklist);
