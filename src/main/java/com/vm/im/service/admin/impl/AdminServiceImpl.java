@@ -137,7 +137,7 @@ public class AdminServiceImpl implements AdminService {
                 throw new BusinessException(BusinessExceptionEnum.RED_PACKET_EXCEPTION.getFailCode(), BusinessExceptionEnum.RED_PACKET_EXCEPTION.getFailReason());
             }
 
-            RedPacketDetial redPacketDetial = redPacketDetialService.createRedPacketDetial(receiveRedPacketDTO, fromUser);
+            RedPacketDetial redPacketDetial = redPacketDetialService.createRedPacketDetial(receiveRedPacketDTO, fromUser, toUser, null);
         }else {
             LOG.info("红包toId 与 收红包的toId 不符, 或者金额不符");
             throw new BusinessException(BusinessExceptionEnum.RED_PACKET_EXCEPTION.getFailCode(), BusinessExceptionEnum.RED_PACKET_EXCEPTION.getFailReason());
@@ -153,10 +153,16 @@ public class AdminServiceImpl implements AdminService {
      */
     @Override
     public void receiveGroupRedPacket(User fromUser, RedPacket redPacket, ReceiveRedPacketDTO receiveRedPacketDTO) {
-        ChatGroup chatGroup = chatGroupService.getById(receiveRedPacketDTO.getToId());
+        ChatGroup chatGroup = chatGroupService.getById(redPacket.getToId());
         if (chatGroup == null || chatGroup.getDelFlag() == CommonConstant.YES){
-            LOG.info("群组不存在,或者状态为不可用, chatGroupId:{}", receiveRedPacketDTO.getToId());
+            LOG.info("群组不存在,或者状态为不可用, chatGroupId:{}", redPacket.getToId());
             throw new BusinessException(BusinessExceptionEnum.GROUP_NOT_FOUND_EXCEPTION.getFailCode(), BusinessExceptionEnum.GROUP_NOT_FOUND_EXCEPTION.getFailReason());
+        }
+
+        User toUser = redisService.getRedisUserById(receiveRedPacketDTO.getToId());
+        if (toUser == null || toUser.getDelFlag() == CommonConstant.YES){
+            LOG.info("用户不存在,或者状态为不可用, toUserId:{}", receiveRedPacketDTO.getToId());
+            throw new BusinessException(BusinessExceptionEnum.USER_NOT_EXIST_EXCEPTION.getFailCode(), BusinessExceptionEnum.USER_NOT_EXIST_EXCEPTION.getFailReason());
         }
 
         if (redPacket.getType() == RedPacketTypeEnum.USER.value()){
@@ -176,7 +182,7 @@ public class AdminServiceImpl implements AdminService {
             throw new BusinessException(BusinessExceptionEnum.RED_PACKET_EXCEPTION.getFailCode(), BusinessExceptionEnum.RED_PACKET_EXCEPTION.getFailReason());
         }
 
-        RedPacketDetial redPacketDetial = redPacketDetialService.createRedPacketDetial(receiveRedPacketDTO, fromUser);
+        RedPacketDetial redPacketDetial = redPacketDetialService.createRedPacketDetial(receiveRedPacketDTO, fromUser, toUser, chatGroup);
 
     }
 

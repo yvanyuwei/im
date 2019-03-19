@@ -28,7 +28,7 @@
         where red_packet_id = #{id,jdbcType=VARCHAR}
     </select>
 
-    <select id="sumAmountByRedPacketId" resultMap="java.math.BigDecimal" parameterType="java.lang.String" >
+    <select id="sumAmountByRedPacketId" resultType="java.math.BigDecimal" parameterType="java.lang.String" >
         select
         sum(amount)
         from im_red_packet_detial

@@ -3,6 +3,7 @@ package com.vm.im.service.common;
 import com.vm.im.common.dto.admin.ReceiveRedPacketDTO;
 import com.vm.im.entity.common.RedPacketDetial;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.vm.im.entity.group.ChatGroup;
 import com.vm.im.entity.user.User;
 
 import java.math.BigDecimal;
@@ -22,9 +23,11 @@ public interface RedPacketDetialService extends IService<RedPacketDetial> {
      *
      * @param receiveRedPacketDTO
      * @param fromUser
+     * @param toUser
+     * @param chatGroup
      * @return
      */
-    RedPacketDetial createRedPacketDetial(ReceiveRedPacketDTO receiveRedPacketDTO, User fromUser);
+    RedPacketDetial createRedPacketDetial(ReceiveRedPacketDTO receiveRedPacketDTO, User fromUser, User toUser, ChatGroup chatGroup);
 
     /**
      * 根据红包Id 查询红包明细
