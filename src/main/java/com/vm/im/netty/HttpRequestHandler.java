@@ -1,10 +1,6 @@
 package com.vm.im.netty;
 
 import com.vm.im.controller.aop.NeedUserAuth;
-import com.vm.im.service.chat.ChatService;
-import com.vm.im.service.user.UserChatGroupService;
-import com.vm.im.service.user.UserCurrentChatService;
-import com.vm.im.service.user.UserFriendService;
 import com.vm.im.service.user.UserService;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

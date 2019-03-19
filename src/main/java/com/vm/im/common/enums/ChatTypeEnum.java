@@ -5,6 +5,7 @@ package com.vm.im.common.enums;
  */
 public enum ChatTypeEnum {
 
+
     REGISTER,
 
     SINGLE_SENDING,

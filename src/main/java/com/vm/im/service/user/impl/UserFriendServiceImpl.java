@@ -1,15 +1,11 @@
 package com.vm.im.service.user.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.vm.im.common.dto.ResultBean;
-import com.vm.im.common.enums.ResultCodeEnum;
 import com.vm.im.common.vo.user.FindUserVO;
 import com.alibaba.fastjson.JSONObject;
 import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.enums.ChatTypeEnum;
 import com.vm.im.common.util.ResponseJson;
 import com.vm.im.common.vo.user.UserMsgVO;
-import com.vm.im.controller.aop.NeedUserAuth;
 import com.vm.im.entity.user.UserFriend;
 import com.vm.im.dao.user.UserFriendMapper;
 import com.vm.im.netty.Constant;

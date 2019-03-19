@@ -8,11 +8,9 @@ import com.vm.im.service.common.MessageService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import javax.xml.bind.PrintConversionEvent;
 import java.sql.Date;
 
 /**

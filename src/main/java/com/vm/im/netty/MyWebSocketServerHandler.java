@@ -2,9 +2,7 @@ package com.vm.im.netty;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.dto.ResultBean;
-import com.vm.im.common.enums.BusinessExceptionEnum;
 import com.vm.im.common.enums.ChatTypeEnum;
 import com.vm.im.common.exception.BusinessException;
 import com.vm.im.common.util.RedisUtil;
@@ -16,7 +14,6 @@ import com.vm.im.service.chat.ChatService;
 import com.vm.im.service.user.UserChatGroupService;
 import com.vm.im.service.user.UserCurrentChatService;
 import com.vm.im.service.user.UserFriendService;
-import com.vm.im.service.user.UserService;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -112,7 +109,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
         }
         //客服端发送过来的消息
         String request = ((TextWebSocketFrame) frame).text();
-        System.out.println("服务端收到：" + request);
+        //System.out.println("服务端收到：" + request);
         LOG.info("socket 服务端收到：{}", request);
         JSONObject param = null;
         try {
@@ -143,8 +140,9 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
                     //chatGroup = redisService.getRedisGroupMsgByGId(String.valueOf(param.get("toGroupId")));
                 }
             }catch (BusinessException busExp){
+                LOG.info("接收请求 param：{}" ,param);
                 String str = JSON.toJSONString(new ResultBean(Integer.parseInt(busExp.getFailCode()),
-                        busExp.getFailReason(),"用户数据信息异常"));
+                        busExp.getFailReason(),"获取用户数据信息异常"));
                 sendMessage(ctx,str);
                 return;
             }catch (Exception e){
@@ -195,7 +193,6 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
                 break;
         }
         long end = System.currentTimeMillis();
-        System.out.println("这里 " + (end - begin));
     }
 
     /**
