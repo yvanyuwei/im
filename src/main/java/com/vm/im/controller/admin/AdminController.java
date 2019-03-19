@@ -184,7 +184,7 @@ public class AdminController {
             adminService.receiveUserRedPacket(fromUser, receiveRedPacketDTO);
         } else {
             LOG.info("收到接收群红包请求, param:{}", JSON.toJSONString(receiveRedPacketDTO));
-            adminService.receiveGroupRedPacket(fromUser, receiveRedPacketDTO);
+            adminService.receiveGroupRedPacket(fromUser, redPacket, receiveRedPacketDTO);
         }
 
         return JSON.toJSONString(new ResultBean(ResultCodeEnum.SUCCESS.getCode(), ResultCodeEnum.SUCCESS.name(), null));

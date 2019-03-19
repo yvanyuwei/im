@@ -1,9 +1,11 @@
 package com.vm.im.service.admin.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.dto.admin.GiveRedPacketDTO;
 import com.vm.im.common.dto.admin.ReceiveRedPacketDTO;
 import com.vm.im.common.enums.BusinessExceptionEnum;
+import com.vm.im.common.enums.RedPacketTypeEnum;
 import com.vm.im.common.exception.BusinessException;
 import com.vm.im.entity.common.RedPacket;
 import com.vm.im.entity.common.RedPacketDetial;
@@ -21,6 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 /**
  * @ClassName: AdminServiceImpl
@@ -126,31 +130,37 @@ public class AdminServiceImpl implements AdminService {
             throw new BusinessException(BusinessExceptionEnum.USER_NOT_EXIST_EXCEPTION.getFailCode(), BusinessExceptionEnum.USER_NOT_EXIST_EXCEPTION.getFailReason());
         }
 
-        //TODO 收红包明细
+        RedPacketDetial redPacketDetial = redPacketDetialService.createRedPacketDetial(receiveRedPacketDTO);
+
     }
 
     /**
      * 收到群组红包
-     *
-     * @param fromUser
+     *  @param fromUser
+     * @param redPacket
      * @param receiveRedPacketDTO
      */
     @Override
-    public void receiveGroupRedPacket(User fromUser, ReceiveRedPacketDTO receiveRedPacketDTO) {
+    public void receiveGroupRedPacket(User fromUser, RedPacket redPacket, ReceiveRedPacketDTO receiveRedPacketDTO) {
         ChatGroup chatGroup = chatGroupService.getById(receiveRedPacketDTO.getToId());
         if (chatGroup == null || chatGroup.getDelFlag() == CommonConstant.YES){
             LOG.info("群组不存在,或者状态为不可用, chatGroupId:{}", receiveRedPacketDTO.getToId());
             throw new BusinessException(BusinessExceptionEnum.GROUP_NOT_FOUND_EXCEPTION.getFailCode(), BusinessExceptionEnum.GROUP_NOT_FOUND_EXCEPTION.getFailReason());
         }
 
-        UserChatGroup userChatGroup = userChatGroupService.selectUserByGroupIdAndUid(receiveRedPacketDTO.getToId(), receiveRedPacketDTO.getFromId());
+        if (redPacket.getType() == RedPacketTypeEnum.USER.value()){
+            LOG.info("该红包不是群组类型红包, redPacketId:{}", JSON.toJSONString(redPacket));
+            throw new BusinessException(BusinessExceptionEnum.RED_PACKET_TYPE_EXCEPTION.getFailCode(), BusinessExceptionEnum.RED_PACKET_TYPE_EXCEPTION.getFailReason());
+        }
+
+        UserChatGroup userChatGroup = userChatGroupService.selectUserByGroupIdAndUid(redPacket.getToId(), receiveRedPacketDTO.getToId());
         if (userChatGroup == null || userChatGroup.getDelFlag() == CommonConstant.YES){
             LOG.info("用户未加入该群组, chatGroupId:{}", receiveRedPacketDTO.getToId());
             throw new BusinessException(BusinessExceptionEnum.GROUP_MEMBER_NOT_EXIST_EXCEPTION.getFailCode(), BusinessExceptionEnum.GROUP_MEMBER_NOT_EXIST_EXCEPTION.getFailReason());
         }
 
+        RedPacketDetial redPacketDetial = redPacketDetialService.createRedPacketDetial(receiveRedPacketDTO);
 
-        //TODO 收红包明细
     }
 
     /**
