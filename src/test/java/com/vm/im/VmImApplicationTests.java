@@ -87,12 +87,7 @@ public class VmImApplicationTests {
 
     @Test
     public void test111(){
-        String s = String.valueOf(redisUtil.get("180179"));
-        if(StringUtil.isEmpty(s)){
-            System.out.println(s);
-        }else{
-            System.out.println("mei");
-        }
+
     }
 }
 

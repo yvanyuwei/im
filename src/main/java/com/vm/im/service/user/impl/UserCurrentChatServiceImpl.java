@@ -79,7 +79,7 @@ public class UserCurrentChatServiceImpl extends ServiceImpl<UserCurrentChatMappe
      * 加载刷新当前会话列表
      */
     @Override
-    @Async
+    //@Async
     public void flushCurrentMsgListForUser(User fromUser,User toUser, int count,JSONObject param) {
         String content = String.valueOf(param.get("content"));
         if (content.length() > 1000){
