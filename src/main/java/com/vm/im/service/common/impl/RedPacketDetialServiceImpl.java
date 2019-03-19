@@ -110,7 +110,7 @@ public class RedPacketDetialServiceImpl extends ServiceImpl<RedPacketDetialMappe
         result.put("fromUserId", receiveRedPacketDTO.getFromId());
         result.put("toUserId", receiveRedPacketDTO.getToId());
         result.put("content", JSON.toJSONString(receiveRedPacketDTO));
-        result.put("msgType", MessageTypeEnum.SYSTEM_MSG);
+        result.put("msgType", MessageTypeEnum.SYSTEM_MSG.type());
         result.put("role", AdminRoleEnum.ADMIN.name());
 
         LOG.info("构建单人收红包系统消息, result:{}", result.toString());
@@ -129,7 +129,7 @@ public class RedPacketDetialServiceImpl extends ServiceImpl<RedPacketDetialMappe
         result.put("fromUserId", receiveRedPacketDTO.getFromId());
         result.put("toUserId", chatGroup.getId());
         result.put("content", JSON.toJSONString(receiveRedPacketDTO));
-        result.put("msgType", MessageTypeEnum.SYSTEM_MSG);
+        result.put("msgType", MessageTypeEnum.SYSTEM_MSG.type());
         result.put("role", AdminRoleEnum.ADMIN.name());
 
         LOG.info("构建收红包系统消息, result:{}", result.toString());
