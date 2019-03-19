@@ -4,6 +4,7 @@ package com.vm.im;
 import com.vm.im.common.dto.admin.CreateUserDTO;
 import com.vm.im.common.dto.user.UserCurrentDTO;
 import com.vm.im.common.util.RedisUtil;
+import com.vm.im.common.util.StringUtil;
 import com.vm.im.common.vo.user.FindCurrentVO;
 import com.vm.im.dao.group.ChatGroupMapper;
 import com.vm.im.dao.user.UserChatGroupMapper;
@@ -85,19 +86,12 @@ public class VmImApplicationTests {
 
     @Test
     public void test111(){
-        for (int i = 0; i < 10; i++) {
-            if (redisUtil.hasKey("1")){
-                redisUtil.incr("1",1);
-            }else {
-                redisUtil.set("1","1",10);
-            }
-            System.out.println(redisUtil.get("1"));
-            if (String.valueOf(redisUtil.get("1")).equals("3")) {
-                System.out.println("超过了");
-                return;
-            }
+        String s = String.valueOf(redisUtil.get("180179"));
+        if(StringUtil.isEmpty(s)){
+            System.out.println(s);
+        }else{
+            System.out.println("mei");
         }
-
     }
 }
 

@@ -129,23 +129,31 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
         }else {
             redisUtil.set(fromUser.getId(),String.valueOf(CommonConstant.YES),CommonConstant.REDIS_EXPIRE_TIME);
         }
-        if (Integer.parseInt(String.valueOf(redisUtil.get(fromUser.getId()))) > CommonConstant.USER_SEND_NUMBER){
-            String str = responseJson.setStatus(Integer.parseInt(BusinessExceptionEnum.USER_SEND_TOO_FREQUENTLY.getFailCode()))
-                    .error(BusinessExceptionEnum.USER_SEND_TOO_FREQUENTLY.getFailReason())
-                    .toString();
-            sendMessage(ctx,str);
-            long end = System.currentTimeMillis();
-            log.info("单聊：{}" ,(end - begin));
-            return;
+        Object redis = redisUtil.get(fromUser.getId());
+        if (null != redis){
+            if (Integer.parseInt(String.valueOf(redis)) > CommonConstant.USER_SEND_NUMBER){
+                String str = responseJson.setStatus(Integer.parseInt(BusinessExceptionEnum.USER_SEND_TOO_FREQUENTLY.getFailCode()))
+                        .error(BusinessExceptionEnum.USER_SEND_TOO_FREQUENTLY.getFailReason())
+                        .toString();
+                sendMessage(ctx,str);
+                long end = System.currentTimeMillis();
+                log.info("单聊：{}" ,(end - begin));
+                return;
+            }
         }
         messageService.saveMessage(param,createTime);
         userCurrentChatService.flushCurrentMsgListForUser(fromUser,toUser,500,param);
         String str = responseJson.success()
                 .toString();
-        sendMessage(ctx,str);
+        try {
+            sendMessage(ctx,str);
+        }catch (Exception e){
+            log.info("发送信息失败:ctx:{},str:{}",ctx,str);
+        }finally {
+            kafkaManager.sendMeessage(str, toUserId + CommonConstant.USER_TOPIC);
+        }
         long end = System.currentTimeMillis();
         log.info("单聊：{}" ,(end - begin));
-        kafkaManager.sendMeessage(str, toUserId + CommonConstant.USER_TOPIC);
     }
 
     @Override

@@ -122,11 +122,11 @@ public class UserCurrentChatServiceImpl extends ServiceImpl<UserCurrentChatMappe
             String groupId = String.valueOf(param.get("toGroupId"));
             List<UserChatGroup> userChatGroups = Constant.groupInfoMap.get(groupId);
             List<String> uids = userChatGroupService.selectUidByGroupId(groupId);
-            ChatGroup chatGroup = null;
+            ChatGroup chatGroup = new ChatGroup();
             try {
                 chatGroup = redisService.getRedisGroupMsgByGId(groupId);
-            }catch (BusinessException busExp){
-                LOG.info("获取工会信息异常",busExp.getFailReason());
+            }catch (BusinessException busExp) {
+                LOG.info("获取工会信息异常", busExp.getFailReason());
             }
             //String groupName = chatGroupService.selectNameByGroupId(groupId);
             List<UserCurrentChat> list = new ArrayList<>();
