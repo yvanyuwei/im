@@ -69,4 +69,18 @@ public interface UserCurrentChatMapper extends BaseMapper<UserCurrentChat> {
      * @param info
      */
     void saveOrUpdateBatch(List<UserCurrentChat> info);
+
+    /**
+     * 清空指定群组所有成员的当前会话
+     *
+     * @param id
+     */
+    void clearUserCurrentChatByGroupId(String id);
+
+    /**
+     * 清空指定用户的当前会话
+     *
+     * @param id
+     */
+    void clearUserCurrentChat(String id);
 }

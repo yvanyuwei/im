@@ -117,4 +117,12 @@ public interface UserChatGroupService extends IService<UserChatGroup> {
     List<String> selectUidByGroupId(String groupId);
 
     List<UserChatVO> selectByPrimaryKey(String groupId);
+
+    /**
+     * 获取群组所有用户id
+     *
+     * @param id
+     * @return
+     */
+    List<String> selectAllUidByGroupId(String id);
 }

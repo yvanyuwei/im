@@ -54,6 +54,7 @@
         <include refid="Base_Column_List" />
       from im_user_chat_group
       where chat_group_id = #{chatGroupId,jdbcType=VARCHAR}
+      and del_flag = 0
     </select>
 
     <update id="deleteByGroupId" parameterType="java.lang.String">
@@ -109,6 +110,15 @@
       where
         chat_group_id = #{chatGroupId,jdbcType=VARCHAR}
       and del_flag = 0;
+    </select>
+
+    <select id="selectAllUidByGroupId" resultType="java.lang.String" parameterType="java.lang.String">
+      SELECT
+        user_id
+      FROM
+        im_user_chat_group
+      where
+        chat_group_id = #{chatGroupId,jdbcType=VARCHAR}
     </select>
 
     <select id="selectByPrimaryKey" resultMap="UserChatGroupResultMap" parameterType="java.lang.String">

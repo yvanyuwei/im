@@ -127,7 +127,7 @@ public class RedPacketDetialServiceImpl extends ServiceImpl<RedPacketDetialMappe
     private JSONObject bulidGroupJsonObject(ReceiveRedPacketDTO receiveRedPacketDTO, ChatGroup chatGroup) {
         JSONObject result = new JSONObject();
         result.put("fromUserId", receiveRedPacketDTO.getFromId());
-        result.put("toUserId", chatGroup.getId());
+        result.put("toGroupId", chatGroup.getId());
         result.put("content", JSON.toJSONString(receiveRedPacketDTO));
         result.put("msgType", MessageTypeEnum.SYSTEM_MSG.type());
         result.put("role", AdminRoleEnum.ADMIN.name());

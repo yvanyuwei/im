@@ -22,15 +22,15 @@
     </resultMap>
     <!-- 查找当前会话映射结果-->
     <resultMap id="FindCurrentResultMap" type="com.vm.im.common.vo.user.FindCurrentVO">
-        <id column="user_id" property="userId" jdbcType="VARCHAR" />
-        <result column="friend_id" property="friendId" jdbcType="VARCHAR" />
-        <result column="type" property="type" jdbcType="INTEGER" />
-        <result column="nickname" property="nickname" jdbcType="VARCHAR" />
-        <result column="last_message" property="lastMessage" jdbcType="VARCHAR" />
-        <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
-        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
-        <result column="avatar" property="avatar" jdbcType="VARCHAR" />
-        <result column="groupavatar" property="groupavatar" jdbcType="VARCHAR" />
+        <id column="user_id" property="userId" jdbcType="VARCHAR"/>
+        <result column="friend_id" property="friendId" jdbcType="VARCHAR"/>
+        <result column="type" property="type" jdbcType="INTEGER"/>
+        <result column="nickname" property="nickname" jdbcType="VARCHAR"/>
+        <result column="last_message" property="lastMessage" jdbcType="VARCHAR"/>
+        <result column="del_flag" property="delFlag" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="avatar" property="avatar" jdbcType="VARCHAR"/>
+        <result column="groupavatar" property="groupavatar" jdbcType="VARCHAR"/>
 
     </resultMap>
 
@@ -47,33 +47,33 @@
         order by TYPE desc, create_time desc
         limit #{count,jdbcType=INTEGER}-->
         select
-          imt.*,
-          icg.avatar groupavatar
+        imt.*,
+        icg.avatar groupavatar
         from
-          (select
-            iu.avatar,
-            temp.*
-          from
-            (select
-              imcc.*
-            from
-              im_user_current_chat imcc
-            where
-              user_id = #{uid,jdbcType=VARCHAR}
-            AND del_flag = 0
-            order by
-            TYPE desc, create_time desc limit #{count,jdbcType=INTEGER}) temp
-          LEFT JOIN
-            im_user iu
-          on temp.friend_id = iu.id) imt
+        (select
+        iu.avatar,
+        temp.*
+        from
+        (select
+        imcc.*
+        from
+        im_user_current_chat imcc
+        where
+        user_id = #{uid,jdbcType=VARCHAR}
+        AND del_flag = 0
+        order by
+        TYPE desc, create_time desc limit #{count,jdbcType=INTEGER}) temp
         LEFT JOIN
-          im_chat_group icg
+        im_user iu
+        on temp.friend_id = iu.id) imt
+        LEFT JOIN
+        im_chat_group icg
         on imt.friend_id = icg.id
     </select>
 
-    <select id="findUsersss" resultMap="FindUserResultMap" parameterType="java.lang.String" >
+    <select id="findUsersss" resultMap="FindUserResultMap" parameterType="java.lang.String">
         select
-        <include refid="Base_Column_List" />
+        <include refid="Base_Column_List"/>
         from im_user_current_chat
         where user_id = #{uid,jdbcType=VARCHAR}
         and friend_id like #{condition,jdbcType=VARCHAR}
@@ -101,7 +101,7 @@
 
     <select id="selectByFriendId" resultMap="BaseResultMap" parameterType="java.lang.String">
         select
-          <include refid="Base_Column_List" />
+        <include refid="Base_Column_List"/>
         from im_user_current_chat
         where friend_id = #{friendId,jdbcType=VARCHAR}
         and del_flag = 0
@@ -110,7 +110,7 @@
     <update id="updateUserMessage" parameterType="java.lang.String">
         update im_user_current_chat set
 
-                    nickname = #{name,jdbcType=VARCHAR}
+        nickname = #{name,jdbcType=VARCHAR}
 
         where friend_id = #{friendId,jdbcType=VARCHAR}
         and (nickname = #{nickname,jdbcType=VARCHAR} or nickname is null )
@@ -132,19 +132,19 @@
             </if>
         </trim>-->
 
-      <!--  update im_user_current_chat
-          <trim prefix="set nickname = #{name,jdbcType=VARCHAR} "  suffix=" where ">
-            <if test="friend_id != null">
-               friend_id = #{friendId,jdbcType=VARCHAR}
-            </if>
-              <if test="nickname != null">
-                  and nickname = #{nickname,jdbcType=VARCHAR}
+        <!--  update im_user_current_chat
+            <trim prefix="set nickname = #{name,jdbcType=VARCHAR} "  suffix=" where ">
+              <if test="friend_id != null">
+                 friend_id = #{friendId,jdbcType=VARCHAR}
               </if>
-          </trim>-->
+                <if test="nickname != null">
+                    and nickname = #{nickname,jdbcType=VARCHAR}
+                </if>
+            </trim>-->
     </update>
 
     <insert id="saveOrUpdate" parameterType="com.vm.im.entity.user.UserCurrentChat">
-      INSERT into
+        INSERT into
         im_user_current_chat
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="userId != null">
@@ -197,32 +197,42 @@
         friend_id = #{friendId,jdbcType=VARCHAR},
         nickname = #{nickname,jdbcType =VARCHAR},
         last_message = #{lastMessage,jdbcType=INTEGER},
-        type =  #{type,jdbcType=VARCHAR},
+        type = #{type,jdbcType=VARCHAR},
         del_flag = #{delFlag,jdbcType=TIMESTAMP},
         create_time = #{createTime,jdbcType=VARCHAR}
     </insert>
 
     <insert id="saveOrUpdateBatch" parameterType="com.vm.im.entity.user.UserCurrentChat">
         INSERT into
-          im_user_current_chat
-          (user_id,friend_id,nickname,last_message,type, del_flag,create_time)
-          values
-        <foreach collection="list" item="info" separator="," >
-          (#{info.userId,jdbcType=VARCHAR},
-          #{info.friendId,jdbcType=VARCHAR},
-          #{info.nickname,jdbcType=VARCHAR},
-          #{info.lastMessage,jdbcType=INTEGER},
-          #{info.type,jdbcType=VARCHAR},
-          #{info.delFlag,jdbcType=TIMESTAMP},
-          #{info.createTime,jdbcType=VARCHAR})
+        im_user_current_chat
+        (user_id,friend_id,nickname,last_message,type, del_flag,create_time)
+        values
+        <foreach collection="list" item="info" separator=",">
+            (#{info.userId,jdbcType=VARCHAR},
+            #{info.friendId,jdbcType=VARCHAR},
+            #{info.nickname,jdbcType=VARCHAR},
+            #{info.lastMessage,jdbcType=INTEGER},
+            #{info.type,jdbcType=VARCHAR},
+            #{info.delFlag,jdbcType=TIMESTAMP},
+            #{info.createTime,jdbcType=VARCHAR})
         </foreach>
         ON DUPLICATE KEY UPDATE
         user_id = VALUES (user_id),
         friend_id = VALUES (friend_id),
         nickname = VALUES (nickname),
         last_message = VALUES (last_message),
-        type =  VALUES (type),
+        type = VALUES (type),
         del_flag = VALUES (del_flag),
         create_time = VALUES (create_time)
     </insert>
+    <update id="clearUserCurrentChatByGroupId" parameterType="java.lang.String">
+        update im_user_current_chat set
+        del_flag = 1
+        where user_id in(select iucg.user_id from im_user_chat_group iucg where chat_group_id = #{id,jdbcType=VARCHAR})
+    </update>
+    <update id="clearUserCurrentChat" parameterType="java.lang.String">
+        update im_user_current_chat set
+        del_flag = 1
+        where user_id = #{id,jdbcType=VARCHAR}
+    </update>
 </mapper>

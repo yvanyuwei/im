@@ -86,6 +86,11 @@ public class VmImApplicationTests {
     }
 
     @Test
+    public void userCurrentchat(){
+        userCurrentChatMapper.clearUserCurrentChatByGroupId("2");
+    }
+
+    @Test
     public void test111(){
 
     }
