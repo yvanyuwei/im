@@ -11,7 +11,7 @@ import com.vm.im.common.exception.BusinessException;
 import com.vm.im.entity.common.RedPacket;
 import com.vm.im.entity.common.RedPacketDetial;
 import com.vm.im.entity.user.User;
-import com.vm.im.netty.Constant;
+import com.vm.im.kafka.KafkaManager;
 import com.vm.im.service.Redis.RedisService;
 import com.vm.im.service.admin.AdminService;
 import com.vm.im.service.group.ChatGroupService;
@@ -60,6 +60,9 @@ public class AdminController {
     @Autowired
     private RedisService redisService;
 
+    @Autowired
+    private KafkaManager kafkaManager;
+
     @AdminAuth(roles = {AdminRoleEnum.ADMIN})
     @PostMapping("unionOperation")
     @ApiOperation(value = "工会操作", notes = "创建和解散工会使用接口")
@@ -78,6 +81,8 @@ public class AdminController {
             chatGroupService.closeConnection(unionOperationDTO.getGroupId(), BusinessTypeEnum.GROUP);
             //删除系统内存中的群组信息
             chatGroupService.delGroupInfo(unionOperationDTO.getGroupId());
+            //清理kafka该公会的消息
+            kafkaManager.clearMessage(unionOperationDTO.getGroupId() + CommonConstant.GROUP_TOPIC);
         }
 
         return JSON.toJSONString(new ResultBean(ResultCodeEnum.SUCCESS.getCode(), ResultCodeEnum.SUCCESS.name(), null));
@@ -104,6 +109,8 @@ public class AdminController {
             chatGroupService.delUserInfo(memberOperationDTO.getGroupId(),memberOperationDTO.getUid());
             // 刷新用户列表信息
             userChatGroupService.flushGroupMsg(memberOperationDTO.getGroupId());
+            //清空kafka该用户的消息
+            kafkaManager.clearMessage(memberOperationDTO.getUid() + CommonConstant.USER_TOPIC);
         }
 
         return JSON.toJSONString(new ResultBean(ResultCodeEnum.SUCCESS.getCode(), ResultCodeEnum.SUCCESS.name(), null));

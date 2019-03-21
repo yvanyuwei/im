@@ -451,7 +451,7 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
         ChannelHandlerContext channelHandlerContext = Constant.onlineUserMap.get(id);
         try {
             if (channelHandlerContext == null){
-                LOG.info("用户不在线");
+                LOG.info("用户不在线, uid:{}", id);
             }else{
                 chatService.remove(channelHandlerContext);
             }
