@@ -8,7 +8,6 @@ import com.vm.im.common.enums.*;
 import com.vm.im.common.exception.BusinessException;
 import com.vm.im.common.util.RedisUtil;
 import com.vm.im.common.util.ResponseJson;
-import com.vm.im.common.util.StringUtil;
 import com.vm.im.common.vo.user.UserToken;
 import com.vm.im.controller.aop.NeedUserAuth;
 import com.vm.im.entity.user.User;
@@ -24,10 +23,10 @@ import com.vm.im.service.user.UserCurrentChatService;
 import com.vm.im.service.user.UserService;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -51,6 +50,7 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
     @Autowired
     private NeedUserAuth needUserAuth;
 
+    @Lazy
     @Autowired
     private UserService userService;
 
