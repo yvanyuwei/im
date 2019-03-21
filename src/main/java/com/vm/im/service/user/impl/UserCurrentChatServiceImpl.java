@@ -15,7 +15,6 @@ import com.vm.im.entity.user.UserCurrentChat;
 import com.vm.im.dao.user.UserCurrentChatMapper;
 import com.vm.im.netty.Constant;
 import com.vm.im.service.Redis.RedisService;
-import com.vm.im.service.group.ChatGroupService;
 import com.vm.im.service.user.UserChatGroupService;
 import com.vm.im.service.user.UserCurrentChatService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -52,8 +51,6 @@ public class UserCurrentChatServiceImpl extends ServiceImpl<UserCurrentChatMappe
     @Autowired
     private UserChatGroupService userChatGroupService;
 
-    @Autowired
-    private ChatGroupService chatGroupService;
 
     /**
      * 根据用户id 查询当前会话列表
@@ -179,6 +176,26 @@ public class UserCurrentChatServiceImpl extends ServiceImpl<UserCurrentChatMappe
     @Override
     public List<String> findUidByFriendId(String friendId) {
         return userCurrentChatMapper.findUidByFriendId(friendId);
+    }
+
+    /**
+     * 清空指定群组所有成员的当前会话
+     *
+     * @param chatGroup
+     */
+    @Override
+    public void clearUserCurrentChat(ChatGroup chatGroup) {
+        userCurrentChatMapper.clearUserCurrentChatByGroupId(chatGroup.getId());
+    }
+
+    /**
+     * 清空指定用户的当前会话
+     *
+     * @param userId
+     */
+    @Override
+    public void clearUserCurrentChat(String userId) {
+        userCurrentChatMapper.clearUserCurrentChat(userId);
     }
 
     /**

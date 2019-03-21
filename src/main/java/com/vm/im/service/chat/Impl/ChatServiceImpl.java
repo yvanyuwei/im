@@ -24,6 +24,7 @@ import com.vm.im.service.user.UserCurrentChatService;
 import com.vm.im.service.user.UserService;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -210,7 +211,7 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
         } else {
             String str = responseJson.success()
                     .toString();
-            sendMessage(ctx, str);
+//            sendMessage(ctx, str);
             kafkaManager.sendMeessage(str, toGroupId + CommonConstant.GROUP_TOPIC);
         }
         long end = System.currentTimeMillis();

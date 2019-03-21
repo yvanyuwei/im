@@ -3,6 +3,7 @@ package com.vm.im.service.group;
 import com.vm.im.common.dto.admin.AuthOperationDTO;
 import com.vm.im.common.dto.admin.MemberOperationDTO;
 import com.vm.im.common.dto.admin.UnionOperationDTO;
+import com.vm.im.common.enums.BusinessTypeEnum;
 import com.vm.im.common.enums.GroupRoleEnum;
 import com.vm.im.entity.group.ChatGroup;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -88,17 +89,55 @@ public interface ChatGroupService extends IService<ChatGroup> {
     UserChatGroup checkUnionGroupAndMember(String groupId, String userId, GroupRoleEnum roleEnum);
 
     /**
-     *                  Query group information based on group ID
-     * @param groupId   GroupId
-     * @return          Group user list
+     * Query group information based on group ID
+     *
+     * @param groupId GroupId
+     * @return Group user list
      */
     List<UserChatGroup> getByGroupId(String groupId);
 
     /**
-     *                  Load information for Groups
+     * Load information for Groups
      */
     void loadGroupInfo();
 
     String selectNameByGroupId(String groupId);
 
+    /**
+     * 加载指定工会信息到内存
+     *
+     * @param groupId
+     */
+    void addGroupInfo(String groupId);
+
+    /**
+     * 删除系统内存中的群组信息
+     *
+     * @param groupId
+     */
+    void delGroupInfo(String groupId);
+
+    /**
+     * 断开指定用户 或 群组用户的socket
+     *
+     * @param id  typeEnum 为用户 id就是用户id, typeEnum 为群组 id就是群组id
+     * @param typeEnum
+     */
+    void closeConnection(String id, BusinessTypeEnum typeEnum);
+
+    /**
+     * 添加用户信息到群组系统内存
+     *
+     * @param groupId
+     * @param uid
+     */
+    void addUserInfo(String groupId, String uid);
+
+    /**
+     * 删除系统内存群组信息的用户信息
+     *
+     * @param groupId
+     * @param uid
+     */
+    void delUserInfo(String groupId, String uid);
 }

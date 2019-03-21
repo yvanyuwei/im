@@ -17,4 +17,22 @@
         <result column="update_time" property="updateTime" />
     </resultMap>
 
+    <sql id="Base_Column_List">
+        id, red_packet_id, from_id, to_id, type, coin_id, coin_name, amount, status, create_time, update_time
+    </sql>
+
+    <select id="selectByRedPacketId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select
+        <include refid="Base_Column_List" />
+        from im_red_packet_detial
+        where red_packet_id = #{id,jdbcType=VARCHAR}
+    </select>
+
+    <select id="sumAmountByRedPacketId" resultType="java.math.BigDecimal" parameterType="java.lang.String" >
+        select
+        sum(amount)
+        from im_red_packet_detial
+        where red_packet_id = #{id,jdbcType=VARCHAR}
+        and status = 1
+    </select>
 </mapper>

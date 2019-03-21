@@ -23,6 +23,7 @@ import com.vm.im.service.group.ChatGroupOperationFlowService;
 import com.vm.im.service.group.ChatGroupService;
 import com.vm.im.service.user.UserChatGroupService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.vm.im.service.user.UserCurrentChatService;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.slf4j.Logger;
@@ -58,6 +59,9 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
 
     @Autowired
     private ChatGroupService chatGroupService;
+
+    @Autowired
+    private UserCurrentChatService userCurrentChatService;
 
     /**
      * 添加群主加入指定群组
@@ -122,6 +126,8 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
         //删除群成员数据
         userChatGroup.setDelFlag(CommonConstant.YES);
         saveOrUpdate(userChatGroup);
+        //清空用户当前会话
+        userCurrentChatService.clearUserCurrentChat(userChatGroup.getUserId());
         //添加成员流水数据
         chatGroupFlowService.addChatGroupFlow(userChatGroup);
     }
@@ -217,32 +223,11 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
                 JSONObject param = new JSONObject();
                 param.put("userId",chatGroup.getUserId());
                 param.put("chatGroupId",groupId);
-                loadGroupUser(param,ctx);
+                //loadGroupUser(param,ctx);
                 userGroupList(param,ctx);
             }
         }
     }
-
-    /*public void flushCurrentMsgListForGroup(String userId, String groupId, int count,JSONObject param) {
-        ChannelHandlerContext ctx = Constant.onlineUserMap.get(userId);
-        //ChannelHandlerContext toCtx = Constant.onlineUserMap.get(friendId);
-        *//*List<String> userIdList = userCurrentChatMapper.findFriendByUid(userId);
-        List<String> friendIdlist = userCurrentChatMapper.findFriendByUid(friendId);*//*
-        UserCurrentDTO userCurrentUid = new UserCurrentDTO();
-        userCurrentUid.setUid(userId);
-        userCurrentUid.setFriendId(groupId);
-        userCurrentUid.setLastMessage(String.valueOf(param.get("content")));
-        UserCurrentChat userChatUid = buildUserCurrentChat(userCurrentUid);
-        List<UserCurrentChat> userCurrentChats = userCurrentChatService.selectByFriendId(userChatUid.getFriendId());
-
-        //userCurrentChatMapper.saveOrUpdate(userChatUid);
-        if (ctx != null) {
-            JSONObject params = new JSONObject();
-            params.put("userId", userId);
-            params.put("count", count);
-            listByUid(params, ctx);
-        }
-    }*/
 
     @Override
     public List<UserChatGroup> selectByUserId(String userId) {
@@ -252,6 +237,17 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
     @Override
     public List<UserChatVO> selectByPrimaryKey(String groupId) {
         return userChatGroupMapper.selectByPrimaryKey(groupId);
+    }
+
+    /**
+     * 获取群组所有用户id
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public List<String> selectAllUidByGroupId(String id) {
+        return userChatGroupMapper.selectAllUidByGroupId(id);
     }
 
     @Override

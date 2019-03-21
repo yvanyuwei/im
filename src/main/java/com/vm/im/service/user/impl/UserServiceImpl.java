@@ -103,6 +103,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Async
     public void saveUserInfo(User user) {
         saveOrUpdate(user);
+        redisUtil.hset(CommonConstant.REDIS_USER_INFO, user.getId(), JSON.toJSONString(user));
+        // TODO 优化为一条sql
         List<UserFriend> userFriends = userFriendService.selectByFriendId(user.getId(), CommonConstant.NO);
         for (UserFriend userFriend : userFriends) {
             if (!user.getName().equals(userFriend.getNickname())) {

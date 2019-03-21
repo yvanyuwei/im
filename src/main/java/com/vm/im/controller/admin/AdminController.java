@@ -11,6 +11,7 @@ import com.vm.im.common.exception.BusinessException;
 import com.vm.im.entity.common.RedPacket;
 import com.vm.im.entity.common.RedPacketDetial;
 import com.vm.im.entity.user.User;
+import com.vm.im.netty.Constant;
 import com.vm.im.service.Redis.RedisService;
 import com.vm.im.service.admin.AdminService;
 import com.vm.im.service.group.ChatGroupService;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.math.BigDecimal;
 
 /**
  * <p>
@@ -65,13 +67,17 @@ public class AdminController {
         if (CommonConstant.YES.equals(unionOperationDTO.getType())) {
             LOG.info("收到创建工会群申请, groupId:{}", unionOperationDTO.getGroupId());
             chatGroupService.createUnionGroup(unionOperationDTO);
-            chatGroupService.loadGroupInfo();
+            //添加群组信息到系统内存
+            chatGroupService.addGroupInfo(unionOperationDTO.getGroupId());
         }
 
         if (CommonConstant.NO.equals(unionOperationDTO.getType())) {
             LOG.info("收到解散工会群申请, groupId:{}", unionOperationDTO.getGroupId());
             chatGroupService.deleteUnionGroup(unionOperationDTO);
-            chatGroupService.loadGroupInfo();
+            //断开所有该工会成员连接
+            chatGroupService.closeConnection(unionOperationDTO.getGroupId(), BusinessTypeEnum.GROUP);
+            //删除系统内存中的群组信息
+            chatGroupService.delGroupInfo(unionOperationDTO.getGroupId());
         }
 
         return JSON.toJSONString(new ResultBean(ResultCodeEnum.SUCCESS.getCode(), ResultCodeEnum.SUCCESS.name(), null));
@@ -84,11 +90,19 @@ public class AdminController {
         if (CommonConstant.YES.equals(memberOperationDTO.getType())) {
             LOG.info("收到群人员添加操作, groupId:{}", memberOperationDTO.getGroupId());
             chatGroupService.addUnionMember(memberOperationDTO);
+            //添加用户信息到群组系统内存
+            chatGroupService.addUserInfo(memberOperationDTO.getGroupId(),memberOperationDTO.getUid());
+            //刷新用户列表信息
             userChatGroupService.flushGroupMsg(memberOperationDTO.getGroupId());
         }
         if (CommonConstant.NO.equals(memberOperationDTO.getType())) {
             LOG.info("收到群人员删除操作, groupId:{}", memberOperationDTO.getGroupId());
             chatGroupService.deleteUnionMember(memberOperationDTO);
+            // 断开用户连接
+            chatGroupService.closeConnection(memberOperationDTO.getUid(), BusinessTypeEnum.USER);
+            //删除系统内存群组信息的用户信息
+            chatGroupService.delUserInfo(memberOperationDTO.getGroupId(),memberOperationDTO.getUid());
+            // 刷新用户列表信息
             userChatGroupService.flushGroupMsg(memberOperationDTO.getGroupId());
         }
 
@@ -179,6 +193,11 @@ public class AdminController {
             throw new BusinessException(BusinessExceptionEnum.RED_PACKET_STATUS_EXCEPTION.getFailCode(), BusinessExceptionEnum.RED_PACKET_STATUS_EXCEPTION.getFailReason());
         }
 
+        if (receiveRedPacketDTO.getAmount().compareTo(BigDecimal.ZERO) < CommonConstant.YES){
+            LOG.info("红包金额小于0, amount:{}", receiveRedPacketDTO.getAmount());
+            throw new BusinessException(BusinessExceptionEnum.RED_PACKET_EXCEPTION.getFailCode(), BusinessExceptionEnum.RED_PACKET_EXCEPTION.getFailReason());
+        }
+
         if (receiveRedPacketDTO.getType() == RedPacketTypeEnum.USER.value()) {
             LOG.info("收到接收个人红包请求, param:{}", JSON.toJSONString(receiveRedPacketDTO));
             adminService.receiveUserRedPacket(fromUser, redPacket, receiveRedPacketDTO);
@@ -201,7 +220,7 @@ public class AdminController {
             throw new BusinessException(BusinessExceptionEnum.RED_PACKET_NOT_FOUND_EXCEPTION.getFailCode(), BusinessExceptionEnum.RED_PACKET_NOT_FOUND_EXCEPTION.getFailReason());
         }
         if (redPacketCompleteDTO.getStatus() != RedPacketStatusEnum.COMOKETE.value()){
-            LOG.info("修改状态不支持, redPacketCompleteDTO", JSON.toJSONString(redPacketCompleteDTO));
+            LOG.info("修改状态不支持, redPacketCompleteDTO:{}", JSON.toJSONString(redPacketCompleteDTO));
             throw new BusinessException(BusinessExceptionEnum.RED_PACKET_STATUS_EXCEPTION.getFailCode(), BusinessExceptionEnum.RED_PACKET_STATUS_EXCEPTION.getFailReason());
         }
 

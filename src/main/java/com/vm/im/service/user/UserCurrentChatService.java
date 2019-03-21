@@ -2,6 +2,7 @@ package com.vm.im.service.user;
 
 import com.alibaba.fastjson.JSONObject;
 import com.vm.im.common.vo.user.FindUserVO;
+import com.vm.im.entity.group.ChatGroup;
 import com.vm.im.entity.user.User;
 import com.vm.im.entity.user.UserCurrentChat;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -65,4 +66,18 @@ public interface UserCurrentChatService extends IService<UserCurrentChat> {
     void CurrentMsgListForGroup(int count,String content,JSONObject param);
 
     List<String> findUidByFriendId(String friendId);
+
+    /**
+     * 清空指定群组所有成员的当前会话
+     *
+     * @param chatGroup
+     */
+    void clearUserCurrentChat(ChatGroup chatGroup);
+
+    /**
+     * 清空指定用户的当前会话
+     *
+     * @param userId
+     */
+    void clearUserCurrentChat(String userId);
 }

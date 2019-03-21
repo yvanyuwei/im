@@ -97,7 +97,7 @@ public class RedPacketServiceImpl extends ServiceImpl<RedPacketMapper, RedPacket
             result.put("toGroupId", giveRedPacketDTO.getToId());
         }
         result.put("content", JSON.toJSONString(giveRedPacketDTO));
-        result.put("msgType", MessageTypeEnum.RED_PACKET_MSG);
+        result.put("msgType", MessageTypeEnum.RED_PACKET_MSG.type());
         result.put("role", AdminRoleEnum.ADMIN.name());
 
         LOG.info("构建收红包系统消息, result:{}", result.toString());
