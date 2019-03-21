@@ -223,32 +223,11 @@ public class UserChatGroupServiceImpl extends ServiceImpl<UserChatGroupMapper, U
                 JSONObject param = new JSONObject();
                 param.put("userId",chatGroup.getUserId());
                 param.put("chatGroupId",groupId);
-                loadGroupUser(param,ctx);
+                //loadGroupUser(param,ctx);
                 userGroupList(param,ctx);
             }
         }
     }
-
-    /*public void flushCurrentMsgListForGroup(String userId, String groupId, int count,JSONObject param) {
-        ChannelHandlerContext ctx = Constant.onlineUserMap.get(userId);
-        //ChannelHandlerContext toCtx = Constant.onlineUserMap.get(friendId);
-        *//*List<String> userIdList = userCurrentChatMapper.findFriendByUid(userId);
-        List<String> friendIdlist = userCurrentChatMapper.findFriendByUid(friendId);*//*
-        UserCurrentDTO userCurrentUid = new UserCurrentDTO();
-        userCurrentUid.setUid(userId);
-        userCurrentUid.setFriendId(groupId);
-        userCurrentUid.setLastMessage(String.valueOf(param.get("content")));
-        UserCurrentChat userChatUid = buildUserCurrentChat(userCurrentUid);
-        List<UserCurrentChat> userCurrentChats = userCurrentChatService.selectByFriendId(userChatUid.getFriendId());
-
-        //userCurrentChatMapper.saveOrUpdate(userChatUid);
-        if (ctx != null) {
-            JSONObject params = new JSONObject();
-            params.put("userId", userId);
-            params.put("count", count);
-            listByUid(params, ctx);
-        }
-    }*/
 
     @Override
     public List<UserChatGroup> selectByUserId(String userId) {

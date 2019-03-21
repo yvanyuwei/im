@@ -112,10 +112,25 @@ public interface UserChatGroupService extends IService<UserChatGroup> {
      */
     void flushGroupMsg(String groupId);
 
+    /**
+     * 查询用户所在工会
+     * @param userId
+     * @return
+     */
     List<String> selectGroupIdByUid(String userId);
 
+    /**
+     * 查询工会用户列表
+     * @param groupId
+     * @return
+     */
     List<String> selectUidByGroupId(String groupId);
 
+    /**
+     * 查询工会列表信息
+     * @param groupId
+     * @return
+     */
     List<UserChatVO> selectByPrimaryKey(String groupId);
 
     /**

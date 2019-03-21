@@ -61,6 +61,10 @@ public interface UserCurrentChatService extends IService<UserCurrentChat> {
      */
     void updateUserMessage(String name, String friendId, String nickname);
 
+    void CurrentMsgListForUser(User fromUser,User toUser,int count,String content);
+
+    void CurrentMsgListForGroup(int count,String content,JSONObject param);
+
     List<String> findUidByFriendId(String friendId);
 
     /**

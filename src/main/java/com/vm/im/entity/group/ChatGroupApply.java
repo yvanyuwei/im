@@ -2,8 +2,8 @@ package com.vm.im.entity.group;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 
-import java.util.Date;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * <p>

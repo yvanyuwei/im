@@ -2,6 +2,7 @@
 
 package com.vm.im;
 
+import com.alibaba.fastjson.JSONObject;
 import com.vm.im.common.dto.admin.CreateUserDTO;
 import com.vm.im.common.dto.user.UserCurrentDTO;
 import com.vm.im.common.util.RedisUtil;
