@@ -102,9 +102,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     //@Scheduled(cron = "0/10 * *  * * ? ")
     @Async
     public void saveUserInfo(User user) {
-        /*String userId = String.valueOf(param.get("userId"));
-        if(Constant.onlineUserMap.get(userId) != null) {*/
-        //saveOrUpdate(user);
+        saveOrUpdate(user);
         List<UserFriend> userFriends = userFriendService.selectByFriendId(user.getId(), CommonConstant.NO);
         for (UserFriend userFriend : userFriends) {
             if (!user.getName().equals(userFriend.getNickname())) {

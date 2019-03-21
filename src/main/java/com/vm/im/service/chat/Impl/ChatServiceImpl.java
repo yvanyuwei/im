@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.dto.ResultBean;
-import com.vm.im.common.enums.AdminRoleEnum;
-import com.vm.im.common.enums.BusinessExceptionEnum;
-import com.vm.im.common.enums.ChatTypeEnum;
-import com.vm.im.common.enums.MessageTypeEnum;
+import com.vm.im.common.enums.*;
 import com.vm.im.common.exception.BusinessException;
 import com.vm.im.common.util.RedisUtil;
 import com.vm.im.common.util.ResponseJson;
@@ -109,7 +106,10 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
             content = content.substring(0,1000);
         }
         Long createTime = System.currentTimeMillis();
-        String fromUserIdAvatar = String.valueOf(param.get("fromUserIdAvatar"));
+        Object fromUserIdAvatar = param.get("fromUserIdAvatar");
+        if (null == fromUserIdAvatar){
+            fromUserIdAvatar = fromUser.getAvatar();
+        }
         ResponseJson responseJson = new ResponseJson()
                 .setData("fromUserId", fromUserId)
                 .setData("toUserId", toUserId)
@@ -117,7 +117,7 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
                 .setData("type", ChatTypeEnum.SINGLE_SENDING)
                 .setData("createTime", createTime)
                 .setData("nickName", fromUser.getName())
-                .setData("fromUserIdAvatar", fromUserIdAvatar);
+                .setData("fromUserIdAvatar", String.valueOf(fromUserIdAvatar));
         if (role.equals(AdminRoleEnum.ADMIN.name()) && (msgType.equals(String.valueOf(MessageTypeEnum.RED_PACKET_MSG.type())) ||
                 msgType.equals(String.valueOf(MessageTypeEnum.SYSTEM_MSG.type())))){
             responseJson.setData("msgType", Integer.parseInt(msgType));
@@ -163,7 +163,10 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
             content = content.substring(0,1000);
         }
         Long createTime = System.currentTimeMillis();
-        String fromUserIdAvatar = String.valueOf(param.get("fromUserIdAvatar"));
+        Object fromUserIdAvatar = param.get("fromUserIdAvatar");
+        if (null == fromUserIdAvatar){
+            fromUserIdAvatar = fromUser.getAvatar();
+        }
         ResponseJson responseJson = new ResponseJson()
                 .setData("fromUserId", fromUserId)
                 .setData("content", content)
@@ -171,7 +174,7 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
                 .setData("type", ChatTypeEnum.GROUP_SENDING)
                 .setData("createTime", createTime)
                 .setData("nickName", fromUser.getName())
-                .setData("fromUserIdAvatar", fromUserIdAvatar);
+                .setData("fromUserIdAvatar", String.valueOf(fromUserIdAvatar));
         if (role.equals(AdminRoleEnum.ADMIN.name()) && (msgType.equals(String.valueOf(MessageTypeEnum.RED_PACKET_MSG.type())) ||
                 msgType.equals(String.valueOf(MessageTypeEnum.SYSTEM_MSG.type())))){
             responseJson.setData("msgType", Integer.parseInt(msgType));

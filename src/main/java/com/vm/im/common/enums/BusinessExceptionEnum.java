@@ -18,6 +18,8 @@ public enum BusinessExceptionEnum {
     USER_INFO_PARSING_EXCEPTION("1003", "User information parsing exception"),
     //访问过于频繁
     USER_SEND_TOO_FREQUENTLY("1004","User send information too frequently"),
+    //用户发送异常
+    USER_SEND_CONTENT_EXCEPTION("1005","User send information exception"),
 
     /**
      * 群组相关异常

@@ -170,10 +170,14 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<WebSoc
                 }
                 break;
             case "SINGLE_SENDING":
-                chatService.singleSend(param, ctx,fromUser,toUser);
+                if (null != param.get("content")) {
+                    chatService.singleSend(param, ctx, fromUser, toUser);
+                }
                 break;
             case "GROUP_SENDING":
-                chatService.groupSend(param, ctx,fromUser);
+                if (null != param.get("content")) {
+                    chatService.groupSend(param, ctx, fromUser);
+                }
                 break;
             case "USER_FRIEND_LIST":
                 userFriendService.selectUserFriend(param, ctx);
