@@ -3,6 +3,7 @@ package com.vm.im.service.group.impl;
 import com.alibaba.fastjson.JSON;
 import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.dto.admin.AuthOperationDTO;
+import com.vm.im.common.dto.admin.GroupInfoDTO;
 import com.vm.im.common.dto.admin.MemberOperationDTO;
 import com.vm.im.common.dto.admin.UnionOperationDTO;
 import com.vm.im.common.enums.*;
@@ -443,6 +444,46 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
     }
 
     /**
+     * 更新群组信息
+     *
+     * @param groupInfoDTO
+     */
+    @Override
+    public void updateGroupInfo(GroupInfoDTO groupInfoDTO) {
+        ChatGroup chatGroup = getById(groupInfoDTO.getGroupId());
+        if (chatGroup == null || chatGroup.getDelFlag() == CommonConstant.YES) {
+            LOG.info("群组不存在, 或状态为不可用, chatGroupId:{}", groupInfoDTO.getGroupId());
+            throw new BusinessException(BusinessExceptionEnum.GROUP_NOT_FOUND_EXCEPTION.getFailCode(), BusinessExceptionEnum.GROUP_NOT_FOUND_EXCEPTION.getFailReason());
+        }
+
+        if (StringUtil.isNotBlank(groupInfoDTO.getAvatar())) {
+            chatGroup.setAvatar(groupInfoDTO.getAvatar());
+
+            if (StringUtil.isNotBlank(groupInfoDTO.getNewName()) && StringUtil.isNotBlank(groupInfoDTO.getOldName())) {
+                if (groupInfoDTO.getNewName().equals(groupInfoDTO.getOldName())) {
+                    LOG.info("新名字与旧名字相同, 不更新, newName:{}, oldName:{}", groupInfoDTO.getNewName(), groupInfoDTO.getOldName());
+                } else {
+                    chatGroup.setName(groupInfoDTO.getNewName());
+                }
+                // 更新当前会话
+                userCurrentChatService.updateNickName(groupInfoDTO);
+            }
+            updateById(chatGroup);
+        }else{
+            if (StringUtil.isNotBlank(groupInfoDTO.getNewName()) && StringUtil.isNotBlank(groupInfoDTO.getOldName())) {
+                if (groupInfoDTO.getNewName().equals(groupInfoDTO.getOldName())) {
+                    LOG.info("新名字与旧名字相同, 不更新, newName:{}, oldName:{}", groupInfoDTO.getNewName(), groupInfoDTO.getOldName());
+                } else {
+                    chatGroup.setName(groupInfoDTO.getNewName());
+                }
+                updateById(chatGroup);
+                // 更新当前会话
+                userCurrentChatService.updateNickName(groupInfoDTO);
+            }
+        }
+    }
+
+    /**
      * 关闭指定用户的socket
      *
      * @param id 用户id
@@ -450,9 +491,9 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
     private void closeConnection(String id) {
         ChannelHandlerContext channelHandlerContext = Constant.onlineUserMap.get(id);
         try {
-            if (channelHandlerContext == null){
+            if (channelHandlerContext == null) {
                 LOG.info("用户不在线, uid:{}", id);
-            }else{
+            } else {
                 chatService.remove(channelHandlerContext);
             }
         } catch (Exception e) {

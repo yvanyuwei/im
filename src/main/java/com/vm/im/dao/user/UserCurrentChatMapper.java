@@ -44,6 +44,7 @@ public interface UserCurrentChatMapper extends BaseMapper<UserCurrentChat> {
 
     /**
      * 通过好友Id查询用户当前列表信息
+     *
      * @param friendId
      * @return
      */
@@ -51,21 +52,24 @@ public interface UserCurrentChatMapper extends BaseMapper<UserCurrentChat> {
 
     /**
      * 更新用户信息
+     *
      * @param name
      * @param friendId
      * @param nickname
      */
-    void updateUserMessage(@Param("name") String name , @Param("friendId") String friendId ,
+    void updateUserMessage(@Param("name") String name, @Param("friendId") String friendId,
                            @Param("nickname") String nickname);
 
     /**
      * 更新或保存用户数据（限单聊）
+     *
      * @param userCurrentChat
      */
     void saveOrUpdate(UserCurrentChat userCurrentChat);
 
     /**
      * 批量插入
+     *
      * @param info
      */
     void saveOrUpdateBatch(List<UserCurrentChat> info);
@@ -83,4 +87,14 @@ public interface UserCurrentChatMapper extends BaseMapper<UserCurrentChat> {
      * @param id
      */
     void clearUserCurrentChat(String id);
+
+    /**
+     * 更新当前会话昵称
+     *
+     * @param id      表数据 friend_id
+     * @param oldName 旧名称
+     * @param newName 新名称
+     * @param type    类型 1: 好友, 3:群组
+     */
+    void updateNickName(@Param("id") String id, @Param("oldName") String oldName, @Param("newName") String newName, @Param("type") int type);
 }

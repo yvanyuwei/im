@@ -1,6 +1,7 @@
 package com.vm.im.service.user;
 
 import com.alibaba.fastjson.JSONObject;
+import com.vm.im.common.dto.admin.GroupInfoDTO;
 import com.vm.im.common.vo.user.FindUserVO;
 import com.vm.im.entity.group.ChatGroup;
 import com.vm.im.entity.user.User;
@@ -80,4 +81,11 @@ public interface UserCurrentChatService extends IService<UserCurrentChat> {
      * @param userId
      */
     void clearUserCurrentChat(String userId);
+
+    /**
+     * 更新当前会话的群组昵称
+     *
+     * @param groupInfoDTO
+     */
+    void updateNickName(GroupInfoDTO groupInfoDTO);
 }

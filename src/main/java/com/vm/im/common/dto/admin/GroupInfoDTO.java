@@ -27,21 +27,18 @@ public class GroupInfoDTO {
     /**
      * 旧名字
      */
-    @ApiModelProperty(required = true, value = "旧名字")
-    @NotEmpty(message = "oldName不能为空")
+    @ApiModelProperty(value = "旧名字")
     private String oldName;
 
     /**
      * 新名字
      */
-    @ApiModelProperty(required = true, value = "新名字")
-    @NotEmpty(message = "newName不能为空")
+    @ApiModelProperty(value = "新名字")
     private String newName;
 
     /**
      * 头像
      */
-    @ApiModelProperty(required = true, value = "头像")
-    @NotEmpty(message = "avatar不能为空")
+    @ApiModelProperty(value = "头像")
     private String avatar;
 }

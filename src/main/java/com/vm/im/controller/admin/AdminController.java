@@ -241,7 +241,8 @@ public class AdminController {
     @PostMapping("updateUserInfo")
     @ApiOperation(value = "更新用户信息", notes = "更新用户信息接口")
     public String updateUserInfo(@RequestBody @Valid @ApiParam(name = "用户信息", value = "传入json格式") UserInfoDTO userInfoDTO) {
-
+        LOG.info("收到更新用户信息请求, param:{}", JSON.toJSONString(userInfoDTO));
+        userService.updateUserInfo(userInfoDTO);
         return JSON.toJSONString(new ResultBean(ResultCodeEnum.SUCCESS.getCode(), ResultCodeEnum.SUCCESS.name(), null));
     }
 
@@ -249,7 +250,8 @@ public class AdminController {
     @PostMapping("updateGroupInfo")
     @ApiOperation(value = "更新群组信息", notes = "更新群组信息接口")
     public String updateGroupInfo(@RequestBody @Valid @ApiParam(name = "群组信息", value = "传入json格式") GroupInfoDTO groupInfoDTO) {
-
+        LOG.info("收到更新群组信息请求, param:{}", JSON.toJSONString(groupInfoDTO));
+        chatGroupService.updateGroupInfo(groupInfoDTO);
         return JSON.toJSONString(new ResultBean(ResultCodeEnum.SUCCESS.getCode(), ResultCodeEnum.SUCCESS.name(), null));
     }
 }

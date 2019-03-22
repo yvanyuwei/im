@@ -2,6 +2,7 @@ package com.vm.im.service.user.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.vm.im.common.constant.CommonConstant;
+import com.vm.im.common.dto.admin.GroupInfoDTO;
 import com.vm.im.common.dto.user.UserCurrentDTO;
 import com.vm.im.common.enums.ChatTypeEnum;
 import com.vm.im.common.exception.BusinessException;
@@ -196,6 +197,16 @@ public class UserCurrentChatServiceImpl extends ServiceImpl<UserCurrentChatMappe
     @Override
     public void clearUserCurrentChat(String userId) {
         userCurrentChatMapper.clearUserCurrentChat(userId);
+    }
+
+    /**
+     * 更新当前会话的群组昵称
+     *
+     * @param groupInfoDTO
+     */
+    @Override
+    public void updateNickName(GroupInfoDTO groupInfoDTO) {
+        userCurrentChatMapper.updateNickName(groupInfoDTO.getGroupId(), groupInfoDTO.getOldName(), groupInfoDTO.getNewName(), 3);
     }
 
     /**

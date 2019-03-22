@@ -1,6 +1,7 @@
 package com.vm.im.service.user;
 
 import com.vm.im.common.dto.admin.CreateUserDTO;
+import com.vm.im.common.dto.admin.UserInfoDTO;
 import com.vm.im.common.dto.user.FindUserDTO;
 import com.vm.im.common.util.ResponseJson;
 import com.vm.im.common.vo.user.FindUserVO;
@@ -51,4 +52,10 @@ public interface UserService extends IService<User> {
      */
     void createUser(CreateUserDTO createUserDTO);
 
+    /**
+     * 更新用户信息
+     *
+     * @param userInfoDTO
+     */
+    void updateUserInfo(UserInfoDTO userInfoDTO);
 }
