@@ -6,7 +6,9 @@ import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.dto.admin.CreateUserDTO;
 import com.vm.im.common.dto.admin.UserInfoDTO;
 import com.vm.im.common.dto.user.FindUserDTO;
+import com.vm.im.common.enums.BusinessExceptionEnum;
 import com.vm.im.common.enums.FindUserTypeEnum;
+import com.vm.im.common.exception.BusinessException;
 import com.vm.im.common.util.RedisUtil;
 import com.vm.im.common.util.ResponseJson;
 import com.vm.im.common.vo.user.FindUserVO;
@@ -149,6 +151,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public void updateUserInfo(UserInfoDTO userInfoDTO) {
 
+    }
+
+    /**
+     * 校验用户有效性
+     *
+     * @param userId
+     */
+    @Override
+    public User checkUser(String userId) {
+        User user = userMapper.selectByPrimaryKey(userId);
+        if (user == null || !CommonConstant.NO.equals(user.getDelFlag())){
+            LOG.info("用户不存在, 或状态为不可用, userId:{}", userId);
+            throw new BusinessException(BusinessExceptionEnum.USER_NOT_EXIST_EXCEPTION.getFailCode(), BusinessExceptionEnum.USER_NOT_EXIST_EXCEPTION.getFailReason());
+        }
+        return user;
     }
 
     private User buildUserMsg(CreateUserDTO createUserDTO) {

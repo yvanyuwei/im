@@ -23,6 +23,8 @@ public interface UserMapper extends BaseMapper<User> {
 
     User selectByUserName(String name);
 
+    User selectByPrimaryKey(String id);
+
     int insertSelective(User record);
 
     /**

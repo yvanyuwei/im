@@ -148,4 +148,11 @@ public interface ChatGroupService extends IService<ChatGroup> {
      * @param groupInfoDTO
      */
     void updateGroupInfo(GroupInfoDTO groupInfoDTO);
+
+    /**
+     * 校验用户聊天群信息
+     *  @param userId
+     * @param groupId
+     */
+    UserChatGroup checkChatGroup(String userId, String groupId);
 }

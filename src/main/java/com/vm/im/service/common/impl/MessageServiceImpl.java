@@ -1,20 +1,25 @@
 package com.vm.im.service.common.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.vm.im.common.enums.BusinessExceptionEnum;
+import com.vm.im.common.dto.user.ChatHistoryDTO;
 import com.vm.im.common.enums.ChatTypeEnum;
-import com.vm.im.common.exception.BusinessException;
+import com.vm.im.common.enums.UserChatTypeEnum;
+import com.vm.im.common.vo.user.ChatHistoryVO;
 import com.vm.im.entity.common.Message;
 import com.vm.im.dao.common.MessageMapper;
 import com.vm.im.service.common.MessageService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.vm.im.service.group.ChatGroupService;
+import com.vm.im.service.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -27,6 +32,15 @@ import java.sql.Date;
 @Service
 public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> implements MessageService {
     private static final Logger LOG = LoggerFactory.getLogger(MessageServiceImpl.class);
+
+    @Autowired
+    private MessageMapper messageMapper;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private ChatGroupService chatGroupService;
 
     @Async
     public void saveMessage(JSONObject param,Long createTime) {
@@ -49,5 +63,34 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         }
         msg.setContent(content);
         save(msg);
+    }
+
+    /**
+     * 查询聊天历史
+     *
+     * @param chatHistoryDTO
+     * @return
+     */
+    @Override
+    public List<ChatHistoryVO> chatHistory(ChatHistoryDTO chatHistoryDTO) {
+        UserChatTypeEnum userChatTypeEnum = UserChatTypeEnum.valueOf(chatHistoryDTO.getType());
+        List<ChatHistoryVO> result = new ArrayList<>();
+
+        // TODO  聊天历史消息 红包 解析有点问题
+        switch (userChatTypeEnum) {
+            case SINGLE:
+                userService.checkUser(chatHistoryDTO.getToId());
+                result = messageMapper.listSingleByUidAndToid(chatHistoryDTO);
+                break;
+            case GROUP:
+                chatGroupService.checkChatGroup(chatHistoryDTO.getFromId(), chatHistoryDTO.getToId());
+                result = messageMapper.listGroupByUidAndToid(chatHistoryDTO);
+                break;
+            default:
+                LOG.info("用户聊天类型异常, typeEnum:{}", userChatTypeEnum);
+                break;
+        }
+
+        return result;
     }
 }

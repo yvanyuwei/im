@@ -484,6 +484,27 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
     }
 
     /**
+     * 校验用户聊天群信息
+     *  @param userId
+     * @param groupId
+     */
+    @Override
+    public UserChatGroup checkChatGroup(String userId, String groupId) {
+        ChatGroup chatGroup = chatGroupMapper.selectById(groupId);
+        if (chatGroup == null || !CommonConstant.NO.equals(chatGroup.getDelFlag())){
+            LOG.info("聊天群不存在, 或状态为不可用, groupId:{}", groupId);
+            throw new BusinessException(BusinessExceptionEnum.GROUP_NOT_FOUND_EXCEPTION.getFailCode(), BusinessExceptionEnum.GROUP_NOT_FOUND_EXCEPTION.getFailReason());
+        }
+
+        UserChatGroup userChatGroup = userChatGroupService.selectUserByGroupIdAndUid(groupId, userId);
+        if (userChatGroup == null || !CommonConstant.NO.equals(userChatGroup.getDelFlag())){
+            LOG.info("用户未加入该群组, groupId:{}, userId:{}", groupId, userId);
+            throw new BusinessException(BusinessExceptionEnum.GROUP_MEMBER_NOT_EXIST_EXCEPTION.getFailCode(), BusinessExceptionEnum.GROUP_MEMBER_NOT_EXIST_EXCEPTION.getFailReason());
+        }
+        return userChatGroup;
+    }
+
+    /**
      * 关闭指定用户的socket
      *
      * @param id 用户id

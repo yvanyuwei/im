@@ -58,4 +58,11 @@ public interface UserService extends IService<User> {
      * @param userInfoDTO
      */
     void updateUserInfo(UserInfoDTO userInfoDTO);
+
+    /**
+     * 校验用户有效性
+     *
+     * @param userId
+     */
+    User checkUser(String userId);
 }
