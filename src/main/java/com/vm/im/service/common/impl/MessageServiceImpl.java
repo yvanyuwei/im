@@ -2,9 +2,11 @@ package com.vm.im.service.common.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.vm.im.common.dto.user.ChatHistoryDTO;
+import com.vm.im.common.dto.user.FindUserDTO;
 import com.vm.im.common.enums.ChatTypeEnum;
 import com.vm.im.common.enums.UserChatTypeEnum;
 import com.vm.im.common.vo.user.ChatHistoryVO;
+import com.vm.im.common.vo.user.FindUserVO;
 import com.vm.im.entity.common.Message;
 import com.vm.im.dao.common.MessageMapper;
 import com.vm.im.service.common.MessageService;
@@ -92,5 +94,17 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         }
 
         return result;
+    }
+
+    /**
+     * 根据查找目标体查找用户
+     *
+     * @param findUserDTO
+     * @param uid
+     * @return
+     */
+    @Override
+    public List<FindUserVO> findUserList(FindUserDTO findUserDTO, String uid) {
+        return userService.findUserList(findUserDTO, uid);
     }
 }

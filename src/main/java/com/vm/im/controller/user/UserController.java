@@ -12,7 +12,6 @@ import com.vm.im.common.exception.BusinessException;
 import com.vm.im.common.vo.user.ChatHistoryVO;
 import com.vm.im.common.vo.user.FindUserVO;
 import com.vm.im.service.common.MessageService;
-import com.vm.im.service.user.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -42,9 +41,6 @@ public class UserController {
     private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
     private MessageService messageService;
 
     /*@RequestMapping("test")
@@ -69,7 +65,7 @@ public class UserController {
     @PostMapping("findUser")
     public String findUser(@RequestBody @Valid FindUserDTO findUserDTO, @RequestHeader(value = USERID) String uid) {
         LOG.info("收到查找用户请求, param:{}", JSON.toJSONString(findUserDTO));
-        List<FindUserVO> userList = userService.findUserList(findUserDTO, uid);
+        List<FindUserVO> userList = messageService.findUserList(findUserDTO, uid);
         return JSON.toJSONString(new ResultBean(ResultCodeEnum.SUCCESS.getCode(), JSON.toJSONString(userList), null));
     }
 
