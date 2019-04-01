@@ -122,6 +122,9 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
         //创建群
         saveOrUpdate(chatGroup);
 
+        //添加群创建流水
+        chatGroupOperationFlowService.addGroupFlow(chatGroup);
+
         //添加群成员流水
         chatGroupFlowService.addGroupMaster(chatGroup);
 
@@ -151,7 +154,7 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
         userCurrentChatService.clearUserCurrentChat(chatGroup);
 
         //添加操作流水
-        chatGroupOperationFlowService.addDeleteGroupFlow(chatGroup);
+        chatGroupOperationFlowService.addGroupFlow(chatGroup);
 
     }
 

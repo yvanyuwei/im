@@ -16,11 +16,11 @@ import com.vm.im.entity.user.UserChatGroup;
 public interface ChatGroupOperationFlowService extends IService<ChatGroupOperationFlow> {
 
     /**
-     * 添加删除群组的操作流水
+     * 添加群组的操作流水
      *
      * @param chatGroup
      */
-    void addDeleteGroupFlow(ChatGroup chatGroup);
+    void addGroupFlow(ChatGroup chatGroup);
 
     /**
      * 添加群组用户权限操作流水

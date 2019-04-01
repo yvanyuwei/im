@@ -1,6 +1,7 @@
 package com.vm.im.service.group.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.constant.GroupOperationConstant;
 import com.vm.im.common.enums.AdminRoleEnum;
 import com.vm.im.common.enums.GroupRoleEnum;
@@ -35,8 +36,8 @@ public class ChatGroupOperationFlowServiceImpl extends ServiceImpl<ChatGroupOper
      * @param chatGroup
      */
     @Override
-    public void addDeleteGroupFlow(ChatGroup chatGroup) {
-        LOG.info("开始添加删除群组的操作流水");
+    public void addGroupFlow(ChatGroup chatGroup) {
+        LOG.info("开始添加群组的操作流水");
         ChatGroupOperationFlow chatGroupOperationFlow = bulidChatGroupOperationFlow(chatGroup);
         save(chatGroupOperationFlow);
     }
@@ -73,7 +74,7 @@ public class ChatGroupOperationFlowServiceImpl extends ServiceImpl<ChatGroupOper
     }
 
     /**
-     * 构建删除群组的操作流水
+     * 构建群组的操作流水
      *
      * @param chatGroup
      * @return
@@ -84,7 +85,8 @@ public class ChatGroupOperationFlowServiceImpl extends ServiceImpl<ChatGroupOper
         chatGroupOperationFlow.setChatGroupId(chatGroup.getId());
         chatGroupOperationFlow.setOperatorId(chatGroup.getMaster());
         chatGroupOperationFlow.setCreateTime(new Date());
-        chatGroupOperationFlow.setContent(GroupOperationConstant.DELETE_GROUP);
+        String content = chatGroup.getDelFlag() == CommonConstant.YES ? GroupOperationConstant.DELETE_GROUP : GroupOperationConstant.CREATE_GROUP;
+        chatGroupOperationFlow.setContent(content);
         LOG.info("构建群组操作流水, chatGroupOperationFlow:{}", JSON.toJSONString(chatGroupOperationFlow));
 
         return chatGroupOperationFlow;
