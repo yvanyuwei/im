@@ -18,6 +18,7 @@
 .mvn
 target
 pom.xml
+/src/main/resources/application-myTest.properties
 
 ### NetBeans ###
 /nbproject/private/
@@ -31,3 +32,4 @@ static
 log.base_IS_UNDEFINED
 mvnw
 mvnw.cmd
+

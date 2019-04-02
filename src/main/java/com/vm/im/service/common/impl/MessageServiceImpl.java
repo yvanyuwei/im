@@ -1,14 +1,11 @@
 package com.vm.im.service.common.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.vm.im.common.enums.BusinessExceptionEnum;
-import com.vm.im.common.enums.ChatTypeEnum;
-import com.vm.im.common.exception.BusinessException;
-import com.vm.im.entity.common.Message;
-import com.vm.im.dao.common.MessageMapper;
-import com.vm.im.service.common.MessageService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.vm.im.common.enums.ChatTypeEnum;
+import com.vm.im.dao.common.MessageMapper;
+import com.vm.im.entity.common.Message;
+import com.vm.im.service.common.MessageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
@@ -48,6 +45,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
             content = content.substring(0,1000);
         }
         msg.setContent(content);
-        save(msg);
+        boolean save = save(msg);
+        if (save){
+
+        }
     }
 }

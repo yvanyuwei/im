@@ -22,15 +22,6 @@ import org.springframework.stereotype.Component;
 public class HttpRequestHandler extends SimpleChannelInboundHandler<Object> {
 
 
-    private static NeedUserAuth needUserAuth;
-
-    @Autowired
-    public void setChatService(NeedUserAuth needUserAuth,UserService userService) {
-        HttpRequestHandler.needUserAuth = needUserAuth;
-        HttpRequestHandler.userService = userService;
-    }
-
-    private static UserService userService;
     /**
      * 读取完连接的消息后，对消息进行处理。
      * 这里仅处理HTTP请求，WebSocket请求交给下一个处理器。

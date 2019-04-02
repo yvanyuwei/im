@@ -211,7 +211,7 @@ public class ChatServiceImpl extends BaseWebSocketServerHandler implements ChatS
         } else {
             String str = responseJson.success()
                     .toString();
-//            sendMessage(ctx, str);
+            sendMessage(ctx, str);
             kafkaManager.sendMeessage(str, toGroupId + CommonConstant.GROUP_TOPIC);
         }
         long end = System.currentTimeMillis();
