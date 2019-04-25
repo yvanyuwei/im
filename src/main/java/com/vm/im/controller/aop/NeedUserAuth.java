@@ -33,8 +33,8 @@ import static com.vm.im.common.constant.CommonConstant.*;
 /**
  * @ClassName: NeedGroupAuth
  * @Description:
- * @Author zhangqi
- * @Date 2019年02月21日17时27分
+ * @Author 
+ * @Date
  * @Version 1.0
  */
 @Aspect

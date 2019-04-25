@@ -233,6 +233,13 @@
     <update id="clearUserCurrentChat" parameterType="java.lang.String">
         update im_user_current_chat set
         del_flag = 1
-        where user_id = #{id,jdbcType=VARCHAR}
+        where user_id = #{id,jdbcType=VARCHAR} or friend_id = #{id,jdbcType=VARCHAR}
+    </update>
+    <update id="updateNickName">
+        update im_user_current_chat set
+        nickname = #{newName,jdbcType=VARCHAR}
+        where friend_id = #{id,jdbcType=VARCHAR}
+        and type = #{type,jdbcType=INTEGER}
+        and nickname = #{oldName,jdbcType=VARCHAR}
     </update>
 </mapper>

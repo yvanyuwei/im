@@ -20,6 +20,8 @@ public enum BusinessExceptionEnum {
     USER_SEND_TOO_FREQUENTLY("1004","User send information too frequently"),
     //用户发送异常
     USER_SEND_CONTENT_EXCEPTION("1005","User send information exception"),
+    //用户信息异常
+    USER_INFO_EXCEPTION("1006","User info exception"),
 
     /**
      * 群组相关异常

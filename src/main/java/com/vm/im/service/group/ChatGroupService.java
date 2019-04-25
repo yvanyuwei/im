@@ -1,6 +1,7 @@
 package com.vm.im.service.group;
 
 import com.vm.im.common.dto.admin.AuthOperationDTO;
+import com.vm.im.common.dto.admin.GroupInfoDTO;
 import com.vm.im.common.dto.admin.MemberOperationDTO;
 import com.vm.im.common.dto.admin.UnionOperationDTO;
 import com.vm.im.common.enums.BusinessTypeEnum;
@@ -140,4 +141,18 @@ public interface ChatGroupService extends IService<ChatGroup> {
      * @param uid
      */
     void delUserInfo(String groupId, String uid);
+
+    /**
+     * 更新群组信息
+     *
+     * @param groupInfoDTO
+     */
+    void updateGroupInfo(GroupInfoDTO groupInfoDTO);
+
+    /**
+     * 校验用户聊天群信息
+     *  @param userId
+     * @param groupId
+     */
+    UserChatGroup checkChatGroup(String userId, String groupId);
 }

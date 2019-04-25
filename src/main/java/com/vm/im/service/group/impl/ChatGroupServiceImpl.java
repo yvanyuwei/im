@@ -3,6 +3,7 @@ package com.vm.im.service.group.impl;
 import com.alibaba.fastjson.JSON;
 import com.vm.im.common.constant.CommonConstant;
 import com.vm.im.common.dto.admin.AuthOperationDTO;
+import com.vm.im.common.dto.admin.GroupInfoDTO;
 import com.vm.im.common.dto.admin.MemberOperationDTO;
 import com.vm.im.common.dto.admin.UnionOperationDTO;
 import com.vm.im.common.enums.*;
@@ -121,6 +122,9 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
         //创建群
         saveOrUpdate(chatGroup);
 
+        //添加群创建流水
+        chatGroupOperationFlowService.addGroupFlow(chatGroup);
+
         //添加群成员流水
         chatGroupFlowService.addGroupMaster(chatGroup);
 
@@ -150,7 +154,7 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
         userCurrentChatService.clearUserCurrentChat(chatGroup);
 
         //添加操作流水
-        chatGroupOperationFlowService.addDeleteGroupFlow(chatGroup);
+        chatGroupOperationFlowService.addGroupFlow(chatGroup);
 
     }
 
@@ -163,16 +167,16 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
     public void addUnionMember(MemberOperationDTO memberOperationDTO) {
         checkUnionGroupAndMember(memberOperationDTO.getGroupId(), null, null);
 
-        UserChatGroup tepm = userChatGroupService.selectUserByGroupIdAndUid(memberOperationDTO.getGroupId(), memberOperationDTO.getUid());
-        if (tepm != null && CommonConstant.NO == tepm.getDelFlag()) {
-            LOG.info("用户早已添加该群, groupId:{}, uId:{}", memberOperationDTO.getGroupId(), memberOperationDTO.getUid());
-            throw new BusinessException(BusinessExceptionEnum.GROUP_MEMBER_EXIST_EXCEPTION.getFailCode(), BusinessExceptionEnum.GROUP_MEMBER_EXIST_EXCEPTION.getFailReason());
-        }
-
         User user = userService.getById(memberOperationDTO.getUid());
         if (user == null || CommonConstant.YES == user.getDelFlag()) {
             LOG.info("用户不存在, groupId:{}, uId:{}", memberOperationDTO.getGroupId(), memberOperationDTO.getUid());
             throw new BusinessException(BusinessExceptionEnum.USER_NOT_EXIST_EXCEPTION.getFailCode(), BusinessExceptionEnum.USER_NOT_EXIST_EXCEPTION.getFailReason());
+        }
+
+        UserChatGroup tepm = userChatGroupService.selectUserByGroupIdAndUid(memberOperationDTO.getGroupId(), memberOperationDTO.getUid());
+        if (tepm != null && CommonConstant.NO == tepm.getDelFlag()) {
+            LOG.info("用户早已添加该群, groupId:{}, uId:{}", memberOperationDTO.getGroupId(), memberOperationDTO.getUid());
+            throw new BusinessException(BusinessExceptionEnum.GROUP_MEMBER_EXIST_EXCEPTION.getFailCode(), BusinessExceptionEnum.GROUP_MEMBER_EXIST_EXCEPTION.getFailReason());
         }
 
         UserChatGroup userChatGroup = bulidUserChatGroup(memberOperationDTO, user.getName());
@@ -443,6 +447,67 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
     }
 
     /**
+     * 更新群组信息
+     *
+     * @param groupInfoDTO
+     */
+    @Override
+    public void updateGroupInfo(GroupInfoDTO groupInfoDTO) {
+        ChatGroup chatGroup = getById(groupInfoDTO.getGroupId());
+        if (chatGroup == null || chatGroup.getDelFlag() == CommonConstant.YES) {
+            LOG.info("群组不存在, 或状态为不可用, chatGroupId:{}", groupInfoDTO.getGroupId());
+            throw new BusinessException(BusinessExceptionEnum.GROUP_NOT_FOUND_EXCEPTION.getFailCode(), BusinessExceptionEnum.GROUP_NOT_FOUND_EXCEPTION.getFailReason());
+        }
+
+        if (StringUtil.isNotBlank(groupInfoDTO.getAvatar())) {
+            chatGroup.setAvatar(groupInfoDTO.getAvatar());
+
+            if (StringUtil.isNotBlank(groupInfoDTO.getNewName()) && StringUtil.isNotBlank(groupInfoDTO.getOldName())) {
+                if (groupInfoDTO.getNewName().equals(groupInfoDTO.getOldName())) {
+                    LOG.info("新名字与旧名字相同, 不更新, newName:{}, oldName:{}", groupInfoDTO.getNewName(), groupInfoDTO.getOldName());
+                } else {
+                    chatGroup.setName(groupInfoDTO.getNewName());
+                }
+                // 更新当前会话
+                userCurrentChatService.updateNickName(groupInfoDTO);
+            }
+            updateById(chatGroup);
+        }else{
+            if (StringUtil.isNotBlank(groupInfoDTO.getNewName()) && StringUtil.isNotBlank(groupInfoDTO.getOldName())) {
+                if (groupInfoDTO.getNewName().equals(groupInfoDTO.getOldName())) {
+                    LOG.info("新名字与旧名字相同, 不更新, newName:{}, oldName:{}", groupInfoDTO.getNewName(), groupInfoDTO.getOldName());
+                } else {
+                    chatGroup.setName(groupInfoDTO.getNewName());
+                }
+                updateById(chatGroup);
+                // 更新当前会话
+                userCurrentChatService.updateNickName(groupInfoDTO);
+            }
+        }
+    }
+
+    /**
+     * 校验用户聊天群信息
+     *  @param userId
+     * @param groupId
+     */
+    @Override
+    public UserChatGroup checkChatGroup(String userId, String groupId) {
+        ChatGroup chatGroup = chatGroupMapper.selectById(groupId);
+        if (chatGroup == null || !CommonConstant.NO.equals(chatGroup.getDelFlag())){
+            LOG.info("聊天群不存在, 或状态为不可用, groupId:{}", groupId);
+            throw new BusinessException(BusinessExceptionEnum.GROUP_NOT_FOUND_EXCEPTION.getFailCode(), BusinessExceptionEnum.GROUP_NOT_FOUND_EXCEPTION.getFailReason());
+        }
+
+        UserChatGroup userChatGroup = userChatGroupService.selectUserByGroupIdAndUid(groupId, userId);
+        if (userChatGroup == null || !CommonConstant.NO.equals(userChatGroup.getDelFlag())){
+            LOG.info("用户未加入该群组, groupId:{}, userId:{}", groupId, userId);
+            throw new BusinessException(BusinessExceptionEnum.GROUP_MEMBER_NOT_EXIST_EXCEPTION.getFailCode(), BusinessExceptionEnum.GROUP_MEMBER_NOT_EXIST_EXCEPTION.getFailReason());
+        }
+        return userChatGroup;
+    }
+
+    /**
      * 关闭指定用户的socket
      *
      * @param id 用户id
@@ -450,9 +515,9 @@ public class ChatGroupServiceImpl extends ServiceImpl<ChatGroupMapper, ChatGroup
     private void closeConnection(String id) {
         ChannelHandlerContext channelHandlerContext = Constant.onlineUserMap.get(id);
         try {
-            if (channelHandlerContext == null){
-                LOG.info("用户不在线");
-            }else{
+            if (channelHandlerContext == null) {
+                LOG.info("用户不在线, uid:{}", id);
+            } else {
                 chatService.remove(channelHandlerContext);
             }
         } catch (Exception e) {

@@ -15,6 +15,11 @@ public class GroupOperationConstant {
     public final static String DELETE_GROUP = "Delete the group";
 
     /**
+     *  创建群
+     */
+    public final static String CREATE_GROUP = "Create the group";
+
+    /**
      *  设置用户群组角色
      */
     public final static String SET_ROLE = " set role ";

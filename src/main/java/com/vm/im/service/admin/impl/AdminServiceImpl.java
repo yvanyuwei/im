@@ -18,7 +18,6 @@ import com.vm.im.service.common.RedPacketDetialService;
 import com.vm.im.service.common.RedPacketService;
 import com.vm.im.service.group.ChatGroupService;
 import com.vm.im.service.user.UserChatGroupService;
-import com.vm.im.service.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +35,6 @@ import java.math.BigDecimal;
 @Service
 public class AdminServiceImpl implements AdminService {
     private static final Logger LOG = LoggerFactory.getLogger(AdminServiceImpl.class);
-
-    @Autowired
-    private UserService userService;
 
     @Autowired
     private RedPacketService redPacketService;

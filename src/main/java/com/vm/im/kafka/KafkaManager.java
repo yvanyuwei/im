@@ -1,8 +1,12 @@
 package com.vm.im.kafka;
 
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.DeleteTopicsResult;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -24,6 +28,8 @@ public class KafkaManager {
     private static final Logger LOG = LoggerFactory.getLogger(KafkaManager.class);
 
     private Map<String, KafkaConsumer> kafkaConsumerMap = new HashMap<>();
+    @Value("${kafka.producer.servers}")
+    private String producerServers;
 
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
@@ -99,5 +105,18 @@ public class KafkaManager {
             kafkaConsumer.close();
             kafkaConsumerMap.remove(group);
         }
+    }
+
+    /**
+     * 清理指定topic的消息
+     *
+     * @param topic 需要清理的主题
+     */
+    public void clearMessage(String topic) {
+        LOG.info("================Kafka================开始清理:{}, 主题内的消息", topic);
+        Map<String, Object> props = new HashMap<>();
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, producerServers);
+        AdminClient client = AdminClient.create(props);
+        DeleteTopicsResult result = client.deleteTopics(Arrays.asList(topic));
     }
 }

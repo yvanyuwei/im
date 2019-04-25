@@ -11,5 +11,8 @@
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
     </resultMap>
+    <sql id="Base_Column_List" >
+      id, level, level_name, people_number, create_time, update_time
+    </sql>
 
 </mapper>
