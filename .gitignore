@@ -18,9 +18,9 @@
 .mvn
 target
 #pom.xml
-/src/main/resources
-/src/test
-/charts
+/src/main/resources/*
+/src/test/*
+/charts/*
 ##application-myTest.properties
 
 ### NetBeans ###
