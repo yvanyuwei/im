@@ -33,7 +33,7 @@ import static com.vm.im.common.constant.CommonConstant.*;
 /**
  * @ClassName: NeedGroupAuth
  * @Description:
- * @Author 
+ * @Author
  * @Date
  * @Version 1.0
  */
